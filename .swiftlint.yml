@@ -1,6 +1,14 @@
 #제외할 룰
 disabled_rules:
 
+  - line_length
+  - trailing_newline
+  - vertical_whitespace
+  - trailing_whitespace
+  - orphaned_doc_comment
+  - nesting
+  - comment_spacing
+
 #제외할 디렉터리/파일
 excluded:
   - Tuist
