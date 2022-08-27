@@ -1,4 +1,3 @@
-#제외할 룰
 disabled_rules:
 
   - line_length
@@ -8,6 +7,8 @@ disabled_rules:
   - orphaned_doc_comment
   - nesting
   - comment_spacing
+  - trailing_comma
+  - leading_whitespace
 
 #제외할 디렉터리/파일
 excluded:
