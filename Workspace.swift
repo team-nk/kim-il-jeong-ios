@@ -1,9 +1,10 @@
 import ProjectDescription
-import ProjectDescriptionHelpers
 
 let workspace = Workspace(
-    name: Environment.appName,
+    name: "Kim-Il-Jeong",
     projects: [
-        "Projects/App"
-    ]
+        "iOS"
+    ],
+    fileHeaderTemplate: nil,
+    additionalFiles: []
 )
