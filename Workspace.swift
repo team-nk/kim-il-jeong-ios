@@ -3,7 +3,8 @@ import ProjectDescription
 let workspace = Workspace(
     name: "Kim-Il-Jeong",
     projects: [
-        "iOS"
+        "iOS",
+        "Service"
     ],
     fileHeaderTemplate: nil,
     additionalFiles: []

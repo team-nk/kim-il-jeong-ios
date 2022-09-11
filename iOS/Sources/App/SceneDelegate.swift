@@ -14,25 +14,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
-
-        coordinateLogger()
-        coordinateToAppFlow(with: scene)
-    }
-    private func coordinateToAppFlow(with scene: UIWindowScene) {
-        let window = UIWindow(windowScene: scene)
-        self.window = window
-        let appFlow = AppFlow(with: window)
-        let appStepper = AppStepper()
-        coordinator.coordinate(flow: appFlow, with: appStepper)
-        window.makeKeyAndVisible()
-    }
-    private func coordinateLogger() {
-        coordinator.rx.willNavigate
-            .subscribe(onNext: { flow, step in
-                let currentFlow = "\(flow)".split(separator: " ").last ?? "No Flow"
-                print("➡️ will navigate to flow = \(currentFlow) and step = \(step)")
-            })
-            .disposed(by: disposeBag)
+        window = UIWindow(windowScene: scene)
+//        let mainViewController = LoginVC(reactor: LoginReactor())
+//        let naviMainViewController = UINavigationController(rootViewController: mainViewController)
+//        naviMainViewController.navigationBar.isHidden = true
+//        window?.rootViewController = naviMainViewController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
