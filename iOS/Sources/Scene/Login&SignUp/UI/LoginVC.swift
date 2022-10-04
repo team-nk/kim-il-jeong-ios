@@ -24,7 +24,6 @@ class LoginVC: BaseVC<LoginReactor> {
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
         $0.setUnderline(start: 0)
     }
-
     override func addView() {
         [
             logoImageView,
@@ -35,7 +34,6 @@ class LoginVC: BaseVC<LoginReactor> {
             view.addSubview($0)
         }
     }
-
     override func configureVC() {
         emailLoginButton.rx.tap
             .subscribe(onNext: {

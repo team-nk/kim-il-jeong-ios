@@ -59,7 +59,8 @@ class EmailLoginVC: BaseVC<EmailLoginReactor> {
         }
     }
     override func configureVC() {
-        self.navigationController?.navigationBar.topItem?.title = ""
+//        self.navigationController?.navigationBar.topItem?.title = ""
+        self.navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.tintColor = KimIlJeongColor.textColor.color
         emailTextField.attributedPlaceholder = NSAttributedString(
             string: "Email을 입력하세요.",

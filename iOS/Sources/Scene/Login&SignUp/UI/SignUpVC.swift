@@ -111,7 +111,6 @@ class SignUpVC: BaseVC<SignUpReactor> {
         self.navigationController?.navigationBar.topItem?.title = ""
 //        nextButton.rx.tap
 //            .subscribe(onNext: {
-//
 //            })
         emailTextField.rx.text
             .orEmpty
