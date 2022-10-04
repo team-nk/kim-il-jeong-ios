@@ -123,6 +123,7 @@ class SignUpVC: BaseVC<SignUpReactor> {
                 }
             }).disposed(by: disposeBag)
     }
+    // swiftlint:disable function_body_length
     override func setLayout() {
         signUpLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -130,7 +131,6 @@ class SignUpVC: BaseVC<SignUpReactor> {
             $0.width.equalTo(328)
             $0.height.equalTo(44)
         }
-
         emailTextField.snp.makeConstraints {
             $0.top.equalTo(signUpLabel.snp.bottom).offset(84)
             $0.left.equalToSuperview().inset(20)

@@ -4,6 +4,7 @@ import Then
 import RxSwift
 import RxCocoa
 class LoginVC: BaseVC<LoginReactor> {
+
     private let logoImageView = UIImageView().then {
         $0.image = KimIlJeongImage.logo.image
     }
@@ -21,8 +22,9 @@ class LoginVC: BaseVC<LoginReactor> {
         $0.setTitle("이메일로 로그인하기", for: .normal)
         $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        $0.setUnderline(start:0)
+        $0.setUnderline(start: 0)
     }
+
     override func addView() {
         [
             logoImageView,
@@ -33,10 +35,13 @@ class LoginVC: BaseVC<LoginReactor> {
             view.addSubview($0)
         }
     }
+
     override func configureVC() {
         emailLoginButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.pushViewController(EmailLoginVC(reactor: EmailLoginReactor()), animated: true)
+                self.navigationController?
+                    .pushViewController(EmailLoginVC(reactor: EmailLoginReactor()),
+                                        animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {

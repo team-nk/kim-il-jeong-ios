@@ -1,6 +1,6 @@
 import UIKit
 extension UIButton {
-    func setUnderline(start:Int) {
+    func setUnderline(start: Int) {
         guard let title = title(for: .normal) else { return }
         let attributedString = NSMutableAttributedString(string: title)
         attributedString.addAttribute(.underlineStyle,
