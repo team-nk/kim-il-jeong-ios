@@ -1,12 +1,10 @@
 import UIKit
 import RxSwift
-import RxFlow
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     private let disposeBag: DisposeBag = .init()
-    private let coordinator: FlowCoordinator = .init()
 
     func scene(
         _ scene: UIScene,
@@ -15,11 +13,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: scene)
-//        let mainViewController = LoginVC(reactor: LoginReactor())
-//        let naviMainViewController = UINavigationController(rootViewController: mainViewController)
-//        naviMainViewController.navigationBar.isHidden = true
-//        window?.rootViewController = naviMainViewController
+        let mainViewController = LoginVC(reactor: LoginReactor())
+        let naviMainViewController = UINavigationController(rootViewController: mainViewController)
+        window?.rootViewController = naviMainViewController
         window?.makeKeyAndVisible()
+
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -10,12 +10,14 @@ import ReactorKit
 
 class BaseVC<T: Reactor>: UIViewController {
     let bound = UIScreen.main.bounds
+    typealias KimIlJeongColor = KimIlJeongAsset.Color
+    typealias KimIlJeongImage = KimIlJeongAsset.Assets
     var disposeBag: DisposeBag = .init()
 
     @available(*, unavailable)
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = KimIlJeongColor.backGroundColor.color
         addView()
         setLayout()
         configureVC()
