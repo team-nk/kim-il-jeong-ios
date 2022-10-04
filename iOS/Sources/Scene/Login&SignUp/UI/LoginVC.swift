@@ -38,8 +38,7 @@ class LoginVC: BaseVC<LoginReactor> {
         emailLoginButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?
-                    .pushViewController(EmailLoginVC(reactor: EmailLoginReactor()),
-                                        animated: true)
+                    .pushViewController(EmailLoginVC(reactor: EmailLoginReactor()), animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {
