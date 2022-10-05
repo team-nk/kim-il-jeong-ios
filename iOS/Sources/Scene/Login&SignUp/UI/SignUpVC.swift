@@ -108,7 +108,6 @@ class SignUpVC: BaseVC<SignUpReactor> {
         }
     }
     override func configureVC() {
-        self.navigationController?.navigationBar.topItem?.title = ""
 //        nextButton.rx.tap
 //            .subscribe(onNext: {
 //            })
