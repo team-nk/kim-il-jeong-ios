@@ -6,6 +6,28 @@ import RxCocoa
 import FSCalendar
 
 class MainVC: BaseVC<MainReactor> {
+    
+    //임시 배열
+    let dateArr = [
+        "2022-05-04 11:23",
+        "2022-05-04 20:00",
+        "2022-05-05 15:00",
+        "2022-05-06 17:35"
+    ]
+    let doArr = [
+        "아침 자습 (대덕대학교)",
+        "Day Change 강의 수강",
+        "DataBase 수업",
+        "대덕대학교 축제"
+    ]
+    let selectedColorArr: [UIColor] = [
+        UIColor(red: 0.463, green: 0.663, blue: 1, alpha: 1),
+        UIColor(red: 0.529, green: 0.761, blue: 0.537, alpha: 1),
+        UIColor(red: 1, green: 0.58, blue: 0.192, alpha: 1),
+        UIColor(red: 0.463, green: 0.663, blue: 1, alpha: 1)
+    ]
+    //
+    
     private let kimIlJeongLabel = UILabel().then{
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "Kim il jeong"
@@ -67,6 +89,24 @@ class MainVC: BaseVC<MainReactor> {
     lazy var today: Date = {
         return Date()
     }()
+    
+    private let toDayDoLabel = UILabel().then {
+        $0.textColor = KimIlJeongColor.textColor.color
+        $0.text = "오늘 일정"
+        $0.font = .systemFont(ofSize: 18, weight: .bold)
+    }
+    private let plusToDo = UIButton().then {
+        $0.setImage(UIImage(systemName: "plus"), for: .normal)
+        $0.tintColor = KimIlJeongColor.textColor.color
+    }
+    private let dividedLine = UIView().then {
+        $0.backgroundColor = KimIlJeongColor.description.color
+    }
+    
+    private let toDayDoTableView = UITableView().then {
+        $0.rowHeight = 49
+        $0.backgroundColor = .clear
+    }
 
     func moveMonth(next: Bool) {
         var dateComponents = DateComponents()
@@ -75,7 +115,14 @@ class MainVC: BaseVC<MainReactor> {
         self.fsCalendar.setCurrentPage(self.currentPage, animated: true)
     }
     
+    func attribute() {
+        toDayDoTableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: ToDoTableViewCell.cellID)
+    }
+    
     override func addView() {
+        toDayDoTableView.delegate = self
+        toDayDoTableView.dataSource = self
+        toDayDoTableView.separatorStyle = .none
         self.view.backgroundColor = KimIlJeongColor.backGroundColor.color
         [
             kimIlJeongLabel,
@@ -83,10 +130,16 @@ class MainVC: BaseVC<MainReactor> {
             calendarBackground,
             fsCalendar,
             gotoTomorrow,
-            gotoYesterday
+            gotoYesterday,
+            toDayDoLabel,
+            plusToDo,
+            dividedLine,
+            toDayDoTableView
         ].forEach {
             view.addSubview($0)
         }
+
+        attribute()
         gotoTomorrow.addTarget(self, action: #selector(changeAfterDate), for: .touchUpInside)
         gotoYesterday.addTarget(self, action: #selector(changeBeforeDate), for: .touchUpInside)
     }
@@ -117,6 +170,24 @@ class MainVC: BaseVC<MainReactor> {
         fsCalendar.snp.makeConstraints {
             $0.edges.equalTo(calendarBackground).inset(16)
         }
+        toDayDoLabel.snp.makeConstraints {
+            $0.top.equalTo(calendarBackground.snp.bottom).offset(33)
+            $0.left.equalToSuperview().inset(41)
+        }
+        plusToDo.snp.makeConstraints {
+            $0.top.equalTo(calendarBackground.snp.bottom).offset(33)
+            $0.right.equalToSuperview().inset(41)
+        }
+        dividedLine.snp.makeConstraints {
+            $0.top.equalTo(toDayDoLabel.snp.bottom).offset(5)
+            $0.horizontalEdges.equalToSuperview().inset(41)
+            $0.height.equalTo(2)
+        }
+        toDayDoTableView.snp.makeConstraints {
+            $0.top.equalTo(dividedLine.snp.bottom).inset(-7)
+            $0.left.right.equalToSuperview().inset(41)
+            $0.bottom.equalToSuperview()
+        }
         
         /// shadow가 있으려면 layer.borderWidth 값이 필요
         calendarBackground.layer.borderWidth = 0
@@ -141,3 +212,21 @@ class MainVC: BaseVC<MainReactor> {
 extension MainVC : FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
     
 }
+extension MainVC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dateArr.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = toDayDoTableView.dequeueReusableCell(withIdentifier: ToDoTableViewCell.cellID, for: indexPath) as! ToDoTableViewCell
+        
+        cell.dateLabel.text = dateArr[indexPath.row]
+        cell.toDoTitle.text = doArr[indexPath.row]
+        cell.colorDot.tintColor = selectedColorArr[indexPath.row]
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        
+        return cell
+    }
+}
+
