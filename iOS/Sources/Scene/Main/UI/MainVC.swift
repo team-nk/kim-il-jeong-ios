@@ -1,13 +1,8 @@
-import UIKit
-import SnapKit
-import Then
-import RxSwift
-import RxCocoa
 import FSCalendar
+import RxSwift
 
 class MainVC: BaseVC<MainReactor> {
     
-    //임시 배열
     let dateArr = [
         "2022-05-04 11:23",
         "2022-05-04 20:00",
@@ -21,13 +16,11 @@ class MainVC: BaseVC<MainReactor> {
         "대덕대학교 축제"
     ]
     let selectedColorArr: [UIColor] = [
-        UIColor(red: 0.463, green: 0.663, blue: 1, alpha: 1),
-        UIColor(red: 0.529, green: 0.761, blue: 0.537, alpha: 1),
-        UIColor(red: 1, green: 0.58, blue: 0.192, alpha: 1),
-        UIColor(red: 0.463, green: 0.663, blue: 1, alpha: 1)
+        KimIlJeongColor.blueTag.color,
+        KimIlJeongColor.redTag.color,
+        KimIlJeongColor.yellowTag.color,
+        KimIlJeongColor.greenTag.color
     ]
-    //
-    
     private let kimIlJeongLabel = UILabel().then{
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "Kim il jeong"
@@ -46,7 +39,6 @@ class MainVC: BaseVC<MainReactor> {
 
         //언어 한국어로 변경
         $0.locale = Locale(identifier: "en_US")
-
 
         //상단 헤더 뷰 관련
         $0.headerHeight = 34 // YYYY년 M월 표시부 영역 높이
@@ -67,21 +59,19 @@ class MainVC: BaseVC<MainReactor> {
         $0.appearance.titleDefaultColor = KimIlJeongColor.textColor.color //기본 날짜 색
         $0.scrollEnabled = false //스크롤 여부
 
-
         //오늘 날짜(Today) 관련
         $0.appearance.titleTodayColor = KimIlJeongColor.surfaceColor.color //Today에 표시되는 특정 글자색
         $0.appearance.todayColor = KimIlJeongColor.mainColor.color //Today에 표시되는 선택 전 동그라미 색
         $0.appearance.todaySelectionColor = .none  //Today에 표시되는 선택 후 동그라미 색
 
-
         // day 폰트 설정
         $0.appearance.titleFont = .systemFont(ofSize: 13, weight: .medium)
     }
     private let gotoTomorrow = UIButton().then {
-        $0.setImage(UIImage(named: "chevron-right"), for: .normal)
+        $0.setImage(UIImage(named: "icon_right_chevron"), for: .normal)
     }
     private let gotoYesterday = UIButton().then {
-        $0.setImage(UIImage(named: "chevron-left"), for: .normal)
+        $0.setImage(UIImage(named: "icon_left_chevron"), for: .normal)
     }
     
     let calendar = Calendar.current
@@ -140,8 +130,17 @@ class MainVC: BaseVC<MainReactor> {
         }
 
         attribute()
-        gotoTomorrow.addTarget(self, action: #selector(changeAfterDate), for: .touchUpInside)
-        gotoYesterday.addTarget(self, action: #selector(changeBeforeDate), for: .touchUpInside)
+        
+        gotoTomorrow.rx.tap
+            .bind {
+                self.moveMonth(next: true)
+            }
+            .disposed(by: disposeBag)
+        gotoYesterday.rx.tap
+            .bind {
+                self.moveMonth(next: false)
+            }
+            .disposed(by: disposeBag)
     }
     override func setLayout() {
         kimIlJeongLabel.snp.makeConstraints {
@@ -202,21 +201,12 @@ class MainVC: BaseVC<MainReactor> {
         /// shadow의 corner radius
         calendarBackground.layer.shadowRadius = 32
     }
-    @objc fileprivate func changeBeforeDate() {
-        moveMonth(next: false)
-    }
-    @objc fileprivate func changeAfterDate() {
-        moveMonth(next: true)
-    }
 }
-extension MainVC : FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
-    
-}
+
 extension MainVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dateArr.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = toDayDoTableView.dequeueReusableCell(withIdentifier: ToDoTableViewCell.cellID, for: indexPath) as! ToDoTableViewCell
         
@@ -225,7 +215,6 @@ extension MainVC: UITableViewDataSource, UITableViewDelegate {
         cell.colorDot.tintColor = selectedColorArr[indexPath.row]
         cell.selectionStyle = .none
         cell.backgroundColor = .clear
-        
         return cell
     }
 }
