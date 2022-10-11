@@ -12,9 +12,7 @@ import Then
 
 class ToDoTableViewCell: UITableViewCell {
     typealias KimIlJeongColor = KimIlJeongAsset.Color
-    
     static let cellID = "CellID"
-    
     let dateLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 8, weight: .regular)
@@ -26,16 +24,14 @@ class ToDoTableViewCell: UITableViewCell {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 12, weight: .regular)
     }
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        [dateLabel, colorDot, toDoTitle].forEach{ self.addSubview($0) }
+        [dateLabel, colorDot, toDoTitle].forEach { self.addSubview($0) }
         layout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     func layout() {
         colorDot.snp.makeConstraints {
             $0.left.equalTo(self).inset(10)
