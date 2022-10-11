@@ -1,8 +1,3 @@
-import UIKit
-import SnapKit
-import Then
-import RxSwift
-import RxCocoa
 import FSCalendar
 
 class MainVC: BaseVC<MainReactor> {
@@ -209,9 +204,6 @@ class MainVC: BaseVC<MainReactor> {
         moveMonth(next: true)
     }
 }
-extension MainVC : FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
-    
-}
 extension MainVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dateArr.count
@@ -225,7 +217,6 @@ extension MainVC: UITableViewDataSource, UITableViewDelegate {
         cell.colorDot.tintColor = selectedColorArr[indexPath.row]
         cell.selectionStyle = .none
         cell.backgroundColor = .clear
-        
         return cell
     }
 }
