@@ -30,7 +30,7 @@ class MainVC: BaseVC<MainReactor> {
         $0.text = "Calendar"
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
-    private let calendarBackground = UIView().then {
+    private let calendarBackgroundView = UIView().then {
         $0.backgroundColor = KimIlJeongColor.surfaceColor.color
         $0.layer.cornerRadius = 32
     }
@@ -62,10 +62,10 @@ class MainVC: BaseVC<MainReactor> {
         // day 폰트 설정
         $0.appearance.titleFont = .systemFont(ofSize: 13, weight: .medium)
     }
-    private let gotoTomorrow = UIButton().then {
+    private let gotoTomorrowButton = UIButton().then {
         $0.setImage(UIImage(named: "icon_right_chevron"), for: .normal)
     }
-    private let gotoYesterday = UIButton().then {
+    private let gotoYesterdayButton = UIButton().then {
         $0.setImage(UIImage(named: "icon_left_chevron"), for: .normal)
     }
     let calendar = Calendar.current
@@ -78,7 +78,7 @@ class MainVC: BaseVC<MainReactor> {
         $0.text = "오늘 일정"
         $0.font = .systemFont(ofSize: 18, weight: .bold)
     }
-    private let plusToDo = UIButton().then {
+    private let plusToDoButton = UIButton().then {
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
         $0.tintColor = KimIlJeongColor.textColor.color
     }
@@ -108,30 +108,33 @@ class MainVC: BaseVC<MainReactor> {
         [
             kimIlJeongLabel,
             calendarLabel,
-            calendarBackground,
+            calendarBackgroundView,
             fsCalendar,
-            gotoTomorrow,
-            gotoYesterday,
+            gotoTomorrowButton,
+            gotoYesterdayButton,
             toDayDoLabel,
-            plusToDo,
+            plusToDoButton,
             dividedLine,
             toDayDoTableView
         ].forEach {
             view.addSubview($0)
         }
-
+    }
+    
+    override func configureVC() {
         attribute()
-        gotoTomorrow.rx.tap
+        gotoTomorrowButton.rx.tap
             .bind {
                 self.moveMonth(next: true)
             }
             .disposed(by: disposeBag)
-        gotoYesterday.rx.tap
+        gotoYesterdayButton.rx.tap
             .bind {
                 self.moveMonth(next: false)
             }
             .disposed(by: disposeBag)
     }
+    
     override func setLayout() {
         kimIlJeongLabel.snp.makeConstraints {
             $0.leftMargin.equalTo(41)
@@ -141,36 +144,36 @@ class MainVC: BaseVC<MainReactor> {
             $0.top.equalTo(kimIlJeongLabel.snp.bottom).inset(0)
             $0.leftMargin.equalTo(41)
         }
-        calendarBackground.snp.makeConstraints {
+        calendarBackgroundView.snp.makeConstraints {
             $0.top.equalTo(calendarLabel.snp.bottom).offset(21)
             $0.left.right.equalToSuperview().inset(32)
             $0.height.equalTo(300)
         }
-        gotoTomorrow.snp.makeConstraints {
+        gotoTomorrowButton.snp.makeConstraints {
             $0.top.equalTo(fsCalendar.snp.top).inset(4)
             $0.right.equalToSuperview().inset(100)
             $0.width.height.equalTo(30)
         }
-        gotoYesterday.snp.makeConstraints {
+        gotoYesterdayButton.snp.makeConstraints {
             $0.top.equalTo(fsCalendar.snp.top).inset(4)
             $0.left.equalToSuperview().inset(100)
             $0.width.height.equalTo(30)
         }
         fsCalendar.snp.makeConstraints {
-            $0.edges.equalTo(calendarBackground).inset(16)
+            $0.edges.equalTo(calendarBackgroundView).inset(16)
         }
         toDayDoLabel.snp.makeConstraints {
-            $0.top.equalTo(calendarBackground.snp.bottom).offset(33)
+            $0.top.equalTo(calendarBackgroundView.snp.bottom).offset(33)
             $0.left.equalToSuperview().inset(41)
         }
-        plusToDo.snp.makeConstraints {
-            $0.top.equalTo(calendarBackground.snp.bottom).offset(33)
+        plusToDoButton.snp.makeConstraints {
+            $0.top.equalTo(calendarBackgroundView.snp.bottom).offset(33)
             $0.right.equalToSuperview().inset(41)
         }
         dividedLine.snp.makeConstraints {
             $0.top.equalTo(toDayDoLabel.snp.bottom).offset(5)
             $0.horizontalEdges.equalToSuperview().inset(41)
-            $0.height.equalTo(2)
+            $0.height.equalTo(1)
         }
         toDayDoTableView.snp.makeConstraints {
             $0.top.equalTo(dividedLine.snp.bottom).inset(-7)
@@ -178,17 +181,17 @@ class MainVC: BaseVC<MainReactor> {
             $0.bottom.equalToSuperview()
         }
         // shadow가 있으려면 layer.borderWidth 값이 필요
-        calendarBackground.layer.borderWidth = 0
+        calendarBackgroundView.layer.borderWidth = 0
         // 테두리 밖으로 contents가 있을 때, 마스킹(true)하여 표출안되게 할것인지 마스킹을 off(false)하여 보일것인지 설정
-        calendarBackground.layer.masksToBounds = false
+        calendarBackgroundView.layer.masksToBounds = false
         // shadow 색상
-        calendarBackground.layer.shadowColor = UIColor.black.cgColor
+        calendarBackgroundView.layer.shadowColor = UIColor.black.cgColor
         // 현재 shadow는 view의 layer 테두리와 동일한 위치로 있는 상태이므로 offset을 통해 그림자를 이동시켜야 표출
-        calendarBackground.layer.shadowOffset = CGSize(width: 0, height: 20)
+        calendarBackgroundView.layer.shadowOffset = CGSize(width: 0, height: 20)
         // shadow의 투명도 (0 ~ 1)
-        calendarBackground.layer.shadowOpacity = 0.15
+        calendarBackgroundView.layer.shadowOpacity = 0.15
         // shadow의 corner radius
-        calendarBackground.layer.shadowRadius = 32
+        calendarBackgroundView.layer.shadowRadius = 32
     }
 }
 
