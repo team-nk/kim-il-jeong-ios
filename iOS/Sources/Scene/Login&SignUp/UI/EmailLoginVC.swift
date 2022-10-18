@@ -71,6 +71,10 @@ class EmailLoginVC: BaseVC<EmailLoginReactor> {
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(SignUpVC(reactor: SignUpReactor()), animated: true)
             }).disposed(by: disposeBag)
+        loginButton.rx.tap
+            .subscribe(onNext: {
+                self.dismiss(animated: true)
+            }).disposed(by: disposeBag)
     }
     override func setLayout() {
         logoImageView.snp.makeConstraints {
