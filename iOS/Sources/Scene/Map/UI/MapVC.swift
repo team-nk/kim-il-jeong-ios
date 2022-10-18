@@ -6,6 +6,8 @@ import RxCocoa
 import CoreLocation
 
 class MapVC: BaseVC<MapReactor> {
+    let locationManager = CLLocationManager()
+    var currentLocation: CLLocation! // 내 위치 저장
     private let mapView = MKMapView()
     var token = false
     override func setLayout() {
@@ -16,9 +18,12 @@ class MapVC: BaseVC<MapReactor> {
     }
     override func configureVC() {
         setMapView(coordinate: change(xAddress: "36.390906587662", yAddress: "127.36218898382"), addr: "대덕소프트웨어 마이스터고")
-//        setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
-//        self.mapView.showsUserLocation = true
-//        self.mapView.setUserTrackingMode(.follow, animated: true)
+        setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+        self.mapView.showsUserLocation = true
     }
     override func viewDidAppear(_ animated: Bool) {
         if !token {
@@ -26,6 +31,16 @@ class MapVC: BaseVC<MapReactor> {
             loginVC.modalPresentationStyle = .fullScreen
             self.present(loginVC, animated: true)
             token = true
+        }
+        let selectSchoolVC = DetailMapVC()
+        if #available(iOS 15.0, *) {
+            if let sheet = selectSchoolVC.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+                sheet.prefersGrabberVisible = true
+                sheet.largestUndimmedDetentIdentifier = .medium
+                sheet.preferredCornerRadius = 32
+                self.present(selectSchoolVC, animated: true)
+            }
         }
     }
     override func addView() {
@@ -38,9 +53,6 @@ class MapVC: BaseVC<MapReactor> {
         return mapXY
     }
     func setMapView(coordinate: CLLocationCoordinate2D, addr: String) {
-        let region = MKCoordinateRegion(center: coordinate,
-                                        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
-        self.mapView.setRegion(region, animated: true)
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
         annotation.title = addr
@@ -48,12 +60,26 @@ class MapVC: BaseVC<MapReactor> {
         mapView.delegate = self
     }
 }
-extension MapVC: MKMapViewDelegate {
+
+extension MapVC: MKMapViewDelegate, CLLocationManagerDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "MyMarker")
-
-        annotationView.markerTintColor = UIColor.blue
-        return annotationView
+        switch annotation.title {
+        case "My Location":
+            let annotationView = MKUserLocationView(annotation: annotation, reuseIdentifier: "MyMarker")
+            return annotationView
+        default:
+            let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "MyMarker")
+            annotationView.markerTintColor = .blue
+            return annotationView
+        }
     }
-
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude,
+                                            longitude: location!.coordinate.longitude)
+        let region = MKCoordinateRegion(center: center,
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        self.mapView.setRegion(region, animated: true)
+        self.locationManager.stopUpdatingLocation()
+    }
 }
