@@ -6,10 +6,10 @@ import RxCocoa
 import CoreLocation
 
 class MapVC: BaseVC<MapReactor> {
-    let locationManager = CLLocationManager()
-    var currentLocation: CLLocation! // 내 위치 저장
+    private let locationManager = CLLocationManager()
+    private var currentLocation: CLLocation! // 내 위치 저장
     private let mapView = MKMapView()
-    var token = false
+    private var token = false
     override func setLayout() {
         mapView.snp.makeConstraints {
             $0.left.right.equalToSuperview()
@@ -33,7 +33,7 @@ class MapVC: BaseVC<MapReactor> {
             token = true
         }
         let selectSchoolVC = DetailMapVC()
-        if #available(iOS 15.0, *) {
+        if #available(iOS 16.0, *) {
             if let sheet = selectSchoolVC.sheetPresentationController {
                 sheet.detents = [.medium(), .large()]
                 sheet.prefersGrabberVisible = true
@@ -78,7 +78,7 @@ extension MapVC: MKMapViewDelegate, CLLocationManagerDelegate {
         let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude,
                                             longitude: location!.coordinate.longitude)
         let region = MKCoordinateRegion(center: center,
-                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+                                        span: MKCoordinateSpan(latitudeDelta: 100, longitudeDelta: 100))
         self.mapView.setRegion(region, animated: true)
         self.locationManager.stopUpdatingLocation()
     }
