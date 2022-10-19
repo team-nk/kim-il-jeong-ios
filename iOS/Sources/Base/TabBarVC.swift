@@ -15,9 +15,7 @@ class TabBarVC: UITabBarController {
         tabBar.barTintColor = UIColor(named: "BackGroundColor")
         tabBar.unselectedItemTintColor = UIColor(named: "Description")
         tabBar.tintColor = UIColor(named: "TextColor")
-//        tabBar.isHidden = false
         self.hidesBottomBarWhenPushed = true
-//        self.tabBarController?.tabBar.layer.borderColor = .none
     }
 
     func setUpTabBarItem() {
@@ -33,12 +31,6 @@ class TabBarVC: UITabBarController {
 //            image: UIImage(named: "Map"),
 //            selectedImage: UIImage(named: "Map_fill")
 //        )
-        let logInVC = BaseNC(rootViewController: LoginVC(reactor: LoginReactor()))
-        logInVC.tabBarItem = UITabBarItem(
-            title: "",
-            image: UIImage(named: "Person"),
-            selectedImage: UIImage(named: "Person_fill")
-        )
         let postListVC = PostListVC(reactor: PostListVCReactor())
         postListVC.tabBarItem = UITabBarItem(
             title: "",
@@ -54,7 +46,6 @@ class TabBarVC: UITabBarController {
         viewControllers = [
 //            calendarVC,
 //            mapVC,
-            logInVC,
             postListVC
 //            myPageVC
         ]
