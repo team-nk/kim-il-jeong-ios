@@ -1,12 +1,12 @@
 import Foundation
 
-struct BirthDay: Equatable {
+struct BirthDay {
     var username: String = .init()
     var birthDate: String = .init()
     let cellType: String = "birthType"
 }
 
-struct Schedule: Equatable {
+struct Schedule {
     var color: String = .init()
     var title: String = .init()
     var content: String = .init()
