@@ -83,8 +83,6 @@ class PostListVC: BaseVC<PostListVCReactor> {
         scrollView.contentInsetAdjustmentBehavior = .never
         addDummyData()
         setUpTableView()
-        addView()
-        setLayout()
     }
     override func setLayout() {
         scrollView.snp.makeConstraints {
