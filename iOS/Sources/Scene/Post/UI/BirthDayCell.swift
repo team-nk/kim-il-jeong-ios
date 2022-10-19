@@ -1,17 +1,8 @@
-//
-//  BirthDayCell.swift
-//  Kim-Il-Jeong
-//
-//  Created by 강인혜 on 2022/10/06.
-//  Copyright © 2022 com.TeamNK. All rights reserved.
-//
-
 import UIKit
 import Then
 import SnapKit
 
 class BirthDayCell: BaseTC {
-    static let id = "BirthDayCell"
     let backView = UIView().then {
         $0.backgroundColor = UIColor(named: "CellBackGroundColor")
         $0.layer.cornerRadius = 20
@@ -40,8 +31,6 @@ class BirthDayCell: BaseTC {
         }
     }
     override func configureVC() {
-        addView()
-        setLayout()
         self.backgroundColor = KimIlJeongColor.backGroundColor2.color
     }
     override func setLayout() {

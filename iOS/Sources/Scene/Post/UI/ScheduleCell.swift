@@ -3,7 +3,6 @@ import Then
 import SnapKit
 
 class ScheduleCell: BaseTC {
-    static let id = "ScheduleCell"
     let colorSetting = UIImageView().then {
         $0.tintColor = KimIlJeongColor.mainColor.color
         $0.image = UIImage(systemName: "circle.fill")
@@ -46,8 +45,6 @@ class ScheduleCell: BaseTC {
         }
     }
     override func configureVC() {
-        addView()
-        setLayout()
         self.backgroundColor = KimIlJeongColor.backGroundColor.color
     }
     override func setLayout() {
