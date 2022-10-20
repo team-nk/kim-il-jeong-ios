@@ -26,6 +26,7 @@ class DetailLocationTableViewCell: BaseTC {
         $0.backgroundColor = KimIlJeongColor.description.color
     }
     override func configureVC() {
+        self.selectionStyle = .none
     }
     override func addView() {
         [
