@@ -9,7 +9,7 @@ class MapVC: BaseVC<MapReactor> {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation! // 내 위치 저장
     private let mapView = MKMapView()
-    private var token = false
+    private var token = true
     override func setLayout() {
         mapView.snp.makeConstraints {
             $0.left.right.equalToSuperview()
@@ -35,9 +35,17 @@ class MapVC: BaseVC<MapReactor> {
         let selectSchoolVC = DetailMapVC()
         if #available(iOS 16.0, *) {
             if let sheet = selectSchoolVC.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
+                let firstId = UISheetPresentationController.Detent.Identifier("frist")
+                let firstDetent = UISheetPresentationController.Detent.custom(identifier: firstId) { _ in
+                    return 400
+                }
+                let secondId = UISheetPresentationController.Detent.Identifier("second")
+                let secondDetent = UISheetPresentationController.Detent.custom(identifier: secondId) { _ in
+                    return 700
+                }
+                sheet.detents = [firstDetent, secondDetent]
                 sheet.prefersGrabberVisible = true
-                sheet.largestUndimmedDetentIdentifier = .medium
+                sheet.largestUndimmedDetentIdentifier = firstId
                 sheet.preferredCornerRadius = 32
                 self.present(selectSchoolVC, animated: true)
             }
@@ -78,7 +86,7 @@ extension MapVC: MKMapViewDelegate, CLLocationManagerDelegate {
         let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude,
                                             longitude: location!.coordinate.longitude)
         let region = MKCoordinateRegion(center: center,
-                                        span: MKCoordinateSpan(latitudeDelta: 100, longitudeDelta: 100))
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         self.mapView.setRegion(region, animated: true)
         self.locationManager.stopUpdatingLocation()
     }
