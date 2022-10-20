@@ -71,5 +71,19 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectSchoolVC = EditPlanVC()
+        if #available(iOS 16.0, *) {
+            if let sheet = selectSchoolVC.sheetPresentationController {
+                let id = UISheetPresentationController.Detent.Identifier("frist")
+                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                    return 220
+                }
+                sheet.detents = [detent]
+//                sheet.prefersGrabberVisible = true
+                sheet.largestUndimmedDetentIdentifier = id
+                sheet.preferredCornerRadius = 32
+                self.present(selectSchoolVC, animated: true)
+            }
+        }
     }
 }
