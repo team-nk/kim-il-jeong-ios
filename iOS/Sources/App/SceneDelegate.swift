@@ -13,8 +13,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: scene)
-        let mainViewController = MainVC(reactor: MainReactor())
-        let naviMainViewController = BaseNC(rootViewController: mainViewController)
+        let mainViewController = TabBarVC()
+        let naviMainViewController = mainViewController
         window?.rootViewController = naviMainViewController
         window?.makeKeyAndVisible()
 
