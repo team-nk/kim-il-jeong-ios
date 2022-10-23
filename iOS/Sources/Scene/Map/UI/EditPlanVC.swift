@@ -3,9 +3,11 @@ import SnapKit
 import Then
 import MapKit
 import RxCocoa
+import RxSwift
 import CoreLocation
 
 class EditPlanVC: UIViewController {
+    let disposeBag = DisposeBag()
     private let cellColor = UIView().then {
         $0.backgroundColor = .green
         $0.layer.cornerRadius = 5
@@ -47,6 +49,7 @@ class EditPlanVC: UIViewController {
         view.backgroundColor = .white
         addView()
         setLayout()
+        configureVC()
     }
     private func addView() {
         [
@@ -58,6 +61,23 @@ class EditPlanVC: UIViewController {
             deleteButton,
             modifyButton
         ].forEach {view.addSubview($0)}
+    }
+    private func configureVC() {
+        modifyButton.rx.tap.subscribe(onNext: { _ in
+            let selectSchoolVC = ModifyVC()
+            if #available(iOS 16.0, *) {
+                if let sheet = selectSchoolVC.sheetPresentationController {
+                    let id = UISheetPresentationController.Detent.Identifier("frist")
+                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                        return 700
+                    }
+                    sheet.detents = [detent]
+                    sheet.largestUndimmedDetentIdentifier = id
+                    sheet.preferredCornerRadius = 32
+                    self.present(selectSchoolVC, animated: true)
+                }
+            }
+        }).disposed(by: disposeBag)
     }
     private func setLayout() {
         cellColor.snp.makeConstraints {

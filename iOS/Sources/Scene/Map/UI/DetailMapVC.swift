@@ -79,7 +79,6 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
                     return 220
                 }
                 sheet.detents = [detent]
-//                sheet.prefersGrabberVisible = true
                 sheet.largestUndimmedDetentIdentifier = id
                 sheet.preferredCornerRadius = 32
                 self.present(selectSchoolVC, animated: true)
