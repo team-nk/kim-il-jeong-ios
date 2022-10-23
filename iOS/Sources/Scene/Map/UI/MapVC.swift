@@ -5,11 +5,11 @@ import MapKit
 import RxCocoa
 import CoreLocation
 
-class MapVC: BaseVC<MapReactor> {
+class MapVC: BaseVC {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation! // 내 위치 저장
     private let mapView = MKMapView()
-    private var token = true
+    private var token = false
     override func setLayout() {
         mapView.snp.makeConstraints {
             $0.left.right.equalToSuperview()
@@ -27,7 +27,7 @@ class MapVC: BaseVC<MapReactor> {
     }
     override func viewDidAppear(_ animated: Bool) {
         if !token {
-            let loginVC = BaseNC(rootViewController: LoginVC(reactor: LoginReactor()))
+            let loginVC = BaseNC(rootViewController: LoginVC())
             loginVC.modalPresentationStyle = .fullScreen
             self.present(loginVC, animated: true)
             token = true

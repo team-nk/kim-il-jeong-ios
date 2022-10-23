@@ -1,9 +1,11 @@
 import UIKit
+
 import Then
 import SnapKit
 import RxCocoa
 import RxSwift
-class SignUpVC: BaseVC<SignUpReactor> {
+
+class SignUpVC: BaseVC {
     private let signUpLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "SignUp"

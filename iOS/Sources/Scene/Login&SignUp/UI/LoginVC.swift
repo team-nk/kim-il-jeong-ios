@@ -3,7 +3,7 @@ import SnapKit
 import Then
 import RxSwift
 import RxCocoa
-class LoginVC: BaseVC<LoginReactor> {
+class LoginVC: BaseVC {
 
     private let logoImageView = UIImageView().then {
         $0.image = KimIlJeongImage.logo.image
@@ -37,8 +37,7 @@ class LoginVC: BaseVC<LoginReactor> {
     override func configureVC() {
         emailLoginButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?
-                    .pushViewController(EmailLoginVC(reactor: EmailLoginReactor()), animated: true)
+                self.navigationController?.pushViewController(EmailLoginVC(), animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {

@@ -8,7 +8,7 @@
 import UIKit
 import ReactorKit
 
-class BaseVC<T: Reactor>: UIViewController {
+class BaseVC: UIViewController {
     let bound = UIScreen.main.bounds
     typealias KimIlJeongColor = KimIlJeongAsset.Color
     typealias KimIlJeongImage = KimIlJeongAsset.Assets
@@ -18,36 +18,17 @@ class BaseVC<T: Reactor>: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
+        configureVC()
+        bind()
+    }
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         addView()
         setLayout()
-        configureVC()
-    }
-
-    init(reactor: T) {
-        super.init(nibName: nil, bundle: nil)
-        self.reactor = reactor
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        print("\(type(of: self)): \(#function)")
     }
 
     func addView() {}
     func setLayout() {}
     func configureVC() {}
-    func bindView(reactor: T) {}
-    func bindAction(reactor: T) {}
-    func bindState(reactor: T) {}
-}
-
-extension BaseVC: View {
-    func bind(reactor: T) {
-        bindView(reactor: reactor)
-        bindAction(reactor: reactor)
-        bindState(reactor: reactor)
-    }
+    func bind() {}
 }
