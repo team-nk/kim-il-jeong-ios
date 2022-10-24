@@ -37,18 +37,24 @@ class MapVC: BaseVC {
             if let sheet = selectSchoolVC.sheetPresentationController {
                 let firstId = UISheetPresentationController.Detent.Identifier("frist")
                 let firstDetent = UISheetPresentationController.Detent.custom(identifier: firstId) { _ in
-                    return 400
+                    return 200
                 }
                 let secondId = UISheetPresentationController.Detent.Identifier("second")
                 let secondDetent = UISheetPresentationController.Detent.custom(identifier: secondId) { _ in
+                    return 400
+                }
+                let thridId = UISheetPresentationController.Detent.Identifier("thrid")
+                let thridDetent = UISheetPresentationController.Detent.custom(identifier: thridId) { _ in
                     return 700
                 }
-                sheet.detents = [firstDetent, secondDetent]
+
+                sheet.detents = [firstDetent, secondDetent, thridDetent]
                 sheet.prefersGrabberVisible = true
-                sheet.largestUndimmedDetentIdentifier = firstId
+                sheet.largestUndimmedDetentIdentifier = secondId
                 sheet.preferredCornerRadius = 32
                 self.present(selectSchoolVC, animated: true)
             }
+            selectSchoolVC.isModalInPresentation = true
         }
     }
     override func addView() {
