@@ -33,6 +33,7 @@ class EmailLoginVC: BaseVC {
         $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
         $0.layer.borderWidth = 1
         $0.placeholder = "Password를 입력하세요"
+        $0.isSecureTextEntry = true
         $0.addLeftPadding()
     }
     private let loginButton = UIButton(type: .system).then {
@@ -50,14 +51,14 @@ class EmailLoginVC: BaseVC {
         $0.setUnderline(start: 13)
     }
     override func bind() {
-        let input = EmailLoginViewModel.Input(
-            text: passwordTextField.rx.text.orEmpty.asDriver(),
-            buttonDidTap: loginButton.rx.tap.asSignal()
-        )
-        let output = viewModel.transform(input)
-        output.menu.subscribe(onNext: {[weak self] in
-            self?.loginLabel.text = $0
-        }).disposed(by: disposeBag)
+//        let input = EmailLoginViewModel.Input(
+//            text: passwordTextField.rx.text.orEmpty.asDriver(),
+//            buttonDidTap: loginButton.rx.tap.asSignal()
+//        )
+//        let output = viewModel.transform(input)
+//        output.menu.subscribe(onNext: {[weak self] in
+//            self?.loginLabel.text = $0
+//        }).disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -80,9 +81,9 @@ class EmailLoginVC: BaseVC {
         passwordTextField.attributedPlaceholder = NSAttributedString(
             string: "Password을 입력하세요.",
             attributes: [NSAttributedString.Key.foregroundColor: KimIlJeongColor.textfieldDeactivationColor.color])
-        passwordTextField.isSecureTextEntry = true
         signUpButton.rx.tap
             .subscribe(onNext: {
+                self.navigationController?.pushViewController(SignUpVC(), animated: true)
             }).disposed(by: disposeBag)
         loginButton.rx.tap
             .subscribe(onNext: {
