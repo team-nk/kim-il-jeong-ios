@@ -6,6 +6,7 @@ import RxCocoa
 import RxSwift
 
 class SignUpVC: BaseVC {
+    private let viewModel = SignUpViewModel()
     private let signUpLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "SignUp"
@@ -109,19 +110,32 @@ class SignUpVC: BaseVC {
             view.addSubview($0)
         }
     }
+    override func bind() {
+        let input = SignUpViewModel.Input(emailText: emailTextField.rx.text.orEmpty.asDriver(),
+                                          emailCheckText: emailCodeTextField.rx.text.orEmpty.asDriver(),
+                                          idText: idTextField.rx.text.orEmpty.asDriver(),
+                                          paswwordText: passwordTextField.rx.text.orEmpty.asDriver(),
+                                          paswwordCheckText: passwordCheckTextField.rx.text.orEmpty.asDriver(),
+                                          buttonDidTap: nextButton.rx.tap.asSignal())
+        let output = viewModel.transform(input)
+        output.error.asObservable()
+            .subscribe(onNext: {
+                self.noticeLabel.text = $0
+            }).disposed(by: disposeBag)
+    }
     override func configureVC() {
 //        nextButton.rx.tap
 //            .subscribe(onNext: {
 //            })
-        emailTextField.rx.text
-            .orEmpty
-            .subscribe(onNext: {
-                if $0 == "" {
-                    self.noticeLabel.text = "아이디 중복 확인을 해 주세요"
-                } else {
-                    self.noticeLabel.text = ""
-                }
-            }).disposed(by: disposeBag)
+//        emailTextField.rx.text
+//            .orEmpty
+//            .subscribe(onNext: {
+//                if $0 == "" {
+//                    self.noticeLabel.text = "아이디 중복 확인을 해 주세요"
+//                } else {
+//                    self.noticeLabel.text = ""
+//                }
+//            }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
     override func setLayout() {
