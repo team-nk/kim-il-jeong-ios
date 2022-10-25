@@ -6,8 +6,7 @@ import RxCocoa
 import RxSwift
 import CoreLocation
 
-class EditPlanVC: UIViewController {
-    let disposeBag = DisposeBag()
+class EditPlanVC: BaseVC {
     private let cellColor = UIView().then {
         $0.backgroundColor = .green
         $0.layer.cornerRadius = 5
@@ -31,7 +30,7 @@ class EditPlanVC: UIViewController {
         $0.textColor = KimIlJeongAsset.Color.description.color
     }
     private let deleteButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColorr3.color
+        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor3.color
         $0.layer.cornerRadius = 10
         $0.setTitle("Delete", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.errorColor.color, for: .normal)
@@ -44,14 +43,7 @@ class EditPlanVC: UIViewController {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        addView()
-        setLayout()
-        configureVC()
-    }
-    private func addView() {
+    override func addView() {
         [
             cellColor,
             titleLabel,
@@ -62,7 +54,7 @@ class EditPlanVC: UIViewController {
             modifyButton
         ].forEach {view.addSubview($0)}
     }
-    private func configureVC() {
+    override func configureVC() {
         modifyButton.rx.tap.subscribe(onNext: { _ in
             let selectSchoolVC = ModifyVC()
             if #available(iOS 16.0, *) {
@@ -79,7 +71,7 @@ class EditPlanVC: UIViewController {
             }
         }).disposed(by: disposeBag)
     }
-    private func setLayout() {
+    override func setLayout() {
         cellColor.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
             $0.top.equalToSuperview().inset(42)
@@ -107,13 +99,13 @@ class EditPlanVC: UIViewController {
         }
         deleteButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().inset(224)
+            $0.width.equalTo((view.frame.width-60)/2)
             $0.top.equalTo(timeLabel.snp.bottom).offset(38)
             $0.height.equalTo(50)
         }
         modifyButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
-            $0.leading.equalToSuperview().inset(224)
+            $0.width.equalTo((view.frame.width-60)/2)
             $0.top.equalTo(timeLabel.snp.bottom).offset(38)
             $0.height.equalTo(50)
         }

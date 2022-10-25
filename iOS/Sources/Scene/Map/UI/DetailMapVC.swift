@@ -1,11 +1,9 @@
 import UIKit
 import SnapKit
 import Then
-import MapKit
 import RxCocoa
-import CoreLocation
 
-class DetailMapVC: UIViewController {
+class DetailMapVC: BaseVC {
     private let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
@@ -18,11 +16,7 @@ class DetailMapVC: UIViewController {
     private let detailLocationTabelView = UITableView().then {
         $0.register(DetailLocationTableViewCell.self, forCellReuseIdentifier: "cell")
     }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        addSubView()
-        view.backgroundColor = .white
-        setLayout()
+    override func configureVC() {
         tableViewSetting()
      }
     private func tableViewSetting() {
@@ -31,7 +25,7 @@ class DetailMapVC: UIViewController {
         detailLocationTabelView.rowHeight = 60
         detailLocationTabelView.separatorStyle = .none
     }
-    private func addSubView() {
+    override func addView() {
         [
             plusButton,
             titleLabel,
@@ -39,7 +33,7 @@ class DetailMapVC: UIViewController {
         ].forEach {view.addSubview($0)}
 
     }
-    private func setLayout() {
+    override func setLayout() {
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(35)
             $0.leading.equalToSuperview().inset(34)
