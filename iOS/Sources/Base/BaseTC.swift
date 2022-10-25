@@ -12,6 +12,7 @@ class BaseTC: UITableViewCell {
         self.addView()
         self.setLayout()
         self.configureVC()
+        self.backgroundColor = KimIlJeongColor.backGroundColor2.color
     }
 
     @available(*, unavailable)

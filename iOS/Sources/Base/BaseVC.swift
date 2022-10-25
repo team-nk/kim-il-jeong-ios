@@ -14,10 +14,9 @@ class BaseVC: UIViewController {
     typealias KimIlJeongImage = KimIlJeongAsset.Assets
     var disposeBag: DisposeBag = .init()
 
-    @available(*, unavailable)
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = KimIlJeongColor.backGroundColor.color
+        view.backgroundColor = KimIlJeongColor.backGroundColor2.color
         configureVC()
         bind()
     }

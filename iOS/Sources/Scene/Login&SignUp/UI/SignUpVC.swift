@@ -124,18 +124,6 @@ class SignUpVC: BaseVC {
             }).disposed(by: disposeBag)
     }
     override func configureVC() {
-//        nextButton.rx.tap
-//            .subscribe(onNext: {
-//            })
-//        emailTextField.rx.text
-//            .orEmpty
-//            .subscribe(onNext: {
-//                if $0 == "" {
-//                    self.noticeLabel.text = "아이디 중복 확인을 해 주세요"
-//                } else {
-//                    self.noticeLabel.text = ""
-//                }
-//            }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
     override func setLayout() {
