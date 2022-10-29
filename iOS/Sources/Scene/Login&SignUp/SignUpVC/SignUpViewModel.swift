@@ -3,7 +3,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class SignUpViewModel: ViewModel {
+class SignUpViewModel: BaseVM {
 
     struct Input {
         let emailText: Driver<String>

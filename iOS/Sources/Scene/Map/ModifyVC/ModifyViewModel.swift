@@ -3,7 +3,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class ModifyViewModel: ViewModel {
+class ModifyViewModel: BaseVM {
 
     struct Input {
         let titleText: Driver<String>
