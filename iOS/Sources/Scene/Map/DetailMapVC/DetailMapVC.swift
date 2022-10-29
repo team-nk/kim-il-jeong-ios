@@ -61,13 +61,13 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
         }
         cell.titleLabel.text = "네이버 비전계획팀 미팅"
         cell.subTitleLabel.text = "대전광역시 둔산동 갤러리아읍 둔산 스타벅스"
-        cell.tableColor.backgroundColor = .green
+        cell.tableColor.backgroundColor = KimIlJeongColor.purpleColor.color
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectSchoolVC = EditPlanVC()
+        let editPlanVC = EditPlanVC()
         if #available(iOS 16.0, *) {
-            if let sheet = selectSchoolVC.sheetPresentationController {
+            if let sheet = editPlanVC.sheetPresentationController {
                 let id = UISheetPresentationController.Detent.Identifier("frist")
                 let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
                     return 220
@@ -75,8 +75,9 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
                 sheet.detents = [detent]
                 sheet.largestUndimmedDetentIdentifier = id
                 sheet.preferredCornerRadius = 32
-                self.present(selectSchoolVC, animated: true)
+                self.present(editPlanVC, animated: true)
             }
+
         }
     }
 }

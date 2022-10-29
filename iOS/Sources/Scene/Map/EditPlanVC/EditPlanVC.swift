@@ -8,7 +8,7 @@ import CoreLocation
 
 class EditPlanVC: BaseVC {
     private let cellColor = UIView().then {
-        $0.backgroundColor = .green
+        $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
     }
     private let titleLabel = UILabel().then {
@@ -56,9 +56,9 @@ class EditPlanVC: BaseVC {
     }
     override func configureVC() {
         modifyButton.rx.tap.subscribe(onNext: { _ in
-            let selectSchoolVC = ModifyVC()
+            let modifyVC = ModifyVC()
             if #available(iOS 16.0, *) {
-                if let sheet = selectSchoolVC.sheetPresentationController {
+                if let sheet = modifyVC.sheetPresentationController {
                     let id = UISheetPresentationController.Detent.Identifier("frist")
                     let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
                         return 700
@@ -66,9 +66,16 @@ class EditPlanVC: BaseVC {
                     sheet.detents = [detent]
                     sheet.largestUndimmedDetentIdentifier = id
                     sheet.preferredCornerRadius = 32
-                    self.present(selectSchoolVC, animated: true)
+                    self.present(modifyVC, animated: true)
                 }
+                modifyVC.isModalInPresentation = true
             }
+        }).disposed(by: disposeBag)
+        deleteButton.rx.tap.subscribe(onNext: {
+            let deleteCustomVC = DeleteCustomAlertVC()
+            deleteCustomVC.modalPresentationStyle = .overFullScreen
+            deleteCustomVC.modalTransitionStyle = .crossDissolve
+            self.present(deleteCustomVC, animated: true)
         }).disposed(by: disposeBag)
     }
     override func setLayout() {

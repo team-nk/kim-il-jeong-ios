@@ -124,6 +124,13 @@ class SignUpVC: BaseVC {
             }).disposed(by: disposeBag)
     }
     override func configureVC() {
+        nextButton.rx.tap
+            .subscribe(onNext: { [self] in
+                let signUpCustomAlertVC = SignUpCustomAlertVC()
+                signUpCustomAlertVC.modalTransitionStyle = .crossDissolve
+                signUpCustomAlertVC.modalPresentationStyle = .overFullScreen
+                present(signUpCustomAlertVC, animated: true)
+            }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
     override func setLayout() {

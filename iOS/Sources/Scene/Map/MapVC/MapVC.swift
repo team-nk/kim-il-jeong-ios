@@ -32,9 +32,9 @@ class MapVC: BaseVC {
             self.present(loginVC, animated: true)
             token = true
         }
-        let selectSchoolVC = DetailMapVC()
+        let deiailMapVC = DetailMapVC()
         if #available(iOS 16.0, *) {
-            if let sheet = selectSchoolVC.sheetPresentationController {
+            if let sheet = deiailMapVC.sheetPresentationController {
                 let firstId = UISheetPresentationController.Detent.Identifier("frist")
                 let firstDetent = UISheetPresentationController.Detent.custom(identifier: firstId) { _ in
                     return 200
@@ -52,9 +52,9 @@ class MapVC: BaseVC {
                 sheet.prefersGrabberVisible = true
                 sheet.largestUndimmedDetentIdentifier = secondId
                 sheet.preferredCornerRadius = 32
-                self.present(selectSchoolVC, animated: true)
+                self.present(deiailMapVC, animated: true)
             }
-            selectSchoolVC.isModalInPresentation = true
+            deiailMapVC.isModalInPresentation = true
         }
     }
     override func addView() {
