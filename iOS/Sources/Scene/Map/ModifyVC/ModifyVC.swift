@@ -154,10 +154,6 @@ class ModifyVC: BaseVC {
             }).disposed(by: disposeBag)
     }
     override func configureVC() {
-//        doneButton.rx.tap
-//            .subscribe(onNext: { [self] in
-//                dismiss(animated: true)
-//            }).disposed(by: disposeBag)
         cencelButton.rx.tap
             .subscribe(onNext: { [self] in
                 dismiss(animated: true)
