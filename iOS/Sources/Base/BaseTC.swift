@@ -1,14 +1,10 @@
-//
-//  BaseTC.swift
-//  Kim-Il-Jeong
-//
-//  Created by 강인혜 on 2022/10/11.
-//  Copyright © 2022 com.TeamNK. All rights reserved.
-//
 
 import UIKit
+import SnapKit
+import Then
 
 class BaseTC: UITableViewCell {
+
     typealias KimIlJeongColor = KimIlJeongAsset.Color
     typealias KimIlJeongImage = KimIlJeongAsset.Assets
 
@@ -17,7 +13,9 @@ class BaseTC: UITableViewCell {
         self.addView()
         self.setLayout()
         self.configureVC()
+        self.backgroundColor = KimIlJeongColor.backGroundColor2.color
     }
+
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

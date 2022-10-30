@@ -3,7 +3,7 @@ import SnapKit
 import Then
 import RxSwift
 import RxCocoa
-class LoginVC: BaseVC<LoginReactor> {
+class LoginVC: BaseVC {
 
     private let logoImageView = UIImageView().then {
         $0.image = KimIlJeongImage.logo.image
@@ -24,11 +24,23 @@ class LoginVC: BaseVC<LoginReactor> {
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
         $0.setUnderline(start: 0)
     }
+    private let googleLoginButton = UIButton().then {
+        $0.setImage(KimIlJeongImage.google.image, for: .normal)
+    }
+    private let appleLoginButton = UIButton().then {
+        $0.setImage(KimIlJeongImage.apple.image, for: .normal)
+    }
+    private let kakaoLoginButton = UIButton().then {
+        $0.setImage(KimIlJeongImage.kakao.image, for: .normal)
+    }
     override func addView() {
         [
             logoImageView,
             kimIlJeongLabel,
             loginLabel,
+            googleLoginButton,
+            appleLoginButton,
+            kakaoLoginButton,
             emailLoginButton
         ].forEach {
             view.addSubview($0)
@@ -37,8 +49,7 @@ class LoginVC: BaseVC<LoginReactor> {
     override func configureVC() {
         emailLoginButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?
-                    .pushViewController(EmailLoginVC(reactor: EmailLoginReactor()), animated: true)
+                self.navigationController?.pushViewController(EmailLoginVC(), animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {
@@ -55,6 +66,21 @@ class LoginVC: BaseVC<LoginReactor> {
         loginLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(50)
             $0.top.equalTo(kimIlJeongLabel.snp.bottom).offset(8)
+        }
+        googleLoginButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.centerX.equalToSuperview().offset(-80)
+            $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
+        }
+        appleLoginButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
+        }
+        kakaoLoginButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.centerX.equalToSuperview().offset(80)
+            $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
         }
         emailLoginButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
