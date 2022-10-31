@@ -94,7 +94,6 @@ class NewPostVC: BaseVC<NewPostVCReactor> {
             $0.top.equalTo(scheduleButton.snp.bottom).offset(30)
             $0.leading.equalTo(cancelButton.snp.trailing).offset(20)
             $0.trailing.equalToSuperview().inset(20)
-//            $0.width.equalTo(184)
             $0.height.equalTo(50)
             $0.bottom.equalToSuperview().inset(40)
         }
