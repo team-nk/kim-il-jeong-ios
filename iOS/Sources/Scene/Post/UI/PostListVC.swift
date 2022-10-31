@@ -15,6 +15,24 @@ class PostListVC: BaseVC<PostListVCReactor> {
     private let contentView = UIView().then {
         $0.backgroundColor = .clear
     }
+    private let writePostButton = UIButton(type: .system).then {
+        $0.backgroundColor = KimIlJeongColor.surface2.color
+        $0.setImage(UIImage(named: "Pencil"), for: .normal)
+        $0.imageEdgeInsets = UIEdgeInsets(top: 0, left: -12, bottom: 0, right: 0)
+        $0.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
+        $0.layer.cornerRadius = 16
+        $0.layer.shadowColor = UIColor.black.cgColor
+        $0.layer.shadowOffset = CGSize(width: 0, height: 4)
+        $0.layer.shadowOpacity = 0.15
+        $0.layer.shadowRadius = 3
+//        $0.layer.shadowColor = UIColor.black.cgColor
+//        $0.layer.shadowOffset = CGSize(width: 0, height: 1)
+//        $0.layer.shadowOpacity = 0.3
+//        $0.layer.shadowRadius = 0
+        $0.setTitle("글 작성하기", for: .normal)
+        $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
+    }
     private let logoLabel = UILabel().then {
         $0.text = "Kim il jeong"
         $0.textColor = KimIlJeongColor.textColor.color
@@ -55,7 +73,8 @@ class PostListVC: BaseVC<PostListVCReactor> {
         [
             scrollView,
             logoLabel,
-            postLabel
+            postLabel,
+            writePostButton
         ]
             .forEach {
                 view.addSubview($0)
@@ -83,6 +102,12 @@ class PostListVC: BaseVC<PostListVCReactor> {
         scrollView.contentInsetAdjustmentBehavior = .never
         addDummyData()
         setUpTableView()
+        writePostButton.rx.tap
+            .subscribe(onNext: {
+                self.navigationController?
+                    .pushViewController(NewPostVC(reactor: NewPostVCReactor()), animated: true)
+            }).disposed(by: disposeBag)
+        self.navigationController?.isNavigationBarHidden = true
     }
     override func setLayout() {
         scrollView.snp.makeConstraints {
@@ -97,6 +122,12 @@ class PostListVC: BaseVC<PostListVCReactor> {
             } else {
                 $0.height.equalTo(800)
             }
+        }
+        writePostButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(42)
+            $0.bottom.equalToSuperview().inset(115)
+            $0.width.equalTo(141)
+            $0.height.equalTo(56)
         }
         logoLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(69)
