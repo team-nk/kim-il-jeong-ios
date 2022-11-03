@@ -25,10 +25,6 @@ class PostListVC: BaseVC<PostListVCReactor> {
         $0.layer.shadowOffset = CGSize(width: 0, height: 4)
         $0.layer.shadowOpacity = 0.15
         $0.layer.shadowRadius = 3
-//        $0.layer.shadowColor = UIColor.black.cgColor
-//        $0.layer.shadowOffset = CGSize(width: 0, height: 1)
-//        $0.layer.shadowOpacity = 0.3
-//        $0.layer.shadowRadius = 0
         $0.setTitle("글 작성하기", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
