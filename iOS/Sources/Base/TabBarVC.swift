@@ -19,7 +19,7 @@ class TabBarVC: UITabBarController {
     }
 
     func setUpTabBarItem() {
-        let postListVC = PostListVC(reactor: PostListVCReactor())
+        let postListVC = PostListVC()
         postListVC.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "Megaphone"),
