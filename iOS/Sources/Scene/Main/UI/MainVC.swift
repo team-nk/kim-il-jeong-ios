@@ -1,7 +1,7 @@
 import FSCalendar
 import RxSwift
 
-class MainVC: BaseVC<MainReactor> {
+class MainVC: BaseVC {
     let dateArr = [
         "2022-05-04 11:23",
         "2022-05-04 20:00",
@@ -120,7 +120,7 @@ class MainVC: BaseVC<MainReactor> {
             view.addSubview($0)
         }
     }
-    
+
     override func configureVC() {
         attribute()
         gotoTomorrowButton.rx.tap
@@ -134,7 +134,7 @@ class MainVC: BaseVC<MainReactor> {
             }
             .disposed(by: disposeBag)
     }
-    
+
     override func setLayout() {
         kimIlJeongLabel.snp.makeConstraints {
             $0.leftMargin.equalTo(41)
