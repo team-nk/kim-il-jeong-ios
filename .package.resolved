@@ -10,9 +10,18 @@
       }
     },
     {
+      "identity" : "floatingpanel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scenee/FloatingPanel",
+      "state" : {
+        "revision" : "4ab7d260301ddf1cab5376ea14e285a128f5ba39",
+        "version" : "2.5.5"
+      }
+    },
+    {
       "identity" : "fscalendar",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/WenchaoD/FSCalendar.git",
+      "location" : "https://github.com/WenchaoD/FSCalendar",
       "state" : {
         "revision" : "0fbdec5172fccb90f707472eeaea4ffe095278f6",
         "version" : "2.8.4"
@@ -23,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher",
       "state" : {
-        "revision" : "be1a1acb283a702b99b630f586877ba02234b4cb",
-        "version" : "7.3.2"
+        "revision" : "44e891bdb61426a95e31492a67c7c0dfad1f87c5",
+        "version" : "7.4.1"
       }
     },
     {
@@ -68,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa.git",
       "state" : {
-        "revision" : "5629961d905387b40fb2e1e9d8594c87a2ab8811",
-        "version" : "10.28.6"
+        "revision" : "dc1672b3011eb992ce95db4feec83cd897626a16",
+        "version" : "10.32.1"
       }
     },
     {
@@ -77,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core",
       "state" : {
-        "revision" : "6f6a0f415bd33cf2ced4467e36a47f7c84f0a1d7",
-        "version" : "12.5.1"
+        "revision" : "3c4b86da569368c4ee5ccca2a112d511cc6fa936",
+        "version" : "12.11.0"
       }
     },
     {
