@@ -7,7 +7,7 @@ import RxCocoa
 class DeleteCustomAlertVC: BaseVC {
     private let popupView = UIView().then {
         $0.backgroundColor = .white
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 20
         $0.clipsToBounds = true
     }
     private let titleLabel = UILabel().then {
