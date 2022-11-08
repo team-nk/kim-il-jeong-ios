@@ -6,8 +6,7 @@
 //
 
 import UIKit
-import ReactorKit
-
+import RxSwift
 class BaseVC: UIViewController {
     let bound = UIScreen.main.bounds
     typealias KimIlJeongColor = KimIlJeongAsset.Color
@@ -17,13 +16,13 @@ class BaseVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = KimIlJeongColor.backGroundColor2.color
+        addView()
+        setLayout()
         configureVC()
         bind()
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        addView()
-        setLayout()
     }
 
     func addView() {}
