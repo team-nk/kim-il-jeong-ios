@@ -121,7 +121,7 @@ class MainEditModifyVC: BaseVC {
         $0.textAlignment = .center
     }
     private let cencelButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.surfaceColor.color
+        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
         $0.layer.cornerRadius = 10
         $0.setTitle("Cancel", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.textColor.color, for: .normal)

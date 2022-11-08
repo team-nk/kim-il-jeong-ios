@@ -46,7 +46,6 @@ class PostListVC: BaseVC {
         birthTableView.delegate = self
         birthTableView.dataSource = self
         birthTableView.reloadData()
-        
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.reloadData()
@@ -126,10 +125,8 @@ extension PostListVC: UITableViewDataSource, UITableViewDelegate {
         switch tableView {
         case birthTableView:
             return birthDayList.count
-            
         case scheduleTableView:
             return scheduleList.count
-            
         default:
             return 0
         }
