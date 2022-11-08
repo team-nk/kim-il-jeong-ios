@@ -4,7 +4,7 @@ import RxCocoa
 import SnapKit
 import Then
 
-class PostListVC: BaseVC<PostListVCReactor> {
+class PostListVC: BaseVC {
     private var birthDayList: [BirthDay] = []
     private var scheduleList: [Schedule] = []
     private let dummyList = Dummies()
@@ -137,7 +137,8 @@ extension PostListVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableView {
         case birthTableView:
-            if let birthCell = tableView.dequeueReusableCell(withIdentifier: "BirthDayCell", for: indexPath) as? BirthDayCell {
+            if let birthCell = tableView.dequeueReusableCell(withIdentifier: "BirthDayCell",
+                                                             for: indexPath) as? BirthDayCell {
                 birthCell.configureVC()
                 birthCell.congratulationsLabel.text = "\(birthDayList[indexPath.row].username)님의 생일이에요!"
                 birthCell.dateLabel.text = "\(birthDayList[indexPath.row].birthDate)"
@@ -147,7 +148,8 @@ extension PostListVC: UITableViewDataSource, UITableViewDelegate {
                 return UITableViewCell()
             }
         case scheduleTableView:
-            if let scheduleCell = scheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleCell", for: indexPath) as? ScheduleCell {
+            if let scheduleCell = scheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleCell",
+                                                                        for: indexPath) as? ScheduleCell {
                 scheduleCell.configureVC()
                 scheduleCell.scheduleTitle.text = "\(scheduleList[indexPath.row].title)"
                 scheduleCell.scheduleOwner.text = "\(scheduleList[indexPath.row].owner)"
