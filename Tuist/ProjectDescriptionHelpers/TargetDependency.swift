@@ -18,6 +18,7 @@ public extension TargetDependency.SPM {
     static let UPCarouselFlowLayout = TargetDependency.package(product: "UPCarouselFlowLayout")
     static let FSCalendar = TargetDependency.package(product: "FSCalendar")
     static let ReactorKit = TargetDependency.package(product: "ReactorKit")
+    static let FloatingPanel = TargetDependency.package(product: "FloatingPanel")
 }
 
 public extension Package {
@@ -64,5 +65,9 @@ public extension Package {
     static let ReactorKit = Package.remote(
         url: "https://github.com/ReactorKit/ReactorKit.git",
         requirement: .upToNextMajor(from: "3.0.0")
+    )
+    static let FloatingPanel = Package.remote(
+        url: "https://github.com/scenee/FloatingPanel",
+        requirement: .upToNextMajor(from: "2.0.0")
     )
 }
