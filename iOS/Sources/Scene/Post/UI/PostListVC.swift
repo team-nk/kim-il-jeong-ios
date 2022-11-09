@@ -101,7 +101,7 @@ class PostListVC: BaseVC {
         writePostButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?
-                    .pushViewController(NewPostVC(reactor: NewPostVCReactor()), animated: true)
+                    .pushViewController(NewPostVC(), animated: true)
             }).disposed(by: disposeBag)
         self.navigationController?.isNavigationBarHidden = true
     }

@@ -14,7 +14,8 @@ let project = Project.dynamicFramework(
         .Kingfisher,
         .UPCarouselFlowLayout,
         .ReactorKit,
-        .FSCalendar
+        .FSCalendar,
+        .FloatingPanel
     ],
     deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
     dependencies: [
@@ -30,6 +31,7 @@ let project = Project.dynamicFramework(
         .SPM.Kingfisher,
         .SPM.UPCarouselFlowLayout,
         .SPM.ReactorKit,
-        .SPM.FSCalendar
+        .SPM.FSCalendar,
+        .SPM.FloatingPanel
     ]
 )
