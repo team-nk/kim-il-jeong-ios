@@ -35,10 +35,8 @@ class MainVC: BaseVC {
         $0.layer.cornerRadius = 32
     }
     private let fsCalendar = FSCalendar().then {
-
-        // 언어 한국어로 변경
+        // 언어 영어로 변경
         $0.locale = Locale(identifier: "en_US")
-
         // 상단 헤더 뷰 관련
         $0.headerHeight = 34 // YYYY년 M월 표시부 영역 높이
         $0.weekdayHeight = 34 // 날짜 표시부 행의 높이
@@ -54,7 +52,7 @@ class MainVC: BaseVC {
         $0.appearance.selectionColor = UIColor.clear
         $0.appearance.titleWeekendColor = KimIlJeongColor.textColor.color // 주말 날짜 색
         $0.appearance.titleDefaultColor = KimIlJeongColor.textColor.color // 기본 날짜 색
-        $0.scrollEnabled = false // 스크롤 여부
+        $0.scrollEnabled = true // 스크롤 여부
         // 오늘 날짜(Today) 관련
         $0.appearance.titleTodayColor = KimIlJeongColor.surfaceColor.color // Today에 표시되는 특정 글자색
         $0.appearance.todayColor = KimIlJeongColor.mainColor.color // Today에 표시되는 선택 전 동그라미 색
@@ -75,7 +73,7 @@ class MainVC: BaseVC {
     }()
     private let toDayDoLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
-        $0.text = "오늘 일정"
+        $0.text = "5월 8일 일정"
         $0.font = .systemFont(ofSize: 18, weight: .bold)
     }
     private let plusToDoButton = UIButton().then {
@@ -89,7 +87,6 @@ class MainVC: BaseVC {
         $0.rowHeight = 49
         $0.backgroundColor = .clear
     }
-
     func moveMonth(next: Bool) {
         var dateComponents = DateComponents()
         dateComponents.month = next ? 1 : -1
@@ -120,7 +117,6 @@ class MainVC: BaseVC {
             view.addSubview($0)
         }
     }
-
     override func configureVC() {
         attribute()
         gotoTomorrowButton.rx.tap
@@ -133,8 +129,12 @@ class MainVC: BaseVC {
                 self.moveMonth(next: false)
             }
             .disposed(by: disposeBag)
+        plusToDoButton.rx.tap
+            .subscribe(onNext: { _ in
+                let mainModifyVC = MainModifyVC()
+                self.present(mainModifyVC, animated: true, completion: nil)
+            }).disposed(by: disposeBag)
     }
-
     override func setLayout() {
         kimIlJeongLabel.snp.makeConstraints {
             $0.leftMargin.equalTo(41)
@@ -211,5 +211,9 @@ extension MainVC: UITableViewDataSource, UITableViewDelegate {
         cell.selectionStyle = .none
         cell.backgroundColor = .clear
         return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let detailMainVC = DetailMainVC()
+        self.present(detailMainVC, animated: true, completion: nil)
     }
 }
