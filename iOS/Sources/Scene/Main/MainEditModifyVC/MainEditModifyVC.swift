@@ -4,7 +4,7 @@ import Then
 import MapKit
 import RxCocoa
 import CoreLocation
-
+// swiftlint:disable type_body_length
 class MainEditModifyVC: BaseVC {
     private let viewModel = ModifyViewModel()
     private let planChangeLabel = UILabel().then {
