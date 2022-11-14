@@ -53,8 +53,7 @@ class BirthDayCell: BaseTC {
             $0.bottom.equalToSuperview().inset(20)
         }
         backView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(0)
-            $0.trailing.equalToSuperview().inset(0)
+            $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(80)
         }
     }

@@ -4,7 +4,7 @@ import RxCocoa
 import SnapKit
 import Then
 
-class NewPostVC: BaseVC<NewPostVCReactor> {
+class NewPostVC: BaseVC {
     private let contentTextView = UITextView().then {
         $0.backgroundColor = .clear
         $0.text = "내용을 입력하세요(첫 줄은 제목입니다.)"

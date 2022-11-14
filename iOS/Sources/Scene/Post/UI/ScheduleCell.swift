@@ -4,7 +4,7 @@ import SnapKit
 
 class ScheduleCell: BaseTC {
     let colorSetting = UIImageView().then {
-        $0.tintColor = KimIlJeongColor.mainColor.color
+        $0.tintColor = UIColor(named: "BackgroundColor")
         $0.image = UIImage(systemName: "circle.fill")
     }
     let scheduleTitle = UILabel().then {

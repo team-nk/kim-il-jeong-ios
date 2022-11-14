@@ -13,5 +13,6 @@ struct Schedule {
     var owner: String = .init()
     var date: String = .init()
     var location: String = .init()
+    var text: String = .init()
     let cellType: String = "scheduleType"
 }

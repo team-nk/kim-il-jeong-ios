@@ -4,10 +4,10 @@ import RxCocoa
 import SnapKit
 import Then
 
-class PostListVC: BaseVC<PostListVCReactor> {
-    private var birthDayList: [BirthDay] = []
-    private var scheduleList: [Schedule] = []
-    private let dummyList = Dummies()
+class PostListVC: BaseVC {
+    var birthDayList: [BirthDay] = []
+    var scheduleList: [Schedule] = []
+    let dummyList = Dummies()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -39,7 +39,7 @@ class PostListVC: BaseVC<PostListVCReactor> {
         $0.textColor = KimIlJeongColor.mainColor.color
         $0.font = .systemFont(ofSize: 20, weight: .bold)
     }
-    private let birthTableView = ContentWrappingTableView().then {
+    let birthTableView = ContentWrappingTableView().then {
         $0.register(BirthDayCell.self, forCellReuseIdentifier: "BirthDayCell")
         $0.rowHeight = 90
         $0.separatorStyle = .none
@@ -47,7 +47,7 @@ class PostListVC: BaseVC<PostListVCReactor> {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
-    private let scheduleTableView = ContentWrappingTableView().then {
+    let scheduleTableView = ContentWrappingTableView().then {
         $0.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         $0.rowHeight = 80
         $0.separatorInset.left = 16
@@ -64,6 +64,17 @@ class PostListVC: BaseVC<PostListVCReactor> {
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.reloadData()
+    }
+    func addDummyData() {
+        birthDayList = [
+            dummyList.birthItem1, dummyList.birthItem2,
+            dummyList.birthItem3, dummyList.birthItem4
+        ]
+        scheduleList = [
+            dummyList.scheduleItem1, dummyList.scheduleItem2,
+            dummyList.scheduleItem3, dummyList.scheduleItem4,
+            dummyList.scheduleItem5
+        ]
     }
     override func addView() {
         [
@@ -84,16 +95,6 @@ class PostListVC: BaseVC<PostListVCReactor> {
                 contentView.addSubview($0)
             }
     }
-    func addDummyData() {
-        birthDayList = [
-            dummyList.birthItem1, dummyList.birthItem2,
-            dummyList.birthItem3, dummyList.birthItem4
-        ]
-        scheduleList = [
-            dummyList.scheduleItem1, dummyList.scheduleItem2,
-            dummyList.scheduleItem3, dummyList.scheduleItem4
-        ]
-    }
     override func configureVC() {
         scrollView.contentInsetAdjustmentBehavior = .never
         addDummyData()
@@ -101,7 +102,7 @@ class PostListVC: BaseVC<PostListVCReactor> {
         writePostButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?
-                    .pushViewController(NewPostVC(reactor: NewPostVCReactor()), animated: true)
+                    .pushViewController(NewPostVC(), animated: true)
             }).disposed(by: disposeBag)
         self.navigationController?.isNavigationBarHidden = true
     }
@@ -114,9 +115,9 @@ class PostListVC: BaseVC<PostListVCReactor> {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
             if birthDayList.count * 90 + scheduleList.count * 80 > 800 {
-                $0.height.equalTo(700 + (birthDayList.count + scheduleList.count) * 90)
+                $0.height.equalTo(400 + (birthDayList.count + scheduleList.count) * 90)
             } else {
-                $0.height.equalTo(800)
+                $0.height.equalTo(900)
             }
         }
         writePostButton.snp.makeConstraints {
@@ -144,50 +145,6 @@ class PostListVC: BaseVC<PostListVCReactor> {
             $0.top.equalTo(birthTableView.snp.bottom).offset(10)
             $0.leading.equalToSuperview().inset(23)
             $0.trailing.equalToSuperview().inset(24)
-        }
-    }
-}
-
-extension PostListVC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch tableView {
-        case birthTableView:
-            return birthDayList.count
-
-        case scheduleTableView:
-            return scheduleList.count
-
-        default:
-            return 0
-        }
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch tableView {
-        case birthTableView:
-            if let birthCell = tableView.dequeueReusableCell(withIdentifier: "BirthDayCell", for: indexPath) as? BirthDayCell {
-                birthCell.configureVC()
-                birthCell.congratulationsLabel.text = "\(birthDayList[indexPath.row].username)님의 생일이에요!"
-                birthCell.dateLabel.text = "\(birthDayList[indexPath.row].birthDate)"
-                birthCell.selectionStyle = .none
-                return birthCell
-            } else {
-                return UITableViewCell()
-            }
-        case scheduleTableView:
-            if let scheduleCell = scheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleCell", for: indexPath) as? ScheduleCell {
-                scheduleCell.configureVC()
-                scheduleCell.scheduleTitle.text = "\(scheduleList[indexPath.row].title)"
-                scheduleCell.scheduleOwner.text = "\(scheduleList[indexPath.row].owner)"
-                scheduleCell.scheduleContent.text = "\(scheduleList[indexPath.row].content)"
-                scheduleCell.scheduleDate.text = "\(scheduleList[indexPath.row].date)"
-                scheduleCell.scheduleLocation.text = "\(scheduleList[indexPath.row].location)"
-                scheduleCell.selectionStyle = .none
-                return scheduleCell
-            } else {
-                return UITableViewCell()
-            }
-        default:
-            return UITableViewCell()
         }
     }
 }
