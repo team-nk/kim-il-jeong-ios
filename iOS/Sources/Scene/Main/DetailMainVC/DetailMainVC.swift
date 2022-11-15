@@ -7,6 +7,13 @@ import RxSwift
 import CoreLocation
 
 class DetailMainVC: BaseVC {
+    private let locationManager = CLLocationManager()
+    private var currentLocation: CLLocation!
+    private let mapView = MKMapView().then {
+        $0.layer.cornerRadius = 10
+    }
+    private var token = true
+    private var contentsVC: DetailMapVC!
     private let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
@@ -48,15 +55,14 @@ class DetailMainVC: BaseVC {
             if let presentationController = presentationController as? UISheetPresentationController {
                 presentationController.detents = [
                     .custom { _ in
-                        return 220
+                        return 400
                     }
                 ]
                 presentationController.preferredCornerRadius = 32
             }
-        } else {
-            // Fallback on earlier versions
-        }
+        } else { /*Fallback on earlier versions*/ }
         [
+            mapView,
             cellColor,
             titleLabel,
             addressImageView,
@@ -67,6 +73,9 @@ class DetailMainVC: BaseVC {
         ].forEach {view.addSubview($0)}
     }
     override func configureVC() {
+        setMapView(coordinate: change(xAddress: "36.390906587662", yAddress: "127.36218898382"), addr: "대덕소프트웨어 마이스터고")
+        setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
+        setUserLocation()
         modifyButton.rx.tap.subscribe(onNext: { _ in
             let mainEditModifyVC = MainEditModifyVC()
             self.present(mainEditModifyVC, animated: true)
@@ -107,14 +116,61 @@ class DetailMainVC: BaseVC {
         deleteButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo((view.frame.width-60)/2)
-            $0.top.equalTo(timeLabel.snp.bottom).offset(38)
+            $0.top.equalTo(mapView.snp.bottom).offset(20)
             $0.height.equalTo(50)
         }
         modifyButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo((view.frame.width-60)/2)
-            $0.top.equalTo(timeLabel.snp.bottom).offset(38)
+            $0.top.equalTo(mapView.snp.bottom).offset(20)
             $0.height.equalTo(50)
         }
+        mapView.snp.makeConstraints {
+            $0.left.equalTo(deleteButton.snp.left)
+            $0.right.equalTo(modifyButton.snp.right)
+            $0.top.equalTo(timeLabel.snp.bottom).offset(16)
+            $0.height.equalTo(200)
+        }
+    }
+    private func setUserLocation() {
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+        self.mapView.showsUserLocation = true
+    }
+    private func change(xAddress: String, yAddress: String) -> CLLocationCoordinate2D {
+        let mapXY = CLLocationCoordinate2D(latitude: Double(xAddress) ?? 0, longitude: Double(yAddress) ?? 0)
+        return mapXY
+    }
+    private func setMapView(coordinate: CLLocationCoordinate2D, addr: String) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        annotation.title = addr
+        mapView.addAnnotation(annotation)
+        mapView.delegate = self
+    }
+}
+
+extension DetailMainVC: MKMapViewDelegate, CLLocationManagerDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        switch annotation.title {
+        case "My Location":
+            let annotationView = MKUserLocationView(annotation: annotation, reuseIdentifier: "MyMarker")
+            return annotationView
+        default:
+            let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "MyMarker")
+            annotationView.markerTintColor = .blue
+            return annotationView
+        }
+    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude,
+                                            longitude: location!.coordinate.longitude)
+        let region = MKCoordinateRegion(center: center,
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        self.mapView.setRegion(region, animated: true)
+        self.locationManager.stopUpdatingLocation()
     }
 }
