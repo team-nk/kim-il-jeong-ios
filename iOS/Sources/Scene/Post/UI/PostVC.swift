@@ -5,7 +5,7 @@ import SnapKit
 import Then
 
 class PostVC: BaseVC {
-    var myPost: Bool = true
+    var myPost: Bool = false
     let postTitleLabel = UILabel().then {
         $0.text = "Starbucks 인수 결정했습니다!"
         $0.font = .systemFont(ofSize: 18, weight: .regular)
@@ -63,10 +63,10 @@ class PostVC: BaseVC {
         $0.font = .systemFont(ofSize: 16, weight: .bold)
     }
     private let editButton = UIButton().then {
-        $0.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+        $0.backgroundColor = .clear
     }
     private let deleteButton = UIButton().then {
-        $0.setImage(UIImage(named: "Trash"), for: .normal)
+        $0.backgroundColor = .clear
     }
     override func addView() {
         [
@@ -99,6 +99,8 @@ class PostVC: BaseVC {
             commentCountLabel.text = "댓글 12개"
         } else {
             commentCountLabel.text = nil
+            self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+            self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
         }
         commentButton.rx.tap
             .subscribe(onNext: {
