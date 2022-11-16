@@ -5,6 +5,7 @@ import SnapKit
 import Then
 
 class PostVC: BaseVC {
+    var myPost: Bool = true
     let postTitleLabel = UILabel().then {
         $0.text = "Starbucks 인수 결정했습니다!"
         $0.font = .systemFont(ofSize: 18, weight: .regular)
@@ -41,6 +42,8 @@ class PostVC: BaseVC {
     let contentTextView = UITextView().then {
         $0.font = .systemFont(ofSize: 18, weight: .regular)
         $0.textColor = KimIlJeongColor.textColor.color
+        $0.isEditable = false
+        $0.isSelectable = false
         $0.isScrollEnabled = false
         $0.backgroundColor = .clear
     }
@@ -48,8 +51,7 @@ class PostVC: BaseVC {
         $0.layer.cornerRadius = 10
         $0.backgroundColor = KimIlJeongColor.surface2.color
     }
-    private let commentCountLabel = UILabel().then {
-        $0.text = "댓글 12개"
+    let commentCountLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.strongExplanation.color
         $0.textAlignment = .left
         $0.font = .systemFont(ofSize: 16, weight: .light)
@@ -60,10 +62,18 @@ class PostVC: BaseVC {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 16, weight: .bold)
     }
+    private let editButton = UIButton().then {
+        $0.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+    }
+    private let deleteButton = UIButton().then {
+        $0.setImage(UIImage(named: "Trash"), for: .normal)
+    }
     override func addView() {
         [
             commentCountLabel,
-            writeCommentLabel
+            writeCommentLabel,
+            editButton,
+            deleteButton
         ] .forEach {
             commentButton.addSubview($0)
         }
@@ -85,6 +95,11 @@ class PostVC: BaseVC {
     override func configureVC() {
         self.navigationController?.isNavigationBarHidden = false
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
+        if myPost == false {
+            commentCountLabel.text = "댓글 12개"
+        } else {
+            commentCountLabel.text = nil
+        }
         commentButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(CommentListVC(), animated: true)
@@ -133,6 +148,16 @@ class PostVC: BaseVC {
             $0.top.equalTo(separatorLine.snp.bottom).offset(10)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(20)
+        }
+        editButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+            $0.leading.equalToSuperview().inset(15)
+        }
+        deleteButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+            $0.leading.equalTo(editButton.snp.trailing).offset(15)
         }
         commentButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(18)

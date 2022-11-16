@@ -19,13 +19,20 @@ class TabBarVC: UITabBarController {
     }
 
     func setUpTabBarItem() {
-        let postListVC = PostListVC(reactor: PostListVCReactor())
+        let mainVC = MainVC()
+        mainVC.tabBarItem = UITabBarItem(
+            title: "",
+            image: UIImage(named: "Calendar"),
+            selectedImage: UIImage(named: "Calendar_fill")
+        )
+        let postListVC = PostListVC()
         postListVC.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "Megaphone"),
             selectedImage: UIImage(named: "Megaphone_fill")
         )
         viewControllers = [
+            mainVC,
             postListVC
         ]
     }
