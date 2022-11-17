@@ -37,7 +37,6 @@ class BaseNC: UINavigationController {
         appearance2.backButtonAppearance = backButtonAppearance
         navigationBar.standardAppearance = appearance2
         navigationController?.setNeedsStatusBarAppearanceUpdate()
-        navigationBar.standardAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
         self.navigationController?.navigationBar.backItem?.title = nil
     }
