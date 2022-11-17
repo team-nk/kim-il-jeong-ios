@@ -86,7 +86,11 @@ class NewPostVC: BaseVC {
         cancelButton.snp.makeConstraints {
             $0.top.equalTo(scheduleButton.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(184)
+            if view.frame.width < 400 {
+                $0.width.equalTo(164)
+            } else {
+                $0.width.equalTo(184)
+            }
             $0.height.equalTo(50)
             $0.bottom.equalToSuperview().inset(40)
         }
