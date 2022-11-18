@@ -92,7 +92,7 @@ extension API: TargetType {
         case .idCheck(let accountId):
             return .requestParameters(parameters:
                                         [
-                                            "account_id": accountId
+                                            "account-id": accountId
                                         ], encoding: URLEncoding.queryString)
         case .postSerach:
             return .requestPlain
