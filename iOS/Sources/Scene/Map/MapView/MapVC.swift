@@ -10,7 +10,6 @@ class MapVC: BaseVC {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation!
     private let mapView = MKMapView()
-    private var token = true
     private var fpc: FloatingPanelController!
     private var contentsVC: DetailMapVC!
     override func configureVC() {
@@ -18,15 +17,6 @@ class MapVC: BaseVC {
         setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
         setUserLocation()
         floatingPanelView()
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if !token {
-            let loginVC = BaseNC(rootViewController: LoginVC())
-            loginVC.modalPresentationStyle = .fullScreen
-            self.present(loginVC, animated: true)
-            token = true
-        }
     }
     override func addView() {
         self.view.addSubview(mapView)

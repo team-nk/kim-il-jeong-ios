@@ -20,6 +20,7 @@ class MainVC: BaseVC {
         KimIlJeongColor.yellowTag.color,
         KimIlJeongColor.greenTag.color
     ]
+    private var token = false
     private let kimIlJeongLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "Kim il jeong"
@@ -96,6 +97,15 @@ class MainVC: BaseVC {
     }
     func attribute() {
         toDayDoTableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: ToDoTableViewCell.cellID)
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !token {
+            let loginVC = BaseNC(rootViewController: LoginVC())
+            loginVC.modalPresentationStyle = .fullScreen
+            self.present(loginVC, animated: true)
+            token = true
+        }
     }
     override func addView() {
         toDayDoTableView.delegate = self
