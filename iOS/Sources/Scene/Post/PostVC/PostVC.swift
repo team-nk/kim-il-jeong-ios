@@ -148,8 +148,7 @@ class PostVC: BaseVC {
         }
         contentTextView.snp.makeConstraints {
             $0.top.equalTo(separatorLine.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
         editButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
