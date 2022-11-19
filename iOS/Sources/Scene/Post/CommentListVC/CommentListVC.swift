@@ -5,11 +5,12 @@ import SnapKit
 import Then
 
 class CommentListVC: BaseVC {
-    internal var commentArray: [Comments] = []
+    var commentArray: [Comments] = []
     let commentList = CommentDummies()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
+        $0.keyboardDismissMode = .onDrag
     }
     private let contentView = UIView().then {
         $0.backgroundColor = .clear
@@ -74,8 +75,8 @@ class CommentListVC: BaseVC {
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
         commentTextField.addPaddingToCommentTextField()
-//        setKeyboardObserver()
-//        commentTextField.delegate = self
+        setKeyboardObserver()
+        commentTextField.delegate = self
         addDummies()
         setUpTableView()
     }
@@ -87,8 +88,8 @@ class CommentListVC: BaseVC {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if commentArray.count * 100 > 800 {
-                $0.height.equalTo(400 + (commentArray.count) * 100)
+            if commentArray.count * 90 > 800 {
+                $0.height.equalTo(100 + (commentArray.count) * 90)
             } else {
                 $0.height.equalTo(900)
             }
@@ -133,40 +134,77 @@ extension CommentListVC: UITableViewDataSource, UITableViewDelegate {
 
 extension CommentListVC: UITextFieldDelegate {
     func setKeyboardObserver() {
-        NotificationCenter.default.addObserver(
-          self,
-          selector: #selector(keyboardDidShow),
-          name: UIResponder.keyboardDidShowNotification,
-          object: nil
-        )
-        NotificationCenter.default.addObserver(
-          self,
-          selector: #selector(keyboardDidHide),
-          name: UIResponder.keyboardDidHideNotification,
-          object: nil
-        )
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil)
     }
-    @objc private func keyboardDidShow(_ notification: Notification) {
-      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-        let keybaordRectangle = keyboardFrame.cgRectValue
-        let keyboardHeight = keybaordRectangle.height
-        view.frame.origin.y -= keyboardHeight
-      }
+    @objc func keyboardWillShow(noti: Notification) {
+        let notinfo = noti.userInfo!
+        let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+        let heiget = -(keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 50)
+        let animateDuration = notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
+        UIView.animate(withDuration: animateDuration!) {
+//            self.commentTextField.snp.updateConstraints {
+//                $0.bottom.equalTo(heiget)
+//            }
+            self.commentTextField.frame.origin.y += heiget
+            self.view.layoutIfNeeded()
+        }
     }
-    @objc private func keyboardDidHide(_ notification: Notification) {
-      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-        let keyboardRectangle = keyboardFrame.cgRectValue
-        let keyboardHeight = keyboardRectangle.height
-        view.frame.origin.y += keyboardHeight
-      }
+    @objc func keyboardWillHide(noti: Notification) {
+        let notinfo = noti.userInfo!
+        let animateDuration = notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
+        UIView.animate(withDuration: animateDuration!) {
+            self.commentTextField.snp.updateConstraints {
+                $0.bottom.equalTo(-50)
+            }
+            self.view.layoutIfNeeded()
+        }
     }
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        if let keyboardFrame: NSValue = Notification.userInfo? [UIResponder.keyboardFrameEndUserInfoKey] {
-//            let keyboardRectangle = keyboardFrame.cgRectValue
-//            let keyboardHeight = keyboardRectangle.height
-//            view.frame.origin.y += keyboardHeight
-//        }
-//    }
+    //    func setKeyboardObserver() {
+    //        NotificationCenter.default.addObserver(
+    //          self,
+    //          selector: #selector(keyboardDidShow),
+    //          name: UIResponder.keyboardDidShowNotification,
+    //          object: nil
+    //        )
+    //        NotificationCenter.default.addObserver(
+    //          self,
+    //          selector: #selector(keyboardDidHide),
+    //          name: UIResponder.keyboardDidHideNotification,
+    //          object: nil
+    //        )
+    //    }
+    //    @objc private func keyboardDidShow(_ notification: Notification) {
+    //      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+    //        let keybaordRectangle = keyboardFrame.cgRectValue
+    //        let keyboardHeight = keybaordRectangle.height
+    //        view.frame.origin.y -= keyboardHeight - 10
+    //      }
+    //    }
+    //    @objc private func keyboardDidHide(_ notification: Notification) {
+    //      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+    //        let keyboardRectangle = keyboardFrame.cgRectValue
+    //        let keyboardHeight = keyboardRectangle.height
+    //        view.frame.origin.y += keyboardHeight - 10
+    //      }
+    //    }
+    //    func textFieldDidBeginEditing(_ textField: UITextField) {
+    //        if let keyboardFrame: NSValue = Notification.userInfo? [UIResponder.keyboardFrameEndUserInfoKey] {
+    //            let keyboardRectangle = keyboardFrame.cgRectValue
+    //            let keyboardHeight = keyboardRectangle.height
+    //            view.frame.origin.y += keyboardHeight
+    //        }
+    //    }
+    //    func textFieldDidBeginEditing(_ textField: UITextField) {
+    //        commentTextField.becomeFirstResponder()
+    //        return true
+    //    }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         commentTextField.resignFirstResponder()
         return true

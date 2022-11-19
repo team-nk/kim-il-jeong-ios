@@ -15,7 +15,7 @@ class CommentCell: BaseTC {
     }
     let userLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
-        $0.textAlignment = .right
+        $0.textAlignment = .left
         $0.font = .systemFont(ofSize: 8, weight: .semibold)
     }
     let commentDateLabel = UILabel().then {
