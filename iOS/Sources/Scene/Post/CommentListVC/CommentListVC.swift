@@ -5,6 +5,7 @@ import SnapKit
 import Then
 
 class CommentListVC: BaseVC {
+    var keyboardUp: Bool = false
     var commentArray: [Comments] = []
     let commentList = CommentDummies()
     private let scrollView = UIScrollView().then {
@@ -21,7 +22,7 @@ class CommentListVC: BaseVC {
         $0.separatorStyle = .none
         $0.isScrollEnabled = false
     }
-    private let commentTextField = UITextField().then {
+    let commentTextField = UITextField().then {
         $0.attributedPlaceholder = NSAttributedString(string: "메세지를 입력하세요...", attributes: [
             .foregroundColor: KimIlJeongColor.textfieldDeactivationColor.color,
             .font: UIFont.systemFont(ofSize: 16, weight: .light)
@@ -39,7 +40,6 @@ class CommentListVC: BaseVC {
     @objc func didTapSendButton() {
         commentTextField.text?.removeAll()
     }
-//    var keyHeight: CGFloat?
     func addDummies() {
         commentArray = [
             commentList.cmt1, commentList.cmt2, commentList.cmt3,
@@ -103,52 +103,13 @@ class CommentListVC: BaseVC {
         commentTextField.snp.makeConstraints {
             $0.height.equalTo(50)
             $0.leading.trailing.equalToSuperview().inset(18)
-            $0.bottom.equalToSuperview().inset(44)
+            if keyboardUp == false {
+                $0.bottom.equalToSuperview().inset(44)
+            }
         }
         sendButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().inset(16.54)
         }
-    }
-}
-
-extension CommentListVC: UITextFieldDelegate {
-    func setKeyboardObserver() {
-        NotificationCenter.default.addObserver(self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil)
-        NotificationCenter.default.addObserver(self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil)
-    }
-    @objc func keyboardWillShow(noti: Notification) {
-        let notinfo = noti.userInfo!
-        let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-        let heiget = keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 50
-        let animateDuration = (notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval)
-        UIView.animate(withDuration: animateDuration!) {
-            self.commentTextField.snp.updateConstraints {
-                $0.bottom.equalToSuperview().inset(heiget)
-            }
-                self.view.layoutIfNeeded()
-            }
-        }
-        @objc func keyboardWillHide(noti: Notification) {
-            let notinfo = noti.userInfo!
-            let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-            let heiget = keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 10
-            let animateDuration = (notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval)
-            UIView.animate(withDuration: animateDuration!) {
-                self.commentTextField.snp.updateConstraints {
-                    $0.bottom.equalToSuperview().inset(44)
-                }
-                self.view.layoutIfNeeded()
-            }
-        }
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        commentTextField.resignFirstResponder()
-        return true
     }
 }
