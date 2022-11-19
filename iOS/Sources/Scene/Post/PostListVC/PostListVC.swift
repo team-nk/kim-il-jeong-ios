@@ -121,9 +121,7 @@ class PostListVC: BaseVC {
             }
         }
         writePostButton.snp.makeConstraints {
-//            $0.trailing.equalToSuperview().inset(42)
             $0.trailing.equalTo(scheduleTableView.snp.trailing).offset(-15)
-//            $0.bottom.equalToSuperview().inset(115)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(27)
             $0.width.equalTo(141)
             $0.height.equalTo(56)

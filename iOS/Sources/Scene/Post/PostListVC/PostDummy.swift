@@ -53,7 +53,7 @@ class Dummies {
             "대전시에 위치하고 있는 스타벅스 매장을 CJ로부터 강탈해 보려는 계획을 새겨보려 합니다."
     )
     let scheduleItem5 = Schedule.self(
-        color: "YelloColor", title: "Starbucks 인수 결정했습니다!",
+        color: "YellowColor", title: "Starbucks 인수 결정했습니다!",
         content: "스타벅스 둔산 사전점검", owner: "eogus",
         date: "2022-08-02", location: "대전광역시 둔산동 갤러리아읍 둔산 스타벅스",
         text: "이번에 스타벅스 둔산점을 (주)Daehee.corp이 인수하게 되었습니다. 이번 일을 계기로 " +
