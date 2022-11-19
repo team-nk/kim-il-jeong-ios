@@ -91,7 +91,7 @@ class CommentListVC: BaseVC {
             if commentArray.count * 90 > 800 {
                 $0.height.equalTo(100 + (commentArray.count) * 90)
             } else {
-                $0.height.equalTo(900)
+                $0.height.equalTo(800)
             }
         }
         commentTableView.snp.makeConstraints {
@@ -112,26 +112,6 @@ class CommentListVC: BaseVC {
     }
 }
 
-extension CommentListVC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return commentArray.count
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as? CommentCell {
-            cell.commentLabel.text = "\(commentArray[indexPath.row].content)"
-            cell.userLabel.text = "\(commentArray[indexPath.row].accountId)"
-            cell.commentDateLabel.text = "\(commentArray[indexPath.row].createTime)"
-            cell.selectionStyle = .none
-            return cell
-        } else {
-            return UITableViewCell()
-        }
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return tableView.rowHeight
-    }
-}
-
 extension CommentListVC: UITextFieldDelegate {
     func setKeyboardObserver() {
         NotificationCenter.default.addObserver(self,
@@ -146,65 +126,27 @@ extension CommentListVC: UITextFieldDelegate {
     @objc func keyboardWillShow(noti: Notification) {
         let notinfo = noti.userInfo!
         let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-        let heiget = -(keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 50)
-        let animateDuration = notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
-        UIView.animate(withDuration: animateDuration!) {
-//            self.commentTextField.snp.updateConstraints {
-//                $0.bottom.equalTo(heiget)
-//            }
-            self.commentTextField.frame.origin.y += heiget
-            self.view.layoutIfNeeded()
-        }
-    }
-    @objc func keyboardWillHide(noti: Notification) {
-        let notinfo = noti.userInfo!
-        let animateDuration = notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
+        let heiget = keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 50
+        let animateDuration = (notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval)
         UIView.animate(withDuration: animateDuration!) {
             self.commentTextField.snp.updateConstraints {
-                $0.bottom.equalTo(-50)
+                $0.bottom.equalToSuperview().inset(heiget)
             }
-            self.view.layoutIfNeeded()
+                self.view.layoutIfNeeded()
+            }
         }
-    }
-    //    func setKeyboardObserver() {
-    //        NotificationCenter.default.addObserver(
-    //          self,
-    //          selector: #selector(keyboardDidShow),
-    //          name: UIResponder.keyboardDidShowNotification,
-    //          object: nil
-    //        )
-    //        NotificationCenter.default.addObserver(
-    //          self,
-    //          selector: #selector(keyboardDidHide),
-    //          name: UIResponder.keyboardDidHideNotification,
-    //          object: nil
-    //        )
-    //    }
-    //    @objc private func keyboardDidShow(_ notification: Notification) {
-    //      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-    //        let keybaordRectangle = keyboardFrame.cgRectValue
-    //        let keyboardHeight = keybaordRectangle.height
-    //        view.frame.origin.y -= keyboardHeight - 10
-    //      }
-    //    }
-    //    @objc private func keyboardDidHide(_ notification: Notification) {
-    //      if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-    //        let keyboardRectangle = keyboardFrame.cgRectValue
-    //        let keyboardHeight = keyboardRectangle.height
-    //        view.frame.origin.y += keyboardHeight - 10
-    //      }
-    //    }
-    //    func textFieldDidBeginEditing(_ textField: UITextField) {
-    //        if let keyboardFrame: NSValue = Notification.userInfo? [UIResponder.keyboardFrameEndUserInfoKey] {
-    //            let keyboardRectangle = keyboardFrame.cgRectValue
-    //            let keyboardHeight = keyboardRectangle.height
-    //            view.frame.origin.y += keyboardHeight
-    //        }
-    //    }
-    //    func textFieldDidBeginEditing(_ textField: UITextField) {
-    //        commentTextField.becomeFirstResponder()
-    //        return true
-    //    }
+        @objc func keyboardWillHide(noti: Notification) {
+            let notinfo = noti.userInfo!
+            let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+            let heiget = keyboardFrame!.size.height - self.view.safeAreaInsets.bottom + 10
+            let animateDuration = (notinfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval)
+            UIView.animate(withDuration: animateDuration!) {
+                self.commentTextField.snp.updateConstraints {
+                    $0.bottom.equalToSuperview().inset(44)
+                }
+                self.view.layoutIfNeeded()
+            }
+        }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         commentTextField.resignFirstResponder()
         return true
