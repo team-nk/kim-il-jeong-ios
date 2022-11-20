@@ -25,15 +25,29 @@ class TabBarVC: UITabBarController {
             image: UIImage(named: "Calendar"),
             selectedImage: UIImage(named: "Calendar_fill")
         )
+        let mapVC = MapVC()
+        mapVC.tabBarItem = UITabBarItem(
+            title: "",
+            image: UIImage(named: "Map"),
+            selectedImage: UIImage(named: "Map_fill")
+        )
         let postListVC = PostListVC()
         postListVC.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "Megaphone"),
             selectedImage: UIImage(named: "Megaphone_fill")
         )
+        let myPageVC = MyPageVC()
+        myPageVC.tabBarItem = UITabBarItem(
+            title: "",
+            image: UIImage(named: "Person"),
+            selectedImage: UIimage(named: "Person_fill")
+        )
         viewControllers = [
             mainVC,
-            postListVC
+            mapVC,
+            postListVC,
+            myPageVC
         ]
     }
 }
