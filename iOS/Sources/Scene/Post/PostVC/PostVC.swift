@@ -42,6 +42,7 @@ class PostVC: BaseVC {
     let contentTextView = UITextView().then {
         $0.font = .systemFont(ofSize: 18, weight: .regular)
         $0.textColor = KimIlJeongColor.textColor.color
+        $0.textAlignment = .left
         $0.isEditable = false
         $0.isSelectable = false
         $0.isScrollEnabled = false
@@ -107,7 +108,7 @@ class PostVC: BaseVC {
                 self.navigationController?.pushViewController(CommentListVC(), animated: true)
             }).disposed(by: disposeBag)
     }
-    override func setLayout() {
+    func setPostDetailLayout() {
         postTitleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(101)
             $0.height.equalTo(30)
@@ -141,6 +142,9 @@ class PostVC: BaseVC {
             $0.leading.equalTo(locationLabel.snp.trailing).offset(0)
             $0.trailing.equalToSuperview().inset(19)
         }
+    }
+    override func setLayout() {
+        setPostDetailLayout()
         separatorLine.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(19)
             $0.height.equalTo(1)

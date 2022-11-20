@@ -16,18 +16,16 @@ extension CommentListVC: UITextFieldDelegate {
         let heiget = keyboardFrame!.size.height
         keyboardUp = true
         if keyboardUp == true {
-            self.commentTextField.snp.remakeConstraints {
+            self.commentTextField.snp.updateConstraints {
                 $0.bottom.equalToSuperview().inset(10 + heiget)
             }
             self.view.layoutIfNeeded()
         }
     }
     @objc func keyboardWillHide(noti: Notification) {
-        let notinfo = noti.userInfo!
-        let keyboardFrame = notinfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
         keyboardUp = false
         if keyboardUp == false {
-            self.commentTextField.snp.remakeConstraints {
+            self.commentTextField.snp.updateConstraints {
                 $0.bottom.equalToSuperview().inset(44)
             }
             self.view.layoutIfNeeded()
@@ -38,4 +36,3 @@ extension CommentListVC: UITextFieldDelegate {
         return true
     }
 }
-
