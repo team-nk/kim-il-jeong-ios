@@ -31,11 +31,11 @@ class CommentListVC: BaseVC {
         $0.textAlignment = .left
         $0.backgroundColor = KimIlJeongColor.surface2.color
         $0.layer.cornerRadius = 25
+        $0.addPaddingToCommentTextField()
     }
-    private let sendButton = UIButton().then {
+    let sendButton = UIButton().then {
         $0.setImage(UIImage(named: "PaperPlane"), for: .normal)
         $0.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
-        $0.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
     }
     @objc func didTapSendButton() {
         commentTextField.text?.removeAll()
@@ -49,9 +49,10 @@ class CommentListVC: BaseVC {
             commentList.cmt12
         ]
     }
-    func setUpTableView() {
+    func setUpViews() {
         commentTableView.delegate = self
         commentTableView.dataSource = self
+        commentTextField.delegate = self
     }
     override func addView() {
         view.addSubview(scrollView)
@@ -74,11 +75,10 @@ class CommentListVC: BaseVC {
         navigationController!.navigationBar.backItem?.title = nil
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
-        commentTextField.addPaddingToCommentTextField()
         setKeyboardObserver()
-        commentTextField.delegate = self
         addDummies()
-        setUpTableView()
+        setUpViews()
+        sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
     }
     override func setLayout() {
         scrollView.snp.makeConstraints {
