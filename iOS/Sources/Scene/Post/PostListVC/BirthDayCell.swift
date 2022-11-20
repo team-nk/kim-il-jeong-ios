@@ -38,7 +38,7 @@ class BirthDayCell: BaseTC {
             $0.top.equalTo(backView).inset(28)
             $0.leading.equalTo(backView).inset(17)
             $0.bottom.equalTo(backView).inset(27.28)
-            $0.size.width.height.equalTo(24.72)
+            $0.width.height.equalTo(24.72)
         }
         congratulationsLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(20)
