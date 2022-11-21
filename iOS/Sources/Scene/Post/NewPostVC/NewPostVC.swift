@@ -8,7 +8,7 @@ class NewPostVC: BaseVC {
     private let contentTextView = UITextView().then {
         $0.backgroundColor = .clear
         $0.text = "내용을 입력하세요(첫 줄은 제목입니다.)"
-        $0.textColor = UIColor(named: "PlaceholderColor")
+        $0.textColor = KimIlJeongColor.placeholderColor.color
         $0.font = .systemFont(ofSize: 18, weight: .regular)
     }
     private let scheduleButton = UIButton().then {
@@ -86,7 +86,11 @@ class NewPostVC: BaseVC {
         cancelButton.snp.makeConstraints {
             $0.top.equalTo(scheduleButton.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(184)
+            if view.frame.width < 400 {
+                $0.width.equalTo(164)
+            } else {
+                $0.width.equalTo(184)
+            }
             $0.height.equalTo(50)
             $0.bottom.equalToSuperview().inset(40)
         }
@@ -104,11 +108,11 @@ extension NewPostVC: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if contentTextView.text.isEmpty {
             contentTextView.text = "내용을 입력하세요(첫 줄은 제목입니다.)"
-            contentTextView.textColor = UIColor(named: "PlaceholderColor")
+            contentTextView.textColor = KimIlJeongColor.placeholderColor.color
         }
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if contentTextView.textColor == UIColor(named: "PlaceholderColor") {
+        if contentTextView.textColor == KimIlJeongColor.placeholderColor.color {
             contentTextView.text = nil
             contentTextView.textColor = KimIlJeongColor.textColor.color
         }

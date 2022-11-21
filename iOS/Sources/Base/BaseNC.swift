@@ -1,7 +1,6 @@
 import UIKit
 
 class BaseNC: UINavigationController {
-
     private var backButtonImage: UIImage? {
         return UIImage(systemName: "chevron.backward")!
             .withAlignmentRectInsets(UIEdgeInsets(top: 0.0, left: -12.0, bottom: 0.0, right: 0.0))
@@ -30,6 +29,7 @@ class BaseNC: UINavigationController {
         navigationBar.tintColor = KimIlJeongAsset.Color.textColor.color
         appearance.setBackIndicatorImage(backButtonImage, transitionMaskImage: backButtonImage)
         appearance2.setBackIndicatorImage(backButtonImage, transitionMaskImage: backButtonImage)
+        appearance.backgroundColor = KimIlJeongAsset.Color.backGroundColor.color
 
         appearance.configureWithTransparentBackground()
         appearance2.configureWithDefaultBackground()
@@ -38,6 +38,6 @@ class BaseNC: UINavigationController {
         navigationBar.standardAppearance = appearance2
         navigationController?.setNeedsStatusBarAppearanceUpdate()
         navigationBar.scrollEdgeAppearance = appearance
+        self.navigationController?.navigationBar.backItem?.title = nil
     }
-
 }
