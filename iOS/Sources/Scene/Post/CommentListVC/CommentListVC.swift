@@ -72,7 +72,7 @@ class CommentListVC: BaseVC {
             }
     }
     override func configureVC() {
-        navigationController!.navigationBar.backItem?.title = nil
+        navigationController?.navigationBar.backItem?.title = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
         setKeyboardObserver()

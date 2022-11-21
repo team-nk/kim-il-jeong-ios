@@ -4,32 +4,32 @@ import SnapKit
 
 class ScheduleCell: BaseTC {
     let colorSetting = UIImageView().then {
-        $0.tintColor = UIColor(named: "BackgroundColor")
+        $0.tintColor = KimIlJeongColor.backGroundColor.color
         $0.image = UIImage(systemName: "circle.fill")
     }
     let scheduleTitle = UILabel().then {
         $0.textAlignment = .left
-        $0.textColor = UIColor(named: "TextColor")
+        $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 14, weight: .semibold)
     }
     let scheduleOwner = UILabel().then {
         $0.textAlignment = .right
-        $0.textColor = UIColor(named: "TextColor")
+        $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 12, weight: .semibold)
     }
     let scheduleContent = UILabel().then {
         $0.textAlignment = .left
-        $0.textColor = UIColor(named: "TextColor")
+        $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 14, weight: .regular)
     }
     let scheduleDate = UILabel().then {
         $0.textAlignment = .right
-        $0.textColor = UIColor(named: "Description")
+        $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 10, weight: .regular)
     }
     let scheduleLocation = UILabel().then {
         $0.textAlignment = .left
-        $0.textColor = UIColor(named: "Description")
+        $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 12, weight: .regular)
     }
     override func addView() {

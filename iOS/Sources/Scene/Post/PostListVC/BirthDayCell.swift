@@ -4,7 +4,7 @@ import SnapKit
 
 class BirthDayCell: BaseTC {
     let backView = UIView().then {
-        $0.backgroundColor = UIColor(named: "CellBackGroundColor")
+        $0.backgroundColor = KimIlJeongColor.cellBackGroundColor.color
         $0.layer.cornerRadius = 20
     }
     let megaphoneImage = UIImageView().then {
@@ -12,12 +12,12 @@ class BirthDayCell: BaseTC {
     }
     let congratulationsLabel = UILabel().then {
         $0.textAlignment = .left
-        $0.textColor = UIColor(named: "TextColor")
+        $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 14, weight: .regular)
     }
     let dateLabel = UILabel().then {
         $0.textAlignment = .left
-        $0.textColor = UIColor(named: "Description")
+        $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 12, weight: .regular)
     }
     override func addView() {

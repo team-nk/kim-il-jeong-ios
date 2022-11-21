@@ -108,11 +108,11 @@ extension NewPostVC: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if contentTextView.text.isEmpty {
             contentTextView.text = "내용을 입력하세요(첫 줄은 제목입니다.)"
-            contentTextView.textColor = UIColor(named: "PlaceholderColor")
+            contentTextView.textColor = KimIlJeongColor.placeholderColor.color
         }
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if contentTextView.textColor == UIColor(named: "PlaceholderColor") {
+        if contentTextView.textColor == KimIlJeongColor.placeholderColor.color {
             contentTextView.text = nil
             contentTextView.textColor = KimIlJeongColor.textColor.color
         }
