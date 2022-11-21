@@ -6,7 +6,7 @@ import RxCocoa
 import RxSwift
 import CoreLocation
 
-class EditPlanVC: BaseVC {
+class SearchPositionVC: BaseVC {
     private let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
@@ -14,14 +14,6 @@ class EditPlanVC: BaseVC {
     private let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
         $0.font = UIFont.boldSystemFont(ofSize: 20)
-        $0.textColor = KimIlJeongAsset.Color.textColor.color
-    }
-    private let addressImageView = UIImageView().then {
-        $0.image = UIImage(named: "AddressPin")
-    }
-    private let addressLabel = UILabel().then {
-        $0.text = "대전광역시 유성구 가정북로 76"
-        $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
     private let timeLabel = UILabel().then {
@@ -47,8 +39,6 @@ class EditPlanVC: BaseVC {
         [
             cellColor,
             titleLabel,
-            addressImageView,
-            addressLabel,
             timeLabel,
             deleteButton,
             modifyButton
@@ -90,19 +80,10 @@ class EditPlanVC: BaseVC {
             $0.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(30)
         }
-        addressImageView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(46)
-            $0.top.equalTo(titleLabel.snp.bottom)
-        }
-        addressLabel.snp.makeConstraints {
-            $0.leading.equalTo(addressImageView.snp.trailing).offset(5)
-            $0.top.equalTo(titleLabel.snp.bottom)
-            $0.height.equalTo(12)
-        }
         timeLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(46)
             $0.trailing.equalToSuperview().inset(139)
-            $0.top.equalTo(addressImageView.snp.bottom).offset(6)
+            $0.top.equalTo(titleLabel.snp.bottom)
         }
         deleteButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)

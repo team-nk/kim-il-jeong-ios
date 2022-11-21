@@ -4,9 +4,8 @@ import Then
 import MapKit
 import RxCocoa
 import CoreLocation
-
 // swiftlint:disable type_body_length
-class ModifyVC: BaseVC {
+class MainEditModifyVC: BaseVC {
     private let viewModel = ModifyViewModel()
     private let planChangeLabel = UILabel().then {
         $0.text = "일정 변경하기"
@@ -15,6 +14,7 @@ class ModifyVC: BaseVC {
     }
     private let titleTextField = UITextField().then {
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        $0.placeholder = "일정을 입력하세요"
         $0.text = "스타벅스 인수 계약"
         $0.textColor = KimIlJeongAsset.Color.strongExplanation.color
     }
@@ -120,9 +120,9 @@ class ModifyVC: BaseVC {
         $0.textAlignment = .center
     }
     private let cencelButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.surfaceColor.color
+        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
         $0.layer.cornerRadius = 10
-        $0.setTitle("Cencel", for: .normal)
+        $0.setTitle("Cancel", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.textColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
@@ -134,6 +134,18 @@ class ModifyVC: BaseVC {
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
     override func viewDidLoad() {
+        if #available(iOS 16.0, *) {
+            if let presentationController = presentationController as? UISheetPresentationController {
+                presentationController.detents = [
+                    .custom { _ in
+                        return 600
+                    }
+                ]
+                presentationController.preferredCornerRadius = 32
+            }
+        } else {
+            // Fallback on earlier versions
+        }
         super.viewDidLoad()
         setTextField()
     }

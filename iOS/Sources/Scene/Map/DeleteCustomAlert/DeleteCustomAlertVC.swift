@@ -7,7 +7,7 @@ import RxCocoa
 class DeleteCustomAlertVC: BaseVC {
     private let popupView = UIView().then {
         $0.backgroundColor = .white
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 20
         $0.clipsToBounds = true
     }
     private let titleLabel = UILabel().then {
@@ -71,7 +71,7 @@ class DeleteCustomAlertVC: BaseVC {
             }).disposed(by: disposeBag)
         deleteButton.rx.tap
             .subscribe(onNext: {
-                self.dismiss(animated: true)
+                self.dismiss(animated: false)
             }).disposed(by: disposeBag)
     }
 }

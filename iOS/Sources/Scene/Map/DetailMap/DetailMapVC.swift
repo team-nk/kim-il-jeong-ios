@@ -2,8 +2,9 @@ import UIKit
 import SnapKit
 import Then
 import RxCocoa
-
+import FloatingPanel
 class DetailMapVC: BaseVC {
+//    private let viewModel = DetailMapViewModel()
     private let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
@@ -13,25 +14,27 @@ class DetailMapVC: BaseVC {
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
         $0.tintColor = KimIlJeongAsset.Color.textColor.color
     }
-    private let detailLocationTabelView = UITableView().then {
+    let detailLocationTabelView = UITableView().then {
         $0.register(DetailLocationTableViewCell.self, forCellReuseIdentifier: "cell")
+        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
     }
     override func configureVC() {
         tableViewSetting()
-     }
+    }
     private func tableViewSetting() {
         detailLocationTabelView.delegate = self
         detailLocationTabelView.dataSource = self
         detailLocationTabelView.rowHeight = 60
         detailLocationTabelView.separatorStyle = .none
+        detailLocationTabelView.isScrollEnabled = true
     }
+
     override func addView() {
         [
             plusButton,
             titleLabel,
             detailLocationTabelView
         ].forEach {view.addSubview($0)}
-
     }
     override func setLayout() {
         titleLabel.snp.makeConstraints {
@@ -65,6 +68,7 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        MapVC().view.isHidden = true
         let editPlanVC = EditPlanVC()
         if #available(iOS 16.0, *) {
             if let sheet = editPlanVC.sheetPresentationController {
@@ -73,11 +77,10 @@ extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
                     return 220
                 }
                 sheet.detents = [detent]
-                sheet.largestUndimmedDetentIdentifier = id
                 sheet.preferredCornerRadius = 32
                 self.present(editPlanVC, animated: true)
             }
-
         }
+        editPlanVC.isModalInPresentation = true
     }
 }
