@@ -74,10 +74,10 @@ class SignUpVC: BaseVC {
         $0.addLeftPadding()
     }
     private let noticePasswordLabel = UILabel().then {
-        $0.text = "비밀번호는 숫자 + 문자를 사용하여 8글자 이상 15글자 이하로 만들어 주세요."
-        $0.font = .systemFont(ofSize: 12, weight: .regular)
+        $0.text = "비밀번호는 숫자 + 영문자 + 특수기호를 사용하여 8~15글자로 만들어 주세요."
+        $0.font = .systemFont(ofSize: 11, weight: .regular)
         $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.numberOfLines = 3
+        $0.textAlignment = .center
     }
     private let noticeLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.errorColor.color
@@ -234,9 +234,10 @@ class SignUpVC: BaseVC {
             $0.height.equalTo(50)
         }
         noticePasswordLabel.snp.makeConstraints {
-            $0.left.right.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
             $0.top.equalTo(passwordCheckTextField.snp.bottom)
             $0.height.equalTo(40)
+            $0.centerX.equalToSuperview()
         }
         noticeLabel.snp.makeConstraints {
             $0.bottom.equalToSuperview().inset(100)
