@@ -6,8 +6,7 @@
 //
 
 import UIKit
-import ReactorKit
-
+import RxSwift
 class BaseVC: UIViewController {
     let bound = UIScreen.main.bounds
     typealias KimIlJeongColor = KimIlJeongAsset.Color

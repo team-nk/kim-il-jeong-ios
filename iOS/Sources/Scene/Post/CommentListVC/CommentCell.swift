@@ -38,8 +38,6 @@ class CommentCell: BaseTC {
             backView.addSubview($0)
         }
     }
-    override func configureVC() {
-    }
     override func setLayout() {
         backView.snp.makeConstraints {
             $0.top.bottom.equalToSuperview().inset(4)
