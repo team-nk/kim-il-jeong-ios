@@ -3,7 +3,7 @@ import Then
 import SnapKit
 import RxCocoa
 import RxSwift
-// swiftlint:disable type_body_length
+
 class SignUpVC: BaseVC {
     private let viewModel = SignUpViewModel()
     private let signUpLabel = UILabel().then {
