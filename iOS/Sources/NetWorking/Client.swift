@@ -5,6 +5,11 @@ enum API {
     case imageUproad(image: String)
     case postCreate(title: String, content: String, scheduleId: Int)
     case postSerach
+    case login(email: String, password: String)
+    case signup(email: String, code: String, accountId: String, password: String, rePassword: String)
+    case sendEmail(email: String)
+    case codeCheck(email: String, code: String)
+    case idCheck(accountId: String)
 }
 
 extension API: TargetType {
@@ -20,15 +25,24 @@ extension API: TargetType {
             return "/post"
         case .postCreate:
             return "/post"
+        case .login:
+            return "/user/login"
+        case .signup:
+            return "/user"
+        case .sendEmail:
+            return "/mail"
+        case .codeCheck:
+            return "/user/code"
+        case .idCheck:
+            return "/user/check"
         }
-
     }
 
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate:
+        case .imageUproad, .postCreate, .login, .signup:
             return .post
-        case .postSerach:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck:
             return .get
         }
     }
@@ -40,14 +54,46 @@ extension API: TargetType {
                                         [
                                             "image": image
                                         ],
-                                      encoding: JSONEncoding.default)
+                                      encoding: JSONEncoding.prettyPrinted)
         case .postCreate(let title, let content, let scheduleId):
             return .requestParameters(parameters:
                                         [
                                             "title": title,
                                             "content": content,
                                             "scheduleId": scheduleId
-                                        ], encoding: JSONEncoding.default)
+                                        ], encoding: JSONEncoding.prettyPrinted)
+        case .login(let email, let password):
+            return .requestParameters(parameters:
+                                        [
+                                            "email": email,
+                                            "password": password
+                                        ], encoding: JSONEncoding.prettyPrinted)
+        case .signup(let email, let code, let accountId, let password, let rePassword):
+            return .requestParameters(parameters:
+                                        [
+                                            "email": email,
+                                            "code": code,
+                                            "account_id": accountId,
+                                            "password": password,
+                                            "re_password": rePassword
+                                        ], encoding: JSONEncoding.prettyPrinted)
+        case .sendEmail(let email):
+            return .requestParameters(parameters:
+                                        [
+                                            "email": email
+                                        ]
+                                      , encoding: URLEncoding.queryString)
+        case .codeCheck(let email, let code):
+            return .requestParameters(parameters:
+                                        [
+                                            "email": email,
+                                            "code": code
+                                        ], encoding: URLEncoding.queryString)
+        case .idCheck(let accountId):
+            return .requestParameters(parameters:
+                                        [
+                                            "account-id": accountId
+                                        ], encoding: URLEncoding.queryString)
         case .postSerach:
             return .requestPlain
         }
@@ -57,6 +103,8 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postSerach, .postCreate:
             return Header.accessToken.header()
+        case .login, .signup, .sendEmail, .codeCheck, .idCheck:
+            return Header.tokenIsEmpty.header()
         }
     }
 }

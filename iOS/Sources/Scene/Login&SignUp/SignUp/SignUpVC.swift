@@ -1,5 +1,4 @@
 import UIKit
-
 import Then
 import SnapKit
 import RxCocoa
@@ -75,10 +74,10 @@ class SignUpVC: BaseVC {
         $0.addLeftPadding()
     }
     private let noticePasswordLabel = UILabel().then {
-        $0.text = "비밀번호는 숫자 + 문자를 사용하여 8글자 이상 15글자 이하로 만들어 주세요."
-        $0.font = .systemFont(ofSize: 12, weight: .regular)
+        $0.text = "비밀번호는 숫자 + 영문자 + 특수기호를 사용하여 8~15글자로 만들어 주세요."
+        $0.font = .systemFont(ofSize: 11, weight: .regular)
         $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.numberOfLines = 3
+        $0.textAlignment = .center
     }
     private let noticeLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.errorColor.color
@@ -110,26 +109,74 @@ class SignUpVC: BaseVC {
             view.addSubview($0)
         }
     }
+    private func validpassword(mypassword: String) -> Bool {
+            let passwordreg =  ("(?=.*[A-Za-z])(?=.*[0-9]).{8,15}")
+            let passwordtesting = NSPredicate(format: "SELF MATCHES %@", passwordreg)
+            return passwordtesting.evaluate(with: mypassword)
+        }
     override func bind() {
         let input = SignUpViewModel.Input(emailText: emailTextField.rx.text.orEmpty.asDriver(),
-                                          emailCheckText: emailCodeTextField.rx.text.orEmpty.asDriver(),
+                                          codeText: emailCodeTextField.rx.text.orEmpty.asDriver(),
                                           idText: idTextField.rx.text.orEmpty.asDriver(),
                                           paswwordText: passwordTextField.rx.text.orEmpty.asDriver(),
                                           paswwordCheckText: passwordCheckTextField.rx.text.orEmpty.asDriver(),
-                                          buttonDidTap: nextButton.rx.tap.asSignal())
+                                          emailCheckButtonDidTap: emailCheckButton.rx.tap.asSignal(),
+                                          codeCheckButtonDidTap: codeCheckButton.rx.tap.asSignal(),
+                                          idCheckButtonDidTap: idCheckButton.rx.tap.asSignal(),
+                                          signUpButtonDidTap: nextButton.rx.tap.asSignal())
         let output = viewModel.transform(input)
-        output.error.asObservable()
-            .subscribe(onNext: {
-                self.noticeLabel.text = $0
+        output.signUpResult.subscribe(onNext: { [self] in
+                switch $0 {
+                case true:
+                    let signUpCustomAlertVC = SignUpCustomAlertVC()
+                    signUpCustomAlertVC.modalTransitionStyle = .crossDissolve
+                    signUpCustomAlertVC.modalPresentationStyle = .overFullScreen
+                    present(signUpCustomAlertVC, animated: true)
+//                    navigationController?.popViewController(animated: true)
+                    print("회원가입 완료")
+                case false:
+                    print("회원가입 실패")
+                }
             }).disposed(by: disposeBag)
+        output.emailCheckResult.subscribe(onNext: {
+            $0 ? print("email code 보냄") : print("email code 실패")
+        }).disposed(by: disposeBag)
+        output.codeCheckResult.subscribe(onNext: {
+            $0 ?  print("인증번호가 맞음") : print("인증번호가 다름")
+        }).disposed(by: disposeBag)
+        output.idCheckResult.subscribe(onNext: {
+            $0 ? print("id 중복 아님") : print("id 중복!!")
+        }).disposed(by: disposeBag)
+        output.error.subscribe(onNext: { [self] in
+            noticeLabel.text = $0
+        }).disposed(by: disposeBag)
     }
     override func configureVC() {
-        nextButton.rx.tap
+        passwordTextField.rx.text.orEmpty
+            .filter {!$0.isEmpty}
+            .map {self.validpassword(mypassword: $0 )}
             .subscribe(onNext: { [self] in
-                let signUpCustomAlertVC = SignUpCustomAlertVC()
-                signUpCustomAlertVC.modalTransitionStyle = .crossDissolve
-                signUpCustomAlertVC.modalPresentationStyle = .overFullScreen
-                present(signUpCustomAlertVC, animated: true)
+                switch $0 {
+                case true:
+                    noticePasswordLabel.textColor = KimIlJeongColor.textColor.color
+                    print("비밀번호 형식 맞음")
+                case false:
+                    noticePasswordLabel.textColor = KimIlJeongColor.errorColor.color
+                    print("비밀번호 형식 오류")
+                }
+            }).disposed(by: disposeBag)
+        passwordCheckTextField.rx.text.orEmpty
+            .filter {!$0.isEmpty}
+            .map {return $0 == self.passwordTextField.text}
+            .subscribe(onNext: { [self] in
+                switch $0 {
+                case true:
+                    viewModel.isRePasswordCheck = true
+                    print("비밀번호 재확인 ok")
+                case false:
+                    viewModel.isRePasswordCheck = false
+                    print("비밀번호 재확인 x")
+                }
             }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
@@ -187,9 +234,10 @@ class SignUpVC: BaseVC {
             $0.height.equalTo(50)
         }
         noticePasswordLabel.snp.makeConstraints {
-            $0.left.right.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
             $0.top.equalTo(passwordCheckTextField.snp.bottom)
             $0.height.equalTo(40)
+            $0.centerX.equalToSuperview()
         }
         noticeLabel.snp.makeConstraints {
             $0.bottom.equalToSuperview().inset(100)
