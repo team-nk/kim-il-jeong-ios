@@ -22,8 +22,8 @@ final class Service {
             .filterSuccessfulStatusCodes()
             .map(TokenModel.self)
             .map { response -> NetworkingResult in
-                Token.accessToken = response.accessToken
-                Token.refreshToken = response.refreshToken
+                Token.accessToken = response.access_token
+                Token.refreshToken = response.refresh_token
                 return .getOk
             }
             .catch {[unowned self] in return .just(setNetworkError($0))}
