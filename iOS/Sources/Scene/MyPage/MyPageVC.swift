@@ -77,7 +77,9 @@ class MyPageVC: BaseVC {
         userMenuTableView.reloadData()
         editButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.pushViewController(MyEditVC(), animated: true)
+                let nextVC = MyEditVC()
+                nextVC.navigationItem.title = "정보 변경하기"
+                self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {
