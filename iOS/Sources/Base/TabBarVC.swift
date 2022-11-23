@@ -40,8 +40,8 @@ class TabBarVC: UITabBarController {
             image: UIImage(named: "Megaphone"),
             selectedImage: UIImage(named: "Megaphone_fill")
         )
-        let myVC = PostListVC()
-        myVC.tabBarItem = UITabBarItem(
+        let myPageVC = MyPageVC()
+        myPageVC.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "Person"),
             selectedImage: UIImage(named: "Person_fill")
@@ -50,7 +50,7 @@ class TabBarVC: UITabBarController {
             mainVc,
             mapVC,
             postListVC,
-            myVC
+            myPageVC
         ]
     }
 }

@@ -33,6 +33,10 @@ extension MyPageVC: UITableViewDataSource, UITableViewDelegate {
             let next = MyBirthSheetVC()
             userMenuTableView.deselectRow(at: indexPath, animated: true)
             self.present(next, animated: true, completion: nil)
+        case 2:
+            let nextVC = PasswordEditVC()
+            nextVC.navigationItem.title = "비밀번호 변경"
+            self.navigationController?.pushViewController(nextVC, animated: true)
         case 3:
                 let logOut = LogOutCustomAlertVC()
                 logOut.modalPresentationStyle = .overFullScreen
