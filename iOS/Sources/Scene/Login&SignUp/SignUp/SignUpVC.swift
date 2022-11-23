@@ -110,7 +110,7 @@ class SignUpVC: BaseVC {
         }
     }
     private func validpassword(mypassword: String) -> Bool {
-            let passwordreg =  ("(?=.*[A-Za-z])(?=.*[0-9]).{8,15}")
+            let passwordreg =  ("(?=.*[0-9])(?=.*[a-zA-Z]).{8,16}$")
             let passwordtesting = NSPredicate(format: "SELF MATCHES %@", passwordreg)
             return passwordtesting.evaluate(with: mypassword)
         }

@@ -49,10 +49,9 @@ class ScheduleCell: BaseTC {
     }
     override func setLayout() {
         colorSetting.snp.makeConstraints {
-            $0.size.width.height.equalTo(5)
+            $0.width.height.equalTo(5)
             $0.top.equalToSuperview().inset(17)
             $0.leading.equalToSuperview().inset(19)
-            $0.trailing.equalToSuperview().inset(357)
             $0.bottom.equalToSuperview().inset(58)
         }
         scheduleTitle.snp.makeConstraints {

@@ -1,6 +1,6 @@
 import Foundation
-
+// swiftlint:disable identifier_name
 struct TokenModel: Codable {
-    let accessToken: String
-    let refreshToken: String
+    let access_token: String
+    let refresh_token: String
 }
