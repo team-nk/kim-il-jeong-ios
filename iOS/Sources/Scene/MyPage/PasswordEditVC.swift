@@ -18,7 +18,7 @@ class PasswordEditVC: BaseVC {
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
         $0.setTextField(forTextField: $0, placeholderText: "새로운 Password를 한 번 더 입력하세요")
     }
-    private let newPWGuideLabel = UILabel().then {
+    let newPWGuideLabel = UILabel().then {
         $0.text = "비밀번호는 숫자 + 문자를 사용하여 8글자 이상 15글자 이하로 만들어 주세요."
         $0.textAlignment = .center
         $0.numberOfLines = 0

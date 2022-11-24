@@ -81,6 +81,12 @@ class MyPageVC: BaseVC {
                 nextVC.navigationItem.title = "정보 변경하기"
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
+        myPostsButton.rx.tap
+            .subscribe(onNext: {
+                let next = MyPostVC()
+                next.navigationItem.title = "내 글 확인하기"
+                self.navigationController?.pushViewController(next, animated: true)
+            }).disposed(by: disposeBag)
     }
     override func setLayout() {
         welcomeLabel.snp.makeConstraints {

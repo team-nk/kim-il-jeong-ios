@@ -9,14 +9,11 @@ class PasswordEditViewModel: BaseVM {
         let newPasswordCheck: Driver<String>
         let buttonDidTap: Signal<Void>
     }
-
     struct Output {
         let error: PublishRelay<String>
         let success: PublishRelay<Bool>
     }
-
     private var disposeBag = DisposeBag()
-
     func transform(_ input: Input) -> Output {
         let error = PublishRelay<String>()
         let success = PublishRelay<Bool>()
@@ -25,7 +22,6 @@ class PasswordEditViewModel: BaseVM {
             input.newPassword,
             input.newPasswordCheck
         )
-
         input.buttonDidTap
             .asObservable()
             .flatMap { info }
@@ -46,7 +42,6 @@ class PasswordEditViewModel: BaseVM {
                     error.accept($0)
                 }
             }).disposed(by: disposeBag)
-
         return Output(error: error, success: success)
     }
 }
