@@ -86,6 +86,8 @@ class MainVC: BaseVC {
     private let toDayDoTableView = UITableView().then {
         $0.rowHeight = 49
         $0.backgroundColor = .clear
+        $0.register(ToDoTableViewCell.self, forCellReuseIdentifier: ToDoTableViewCell.cellID)
+        $0.separatorStyle = .none
     }
     func moveMonth(next: Bool) {
         var dateComponents = DateComponents()
@@ -94,13 +96,9 @@ class MainVC: BaseVC {
         self.currentPage = page
         self.fsCalendar.setCurrentPage(self.currentPage, animated: true)
     }
-    func attribute() {
-        toDayDoTableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: ToDoTableViewCell.cellID)
-    }
     override func addView() {
         toDayDoTableView.delegate = self
         toDayDoTableView.dataSource = self
-        toDayDoTableView.separatorStyle = .none
         self.view.backgroundColor = KimIlJeongColor.backGroundColor.color
         [
             kimIlJeongLabel,
@@ -118,7 +116,6 @@ class MainVC: BaseVC {
         }
     }
     override func configureVC() {
-        attribute()
         gotoTomorrowButton.rx.tap
             .bind {
                 self.moveMonth(next: true)

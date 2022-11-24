@@ -51,14 +51,20 @@ class EmailLoginVC: BaseVC {
         $0.setUnderline(start: 13)
     }
     override func bind() {
-//        let input = EmailLoginViewModel.Input(
-//            text: passwordTextField.rx.text.orEmpty.asDriver(),
-//            buttonDidTap: loginButton.rx.tap.asSignal()
-//        )
-//        let output = viewModel.transform(input)
-//        output.menu.subscribe(onNext: {[weak self] in
-//            self?.loginLabel.text = $0
-//        }).disposed(by: disposeBag)
+        let input = EmailLoginViewModel.Input(
+            emailText: emailTextField.rx.text.orEmpty.asDriver(),
+            passwordText: passwordTextField.rx.text.orEmpty.asDriver(),
+            loginButtonDidTap: loginButton.rx.tap.asSignal())
+        let output = viewModel.transform(input)
+        output.result.subscribe(onNext: {[self] in
+            switch $0 {
+            case true:
+                dismiss(animated: true)
+                print("login 성공")
+            case false:
+                print("login 실패")
+            }
+        }).disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -84,10 +90,6 @@ class EmailLoginVC: BaseVC {
         signUpButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(SignUpVC(), animated: true)
-            }).disposed(by: disposeBag)
-        loginButton.rx.tap
-            .subscribe(onNext: {
-                self.dismiss(animated: true)
             }).disposed(by: disposeBag)
     }
     override func setLayout() {

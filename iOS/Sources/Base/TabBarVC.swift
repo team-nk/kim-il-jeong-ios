@@ -8,6 +8,11 @@ class TabBarVC: UITabBarController {
         super.viewWillAppear(animated)
         setUpTabBarLayout()
         setUpTabBarItem()
+        if Token.accessToken == nil {
+            let loginVC = BaseNC(rootViewController: LoginVC())
+            loginVC.modalPresentationStyle = .fullScreen
+            self.present(loginVC, animated: true)
+        }
     }
 
     func setUpTabBarLayout() {
