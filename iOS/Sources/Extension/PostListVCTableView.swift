@@ -18,7 +18,6 @@ extension PostListVC: UITableViewDataSource, UITableViewDelegate {
         case birthTableView:
             if let birthCell = tableView
                 .dequeueReusableCell(withIdentifier: "BirthDayCell", for: indexPath) as? BirthDayCell {
-                birthCell.configureVC()
                 birthCell.congratulationsLabel.text = "\(birthDayList[indexPath.row].username)님의 생일이에요!"
                 birthCell.dateLabel.text = "\(birthDayList[indexPath.row].birthDate)"
                 birthCell.selectionStyle = .none

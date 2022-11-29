@@ -31,7 +31,7 @@ class CommentListVC: BaseVC {
         $0.textAlignment = .left
         $0.backgroundColor = KimIlJeongColor.surface2.color
         $0.layer.cornerRadius = 25
-        $0.addPaddingToCommentTextField()
+        $0.addPaddingToTextField(leftSize: 20, rightSize: 60)
     }
     let sendButton = UIButton().then {
         $0.setImage(UIImage(named: "PaperPlane"), for: .normal)
@@ -72,7 +72,8 @@ class CommentListVC: BaseVC {
             }
     }
     override func configureVC() {
-        navigationController?.navigationBar.backItem?.title = ""
+        navigationItem.backButtonTitle = ""
+        setNavigation()
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
         setKeyboardObserver()
