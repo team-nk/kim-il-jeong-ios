@@ -39,7 +39,7 @@ class MyPostVC: BaseVC {
     }
     override func setLayout() {
         myPostTableView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(123)
+            $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.equalToSuperview().inset(23)
             $0.trailing.equalToSuperview().inset(24)
             $0.bottom.equalToSuperview()
@@ -77,6 +77,7 @@ extension MyPostVC: UITableViewDataSource, UITableViewDelegate {
         next.locationLabel.text = "\(scheduleList[indexPath.row].owner)"
         next.dateLabel.text = "\(scheduleList[indexPath.row].date)"
         next.contentTextView.text = "\(scheduleList[indexPath.row].text)"
+        next.navigationItem.backButtonTitle = ""
         navigationController?.pushViewController(next, animated: true)
     }
 }
