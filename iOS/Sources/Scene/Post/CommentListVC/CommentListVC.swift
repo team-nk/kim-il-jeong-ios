@@ -40,14 +40,28 @@ class CommentListVC: BaseVC {
     @objc func didTapSendButton() {
         commentTextField.text?.removeAll()
     }
+    private func updateConstraints() {
+        contentView.snp.remakeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalToSuperview()
+            if Double(commentArray.count * 90) > self.view.frame.height {
+                $0.height.equalTo(100 + (commentArray.count) * 90)
+                print("1", view.frame.height)
+            } else {
+                $0.height.equalTo(self.view.frame.height)
+                print(self.view.frame.height)
+            }
+        }
+    }
     func addDummies() {
         commentArray = [
             commentList.cmt1, commentList.cmt2, commentList.cmt3,
             commentList.cmt4, commentList.cmt5, commentList.cmt6,
             commentList.cmt7, commentList.cmt8, commentList.cmt9,
             commentList.cmt10, commentList.cmt11,
-            commentList.cmt12
+            commentList.cmt12, commentList.cmt1, commentList.cmt2
         ]
+        updateConstraints()
     }
     func setUpViews() {
         commentTableView.delegate = self
@@ -73,6 +87,7 @@ class CommentListVC: BaseVC {
     }
     override func configureVC() {
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.navigationBar.topItem?.title = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
         setKeyboardObserver()
@@ -88,10 +103,12 @@ class CommentListVC: BaseVC {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if commentArray.count * 90 > 800 {
+            if Double(commentArray.count * 90) > self.view.frame.height {
                 $0.height.equalTo(100 + (commentArray.count) * 90)
+                print("1", view.frame.height)
             } else {
-                $0.height.equalTo(800)
+                $0.height.equalTo(self.view.frame.height)
+                print(self.view.frame.height)
             }
         }
         commentTableView.snp.makeConstraints {

@@ -106,7 +106,9 @@ class PostVC: BaseVC {
         }
         commentButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.pushViewController(CommentListVC(), animated: true)
+                let nextVC = CommentListVC()
+                nextVC.navigationController?.navigationItem.backButtonTitle = " "
+                self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
     }
     func setPostDetailLayout() {
