@@ -95,6 +95,7 @@ class PostVC: BaseVC {
     }
     override func configureVC() {
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.navigationItem.backButtonTitle = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         if myPost == false {
             commentCountLabel.text = "댓글 12개"

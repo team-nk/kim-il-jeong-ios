@@ -41,6 +41,19 @@ class LogOutCustomAlertVC: BaseVC {
             popupView.addSubview($0)
         }
     }
+    override func configureVC() {
+        view.backgroundColor = .black.withAlphaComponent(0.3)
+        cancelButton.rx.tap
+            .subscribe(onNext: {
+                self.dismiss(animated: true)
+            }).disposed(by: disposeBag)
+        logOutButton.rx.tap
+            .subscribe(onNext: {
+                Token.accessToken = nil
+//                self.navigationController?.popViewController(animated: true)
+                self.dismiss(animated: false)
+            }).disposed(by: disposeBag)
+    }
     override func setLayout() {
         popupView.snp.makeConstraints {
             $0.width.equalTo(328)
@@ -64,16 +77,5 @@ class LogOutCustomAlertVC: BaseVC {
             $0.height.equalTo(50)
             $0.trailing.equalToSuperview().inset(19)
         }
-    }
-    override func configureVC() {
-        view.backgroundColor = .black.withAlphaComponent(0.3)
-        cancelButton.rx.tap
-            .subscribe(onNext: {
-                self.dismiss(animated: true)
-            }).disposed(by: disposeBag)
-        logOutButton.rx.tap
-            .subscribe(onNext: {
-                self.dismiss(animated: false)
-            }).disposed(by: disposeBag)
     }
 }
