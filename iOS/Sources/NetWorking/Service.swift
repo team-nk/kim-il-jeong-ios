@@ -63,7 +63,27 @@ final class Service {
             }
             .catch {[unowned self] in return .just(setNetworkError($0))}
     }
-
+    // Post
+    func fetchBirthdayUsers() -> Single<(BirthdayListModel?, NetworkingResult)> {
+        return provider.rx.request(.getBirthdayUsers)
+            .filterSuccessfulStatusCodes()
+            .map(BirthdayListModel.self)
+            .map { return ($0, .getOk)}
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func fetchAllPosts() -> Single<(PostListModel?, NetworkingResult)> {
+        return provider.rx.request(.getAllSchedules)
+            .filterSuccessfulStatusCodes()
+            .map(PostListModel.self)
+            .map { return ($0, .getOk)}
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
     func setNetworkError(_ error: Error) -> NetworkingResult {
             print(error)
             print(error.localizedDescription)

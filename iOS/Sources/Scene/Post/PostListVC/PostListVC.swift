@@ -5,6 +5,8 @@ import SnapKit
 import Then
 
 class PostListVC: BaseVC {
+    private let getPosts = BehaviorRelay<Void>(value: ())
+    private let viewModel = PostListVM()
     var birthDayList: [BirthDay] = []
     var scheduleList: [Schedule] = []
     let dummyList = Dummies()
@@ -56,25 +58,27 @@ class PostListVC: BaseVC {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
-    func setUpTableView() {
-        birthTableView.delegate = self
-        birthTableView.dataSource = self
-        birthTableView.reloadData()
-
-        scheduleTableView.delegate = self
-        scheduleTableView.dataSource = self
-        scheduleTableView.reloadData()
-    }
-    func addDummyData() {
-        birthDayList = [
-            dummyList.birthItem1, dummyList.birthItem2,
-            dummyList.birthItem3, dummyList.birthItem4
-        ]
-        scheduleList = [
-            dummyList.scheduleItem1, dummyList.scheduleItem2,
-            dummyList.scheduleItem3, dummyList.scheduleItem4,
-            dummyList.scheduleItem5
-        ]
+    private func bindViewModels() {
+        let input = PostListVM.Input(getLists: getPosts.asDriver(onErrorJustReturn: ()))
+        let output = viewModel.transform(input)
+        output.birthUsers.bind(to: birthTableView.rx.items(
+            cellIdentifier: "BirthDayCell",
+            cellType: BirthDayCell.self)) { _, items, cell in
+                cell.congratulationsLabel.text = "\(items.accountId)님의 생일이에요!"
+                cell.dateLabel.text = items.birthday
+                cell.selectionStyle = .none
+            }.disposed(by: disposeBag)
+        output.posts.bind(to: scheduleTableView.rx.items(
+            cellIdentifier: "ScheduleCell",
+            cellType: ScheduleCell.self)) { _, items, cell in
+                cell.scheduleTitle.text = items.title
+                cell.scheduleOwner.text = items.accountId
+                cell.scheduleContent.text = items.scheduleContent
+                cell.scheduleDate.text = items.createTime
+                cell.scheduleLocation.text = items.address
+                cell.colorSetting.tintColor = UIColor(named: "\(items.color)")
+                cell.selectionStyle = .none
+            }.disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -97,8 +101,7 @@ class PostListVC: BaseVC {
     }
     override func configureVC() {
         scrollView.contentInsetAdjustmentBehavior = .never
-        addDummyData()
-        setUpTableView()
+        bindViewModels()
         writePostButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?

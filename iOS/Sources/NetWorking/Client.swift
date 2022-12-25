@@ -10,6 +10,9 @@ enum API {
     case sendEmail(email: String)
     case codeCheck(email: String, code: String)
     case idCheck(accountId: String)
+    // Post
+    case getBirthdayUsers
+    case getAllSchedules
 }
 
 extension API: TargetType {
@@ -35,6 +38,11 @@ extension API: TargetType {
             return "/user/code"
         case .idCheck:
             return "/user/check"
+        // Post
+        case .getBirthdayUsers:
+            return "/post/birthday"
+        case .getAllSchedules:
+            return "/post"
         }
     }
 
@@ -42,7 +50,7 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postCreate, .login, .signup:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules:
             return .get
         }
     }
@@ -96,12 +104,16 @@ extension API: TargetType {
                                         ], encoding: URLEncoding.queryString)
         case .postSerach:
             return .requestPlain
+        case .getBirthdayUsers:
+            return .requestPlain
+        case .getAllSchedules:
+            return .requestPlain
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
