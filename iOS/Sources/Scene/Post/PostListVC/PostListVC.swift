@@ -78,6 +78,18 @@ class PostListVC: BaseVC {
                 cell.scheduleLocation.text = items.address
                 cell.colorSetting.tintColor = UIColor(named: "\(items.color)")
                 cell.selectionStyle = .none
+                self.scheduleTableView.rx.itemSelected
+                    .subscribe(onNext: {_ in
+                        let next = PostVC()
+                        next.postTitleLabel.text = items.title
+                        next.colorTag.tintColor = UIColor(named: "\(items.color)")
+                        next.scheduleLabel.text = items.scheduleContent
+                        next.userNameLabel.text = items.accountId
+                        next.locationLabel.text = items.address
+                        next.dateLabel.text = items.createTime
+                        next.contentTextView.text = items.scheduleContent
+                        self.navigationController?.pushViewController(next, animated: true)
+                    }).disposed(by: self.disposeBag)
             }.disposed(by: disposeBag)
     }
     override func addView() {

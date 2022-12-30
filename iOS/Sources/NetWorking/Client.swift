@@ -13,6 +13,7 @@ enum API {
     // Post
     case getBirthdayUsers
     case getAllSchedules
+    case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
 }
 
 extension API: TargetType {
@@ -43,12 +44,14 @@ extension API: TargetType {
             return "/post/birthday"
         case .getAllSchedules:
             return "/post"
+        case .postNewPost:
+            return "/post"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate, .login, .signup:
+        case .imageUproad, .postCreate, .login, .signup, .postNewPost:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules:
             return .get
@@ -108,12 +111,21 @@ extension API: TargetType {
             return .requestPlain
         case .getAllSchedules:
             return .requestPlain
+        case .postNewPost(let title, let content, let scheduleId):
+            return .requestParameters(
+                parameters:
+                    [
+                        "title": title,
+                        "content": content,
+                        "scheduleId": scheduleId
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules, .postNewPost:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
