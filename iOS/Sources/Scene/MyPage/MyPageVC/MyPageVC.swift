@@ -4,6 +4,8 @@ import RxCocoa
 import SnapKit
 import Then
 
+public var isLogOutTapped = PublishRelay<Bool>()
+
 class MyPageVC: BaseVC {
     private let welcomeLabel = UILabel().then {
         $0.text = "Welcome!"
@@ -85,8 +87,15 @@ class MyPageVC: BaseVC {
             .subscribe(onNext: {
                 let next = MyPostVC()
                 next.navigationItem.title = "내 글 확인하기"
-                self.navigationController?.pushViewController(next, animated: true)
+                let former = MyPageVC()
+                former.navigationController?.pushViewController(next, animated: true)
             }).disposed(by: disposeBag)
+        isLogOutTapped.subscribe(onNext: {
+            print($0)
+            if $0 == true {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }).disposed(by: disposeBag)
     }
     override func setLayout() {
         welcomeLabel.snp.makeConstraints {

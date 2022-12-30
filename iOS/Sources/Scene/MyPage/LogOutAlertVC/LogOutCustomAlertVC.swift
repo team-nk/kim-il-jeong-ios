@@ -49,9 +49,9 @@ class LogOutCustomAlertVC: BaseVC {
             }).disposed(by: disposeBag)
         logOutButton.rx.tap.subscribe(onNext: {
             self.dismiss(animated: true)
-            self.navigationController?.popViewController(animated: true)
             Token.accessToken = nil
             Token.refreshToken = nil
+            isLogOutTapped.accept(true)
         }).disposed(by: disposeBag)
     }
     override func setLayout() {
