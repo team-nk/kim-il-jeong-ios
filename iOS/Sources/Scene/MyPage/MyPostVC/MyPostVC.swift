@@ -69,7 +69,7 @@ extension MyPostVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         myPostTableView.deselectRow(at: indexPath, animated: true)
         let next = PostVC()
-        next.myPost = true
+        next.isMyPost.accept(true)
         next.postTitleLabel.text = "\(scheduleList[indexPath.row].title)"
         next.colorTag.tintColor = UIColor(named: "\(scheduleList[indexPath.row].color)")
         next.scheduleLabel.text = "\(scheduleList[indexPath.row].content)"

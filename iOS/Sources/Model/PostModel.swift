@@ -25,7 +25,9 @@ struct PostListModel: Codable {
 }
 
 struct Posts: Codable {
+    let id: Int
     let title: String
+    let content: String
     let scheduleContent: String
     let address: String
     let color: String
@@ -34,7 +36,9 @@ struct Posts: Codable {
     let accountId: String
     let createTime: String
     enum CodingKeys: String, CodingKey {
+        case id
         case title
+        case content
         case scheduleContent = "schedule_content"
         case address
         case color

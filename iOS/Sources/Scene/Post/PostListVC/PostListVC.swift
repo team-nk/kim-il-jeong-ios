@@ -81,13 +81,16 @@ class PostListVC: BaseVC {
                 self.scheduleTableView.rx.itemSelected
                     .subscribe(onNext: {_ in
                         let next = PostVC()
+                        next.postCommentCount.accept(items.commentCount)
+                        next.isMyPost.accept(items.mine)
+                        next.postID.accept(items.id)
                         next.postTitleLabel.text = items.title
                         next.colorTag.tintColor = UIColor(named: "\(items.color)")
                         next.scheduleLabel.text = items.scheduleContent
                         next.userNameLabel.text = items.accountId
                         next.locationLabel.text = items.address
                         next.dateLabel.text = items.createTime
-                        next.contentTextView.text = items.scheduleContent
+                        next.contentTextView.text = items.content
                         self.navigationController?.pushViewController(next, animated: true)
                     }).disposed(by: self.disposeBag)
             }.disposed(by: disposeBag)
