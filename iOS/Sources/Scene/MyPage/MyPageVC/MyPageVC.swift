@@ -93,7 +93,9 @@ class MyPageVC: BaseVC {
         isLogOutTapped.subscribe(onNext: {
             print($0)
             if $0 == true {
-                self.navigationController?.popViewController(animated: true)
+                let loginVC = BaseNC(rootViewController: LoginVC())
+                loginVC.modalPresentationStyle = .fullScreen
+                self.present(loginVC, animated: true)
             }
         }).disposed(by: disposeBag)
     }
