@@ -9,8 +9,7 @@ class CommentListVC: BaseVC {
     let postID = BehaviorRelay<Int>(value: 0)
     private let viewModel = CommentListVM()
     var keyboardUp: Bool = false
-    var commentArray: [CommentDummies] = []
-    let commentList = CommentDummyItems()
+    var commentCount = Int()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -47,28 +46,14 @@ class CommentListVC: BaseVC {
         contentView.snp.remakeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if Double(commentArray.count * 90) > self.view.frame.height {
-                $0.height.equalTo(100 + (commentArray.count) * 90)
-                print("1", view.frame.height)
+            if Double(commentCount * 90) > self.view.frame.height {
+                $0.height.equalTo((commentCount) * 40)
             } else {
                 $0.height.equalTo(self.view.frame.height)
-                print(self.view.frame.height)
             }
         }
     }
-    func addDummies() {
-        commentArray = [
-            commentList.cmt1, commentList.cmt2, commentList.cmt3,
-            commentList.cmt4, commentList.cmt5, commentList.cmt6,
-            commentList.cmt7, commentList.cmt8, commentList.cmt9,
-            commentList.cmt10, commentList.cmt11,
-            commentList.cmt12, commentList.cmt1, commentList.cmt2
-        ]
-        updateConstraints()
-    }
     func setUpViews() {
-        commentTableView.delegate = self
-        commentTableView.dataSource = self
         commentTextField.delegate = self
     }
     private func bindViewModels() {
@@ -76,10 +61,13 @@ class CommentListVC: BaseVC {
         let output = viewModel.transform(input)
         output.comments.bind(to: commentTableView.rx.items(
             cellIdentifier: "CommentCell",
-            cellType: CommentCell.self)) { row, items, cell in
+            cellType: CommentCell.self)) { _, items, cell in
                 cell.commentLabel.text = items.content
                 cell.userLabel.text = items.accountId
                 cell.commentDateLabel.text = items.createTime
+                self.commentCount += 1
+                self.updateConstraints()
+                cell.selectionStyle = .none
             }.disposed(by: disposeBag)
     }
     override func addView() {
@@ -106,8 +94,7 @@ class CommentListVC: BaseVC {
         scrollView.contentInsetAdjustmentBehavior = .never
         setKeyboardObserver()
         bindViewModels()
-//        addDummies()
-//        setUpViews()
+        setUpViews()
         sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
     }
     override func setLayout() {
@@ -118,12 +105,10 @@ class CommentListVC: BaseVC {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if Double(commentArray.count * 90) > self.view.frame.height {
-                $0.height.equalTo(100 + (commentArray.count) * 90)
-                print("1", view.frame.height)
+            if Double(commentCount * 90) > self.view.frame.height {
+                $0.height.equalTo((commentCount) * 90)
             } else {
                 $0.height.equalTo(self.view.frame.height)
-                print(self.view.frame.height)
             }
         }
         commentTableView.snp.makeConstraints {

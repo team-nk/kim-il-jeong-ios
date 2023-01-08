@@ -99,7 +99,6 @@ class PostVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.navigationItem.backButtonTitle = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
-        print(postID.value)
         isMyPost.subscribe(onNext: {
             if $0 == true {
                 self.commentCountLabel.text = "댓글 \(self.postCommentCount.value)개"

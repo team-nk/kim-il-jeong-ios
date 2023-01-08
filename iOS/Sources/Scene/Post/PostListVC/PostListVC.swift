@@ -7,9 +7,8 @@ import Then
 class PostListVC: BaseVC {
     private let getPosts = BehaviorRelay<Void>(value: ())
     private let viewModel = PostListVM()
-    var birthDayList: [BirthDay] = []
-    var scheduleList: [Schedule] = []
-    let dummyList = Dummies()
+    var birthUserCount = Int()
+    var postsCount = Int()
     var nextTitle = String()
     var nextContent = String()
     var nextID = Int()
@@ -81,6 +80,8 @@ class PostListVC: BaseVC {
                 cell.congratulationsLabel.text = "\(items.accountId)님의 생일이에요!"
                 cell.dateLabel.text = items.birthday
                 cell.selectionStyle = .none
+                self.birthUserCount += 1
+                self.updateConstraints()
             }.disposed(by: disposeBag)
         output.posts.bind(to: scheduleTableView.rx.items(
             cellIdentifier: "ScheduleCell",
@@ -92,6 +93,8 @@ class PostListVC: BaseVC {
                 cell.scheduleLocation.text = items.address
                 cell.colorSetting.tintColor = UIColor(named: "\(items.color)")
                 cell.selectionStyle = .none
+                self.postsCount += 1
+                self.updateConstraints()
             }.disposed(by: disposeBag)
         output.postDetail.asObservable()
             .subscribe(onNext: { detail in
@@ -136,6 +139,17 @@ class PostListVC: BaseVC {
                 self.navigationController?.pushViewController(next, animated: true)
             }).disposed(by: disposeBag)
     }
+    private func updateConstraints() {
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalToSuperview()
+            if birthUserCount * 90 + postsCount * 80 > 800 {
+                $0.height.equalTo((birthUserCount + postsCount) * 90)
+            } else {
+                $0.height.equalTo(900)
+            }
+        }
+    }
     override func addView() {
         [
             scrollView,
@@ -173,8 +187,8 @@ class PostListVC: BaseVC {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if birthDayList.count * 90 + scheduleList.count * 80 > 800 {
-                $0.height.equalTo(400 + (birthDayList.count + scheduleList.count) * 90)
+            if birthUserCount * 90 + postsCount * 80 > 800 {
+                $0.height.equalTo(400 + (birthUserCount + postsCount) * 90)
             } else {
                 $0.height.equalTo(900)
             }
