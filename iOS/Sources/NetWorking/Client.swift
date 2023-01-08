@@ -14,6 +14,7 @@ enum API {
     case getBirthdayUsers
     case getAllSchedules
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
+    case getAllComments(postId: Int)
 }
 
 extension API: TargetType {
@@ -46,6 +47,8 @@ extension API: TargetType {
             return "/post"
         case .postNewPost:
             return "/post"
+        case .getAllComments(let id):
+            return "/comment/\(id)"
         }
     }
 
@@ -53,7 +56,7 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments:
             return .get
         }
     }
@@ -120,12 +123,16 @@ extension API: TargetType {
                         "scheduleId": scheduleId
                     ],
                 encoding: JSONEncoding.prettyPrinted)
+        case .getAllComments(let id):
+            return .requestParameters(parameters: [
+                "post-id": id
+            ], encoding: URLEncoding.queryString)
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules, .postNewPost:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules, .postNewPost, .getAllComments:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()

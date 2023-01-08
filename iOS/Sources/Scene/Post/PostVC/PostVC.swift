@@ -113,6 +113,7 @@ class PostVC: BaseVC {
             .subscribe(onNext: {
                 let nextVC = CommentListVC()
                 nextVC.navigationController?.navigationItem.backButtonTitle = " "
+                nextVC.postID.accept(self.postID.value)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
     }

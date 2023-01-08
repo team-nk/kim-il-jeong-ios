@@ -10,6 +10,16 @@ class PostListVC: BaseVC {
     var birthDayList: [BirthDay] = []
     var scheduleList: [Schedule] = []
     let dummyList = Dummies()
+    var nextTitle = String()
+    var nextContent = String()
+    var nextID = Int()
+    var nextSchedule = String()
+    var nextColor = String()
+    var nextAddress = String()
+    var nextCommentCount = Int()
+    var nextAccountID = String()
+    var nextMyPost = Bool()
+    var nextDate = String()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -58,8 +68,12 @@ class PostListVC: BaseVC {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
+    // swiftlint:disable function_body_length
     private func bindViewModels() {
-        let input = PostListVM.Input(getLists: getPosts.asDriver(onErrorJustReturn: ()))
+        let input = PostListVM.Input(
+            getLists: getPosts.asDriver(onErrorJustReturn: ()),
+            selectedIndex: scheduleTableView.rx.itemSelected.asSignal()
+        )
         let output = viewModel.transform(input)
         output.birthUsers.bind(to: birthTableView.rx.items(
             cellIdentifier: "BirthDayCell",
@@ -78,22 +92,49 @@ class PostListVC: BaseVC {
                 cell.scheduleLocation.text = items.address
                 cell.colorSetting.tintColor = UIColor(named: "\(items.color)")
                 cell.selectionStyle = .none
-                self.scheduleTableView.rx.itemSelected
-                    .subscribe(onNext: {_ in
-                        let next = PostVC()
-                        next.postCommentCount.accept(items.commentCount)
-                        next.isMyPost.accept(items.mine)
-                        next.postID.accept(items.id)
-                        next.postTitleLabel.text = items.title
-                        next.colorTag.tintColor = UIColor(named: "\(items.color)")
-                        next.scheduleLabel.text = items.scheduleContent
-                        next.userNameLabel.text = items.accountId
-                        next.locationLabel.text = items.address
-                        next.dateLabel.text = items.createTime
-                        next.contentTextView.text = items.content
-                        self.navigationController?.pushViewController(next, animated: true)
-                    }).disposed(by: self.disposeBag)
             }.disposed(by: disposeBag)
+        output.postDetail.asObservable()
+            .subscribe(onNext: { detail in
+                self.nextMyPost = detail.mine
+                self.nextID = detail.id
+                self.nextCommentCount = detail.commentCount
+                self.nextTitle = detail.title
+                switch detail.color {
+                case "RED":
+                    self.nextColor = "ErrorColor"
+                case "BLUE":
+                    self.nextColor = "MainColor"
+                case "YELLOW":
+                    self.nextColor = "YellowColor"
+                case "GREEN":
+                    self.nextColor = "GreenColor"
+                case "PURPLE":
+                    self.nextColor = "PurpleColor"
+                default:
+                    print("ColorEmpty")
+                }
+                self.nextColor = detail.color
+                self.nextSchedule = detail.scheduleContent
+                self.nextAccountID = detail.accountId
+                self.nextAddress = detail.address
+                self.nextDate = detail.createTime
+                self.nextContent = detail.content
+            }).disposed(by: disposeBag)
+        scheduleTableView.rx.itemSelected
+            .subscribe(onNext: { _ in
+                let next = PostVC()
+                next.isMyPost.accept(self.nextMyPost)
+                next.postID.accept(self.nextID)
+                next.postCommentCount.accept(self.nextCommentCount)
+                next.postTitleLabel.text = self.nextTitle
+                next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
+                next.scheduleLabel.text = self.nextSchedule
+                next.userNameLabel.text = self.nextAccountID
+                next.locationLabel.text = self.nextAddress
+                next.dateLabel.text = self.nextDate
+                next.contentTextView.text = self.nextContent
+                self.navigationController?.pushViewController(next, animated: true)
+            }).disposed(by: disposeBag)
     }
     override func addView() {
         [
