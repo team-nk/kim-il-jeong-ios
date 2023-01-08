@@ -5,9 +5,12 @@ import SnapKit
 import Then
 
 class CommentListVC: BaseVC {
+    private let getComments = BehaviorRelay<Void>(value: ())
+    let postID = BehaviorRelay<Int>(value: 0)
+    private let viewModel = CommentListVM()
     var keyboardUp: Bool = false
-    var commentArray: [Comments] = []
-    let commentList = CommentDummies()
+    var commentArray: [CommentDummies] = []
+    let commentList = CommentDummyItems()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -68,6 +71,17 @@ class CommentListVC: BaseVC {
         commentTableView.dataSource = self
         commentTextField.delegate = self
     }
+    private func bindViewModels() {
+        let input = CommentListVM.Input(getComments: getComments.asDriver(), postId: postID.asDriver())
+        let output = viewModel.transform(input)
+        output.comments.bind(to: commentTableView.rx.items(
+            cellIdentifier: "CommentCell",
+            cellType: CommentCell.self)) { row, items, cell in
+                cell.commentLabel.text = items.content
+                cell.userLabel.text = items.accountId
+                cell.commentDateLabel.text = items.createTime
+            }.disposed(by: disposeBag)
+    }
     override func addView() {
         view.addSubview(scrollView)
         commentTextField.addSubview(sendButton)
@@ -91,8 +105,9 @@ class CommentListVC: BaseVC {
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
         setKeyboardObserver()
-        addDummies()
-        setUpViews()
+        bindViewModels()
+//        addDummies()
+//        setUpViews()
         sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
     }
     override func setLayout() {
