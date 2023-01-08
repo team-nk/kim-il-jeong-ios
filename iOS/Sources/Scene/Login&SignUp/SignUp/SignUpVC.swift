@@ -3,7 +3,7 @@ import Then
 import SnapKit
 import RxCocoa
 import RxSwift
-
+// swiftlint:disable type_body_length
 class SignUpVC: BaseVC {
     private let viewModel = SignUpViewModel()
     private let signUpLabel = UILabel().then {
@@ -113,7 +113,7 @@ class SignUpVC: BaseVC {
             let passwordreg =  ("(?=.*[0-9])(?=.*[a-zA-Z]).{8,16}$")
             let passwordtesting = NSPredicate(format: "SELF MATCHES %@", passwordreg)
             return passwordtesting.evaluate(with: mypassword)
-        }
+    }
     override func bind() {
         let input = SignUpViewModel.Input(emailText: emailTextField.rx.text.orEmpty.asDriver(),
                                           codeText: emailCodeTextField.rx.text.orEmpty.asDriver(),
