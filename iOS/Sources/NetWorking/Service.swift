@@ -63,6 +63,37 @@ final class Service {
             }
             .catch {[unowned self] in return .just(setNetworkError($0))}
     }
+    func refreshToken() -> Single<NetworkingResult> {
+        return provider.rx.request(.refreshToken)
+            .filterSuccessfulStatusCodes()
+            .map(TokenModel.self)
+            .map { response -> NetworkingResult in
+                Token.accessToken = response.access_token
+                Token.refreshToken = response.refresh_token
+                return .getOk
+            }
+            .catch {[unowned self] in return .just(setNetworkError($0))}
+    }
+    func getMySchedules() -> Single<(MySchedulesToken?, NetworkingResult)> {
+        return provider.rx.request(.getMySchedule)
+            .filterSuccessfulStatusCodes()
+            .map(MySchedulesToken.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func getMapSchedules() -> Single<(MyMapSchedulesToken?, NetworkingResult)> {
+        return provider.rx.request(.getMapSchedule)
+            .filterSuccessfulStatusCodes()
+            .map(MyMapSchedulesToken.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
 
     func setNetworkError(_ error: Error) -> NetworkingResult {
             print(error)
