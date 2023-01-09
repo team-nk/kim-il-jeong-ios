@@ -68,7 +68,8 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
+                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
             return .get
         case .refreshToken:
             return .put
@@ -122,8 +123,6 @@ extension API: TargetType {
                                         [
                                             "account-id": accountId
                                         ], encoding: URLEncoding.queryString)
-        default:
-            return .requestPlain
         case .getBirthdayUsers:
             return .requestPlain
         case .getAllSchedules:
@@ -148,6 +147,8 @@ extension API: TargetType {
                         "content": content
                     ],
                 encoding: JSONEncoding.prettyPrinted)
+        default:
+            return .requestPlain
         }
     }
 
