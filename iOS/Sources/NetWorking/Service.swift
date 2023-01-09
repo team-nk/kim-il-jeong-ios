@@ -84,10 +84,41 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    func refreshToken() -> Single<NetworkingResult> {
+        return provider.rx.request(.refreshToken)
+            .filterSuccessfulStatusCodes()
+            .map(TokenModel.self)
+            .map { response -> NetworkingResult in
+                Token.accessToken = response.access_token
+                Token.refreshToken = response.refresh_token
+                return .getOk
+            }
+            .catch {[unowned self] in return .just(setNetworkError($0))}
+    }
+    func getMySchedules() -> Single<(MySchedulesModel?, NetworkingResult)> {
+        return provider.rx.request(.getMySchedule)
+            .filterSuccessfulStatusCodes()
+            .map(MySchedulesModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
     func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
         return provider.rx.request(.getAllComments(postId: postID))
             .filterSuccessfulStatusCodes()
             .map(CommentModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func getMapSchedules() -> Single<(MyMapSchedulesModel?, NetworkingResult)> {
+        return provider.rx.request(.getMapSchedule)
+            .filterSuccessfulStatusCodes()
+            .map(MyMapSchedulesModel.self)
             .map { return ($0, .getOk) }
             .catch { error in
                 print(error)

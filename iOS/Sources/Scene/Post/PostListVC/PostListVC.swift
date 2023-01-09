@@ -67,19 +67,8 @@ class PostListVC: BaseVC {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
-    private func updateConstraints() {
-        contentView.snp.makeConstraints {
-            $0.edges.equalTo(scrollView.contentLayoutGuide)
-            $0.width.equalToSuperview()
-            if birthUserCount * 90 + postsCount * 80 > 800 {
-                $0.height.equalTo((birthUserCount + postsCount) * 90)
-            } else {
-                $0.height.equalTo(900)
-            }
-        }
-    }
     // swiftlint:disable function_body_length
-    override func bind() {
+    private func bindViewModels() {
         let input = PostListVM.Input(
             getLists: getPosts.asDriver(onErrorJustReturn: ()),
             selectedIndex: scheduleTableView.rx.itemSelected.asSignal()
@@ -150,6 +139,17 @@ class PostListVC: BaseVC {
                 self.navigationController?.pushViewController(next, animated: true)
             }).disposed(by: disposeBag)
     }
+    private func updateConstraints() {
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalToSuperview()
+            if birthUserCount * 90 + postsCount * 80 > 800 {
+                $0.height.equalTo((birthUserCount + postsCount) * 90)
+            } else {
+                $0.height.equalTo(900)
+            }
+        }
+    }
     override func addView() {
         [
             scrollView,
@@ -171,6 +171,7 @@ class PostListVC: BaseVC {
     }
     override func configureVC() {
         scrollView.contentInsetAdjustmentBehavior = .never
+        bindViewModels()
         writePostButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?

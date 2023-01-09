@@ -1,7 +1,12 @@
 import FSCalendar
 import RxSwift
+import RxCocoa
+import UIKit
 
 class MainVC: BaseVC {
+    private let refresh = PublishRelay<Void>()
+    private let viewModel = MainViewModel()
+    private let viewAppear = PublishRelay<Void>()
     let dateArr = [
         "2022-05-04 11:23",
         "2022-05-04 20:00",
@@ -96,24 +101,52 @@ class MainVC: BaseVC {
         self.currentPage = page
         self.fsCalendar.setCurrentPage(self.currentPage, animated: true)
     }
-    override func addView() {
-        toDayDoTableView.delegate = self
-        toDayDoTableView.dataSource = self
-        self.view.backgroundColor = KimIlJeongColor.backGroundColor.color
-        [
-            kimIlJeongLabel,
-            calendarLabel,
-            calendarBackgroundView,
-            fsCalendar,
-            gotoTomorrowButton,
-            gotoYesterdayButton,
-            toDayDoLabel,
-            plusToDoButton,
-            dividedLine,
-            toDayDoTableView
-        ].forEach {
-            view.addSubview($0)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        refresh.accept(())
+    }
+    override func bind() {
+        let input = MainViewModel.Input(refresh: refresh.asSignal(), viewAppear: viewAppear.asSignal())
+        let output = viewModel.transform(input)
+        output.refreshResult.subscribe(onNext: { [self] in
+            switch $0 {
+            case true:
+                viewAppear.accept(())
+            default:
+                print("실패")
+                let loginVC = BaseNC(rootViewController: LoginVC())
+                loginVC.modalPresentationStyle = .fullScreen
+                self.present(loginVC, animated: true)
+            }
+        }).disposed(by: disposeBag)
+        output.mySchedulesList
+            .bind(to: toDayDoTableView.rx.items(
+                cellIdentifier: ToDoTableViewCell.cellID,
+                cellType: ToDoTableViewCell.self)) { _, item, cell in
+                    let nowDate = item.end_time
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.locale = Locale(identifier: "ko_KR")
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                    let str = dateFormatter.date(from: nowDate)
+                    let myDateFormatter = DateFormatter()
+                    myDateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                    let time = myDateFormatter.string(from: str ?? Date())
+                    cell.dateLabel.text = time
+                    cell.toDoTitle.text = item.content
+                    switch item.color {
+                    case "RED":
+                        cell.colorDot.tintColor = KimIlJeongColor.redTag.color
+                    case "BLUE":
+                        cell.colorDot.tintColor = KimIlJeongColor.blueTag.color
+                    case "YELLOW":
+                        cell.colorDot.tintColor = KimIlJeongColor.yellowTag.color
+                    case "GREEN":
+                        cell.colorDot.tintColor = KimIlJeongColor.greenTag.color
+                    default:
+                        cell.colorDot.tintColor = KimIlJeongColor.purpleTag.color
+                    }
+                    cell.selectionStyle = .none
+                    cell.backgroundColor = .clear
+                }.disposed(by: disposeBag)
     }
     override func configureVC() {
         gotoTomorrowButton.rx.tap
@@ -131,6 +164,24 @@ class MainVC: BaseVC {
                 let mainModifyVC = MainModifyVC()
                 self.present(mainModifyVC, animated: true, completion: nil)
             }).disposed(by: disposeBag)
+    }
+    override func addView() {
+        toDayDoTableView.delegate = self
+        self.view.backgroundColor = KimIlJeongColor.backGroundColor.color
+        [
+            kimIlJeongLabel,
+            calendarLabel,
+            calendarBackgroundView,
+            fsCalendar,
+            gotoTomorrowButton,
+            gotoYesterdayButton,
+            toDayDoLabel,
+            plusToDoButton,
+            dividedLine,
+            toDayDoTableView
+        ].forEach {
+            view.addSubview($0)
+        }
     }
     override func setLayout() {
         kimIlJeongLabel.snp.makeConstraints {
@@ -192,23 +243,7 @@ class MainVC: BaseVC {
     }
 }
 
-extension MainVC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dateArr.count
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = (toDayDoTableView.dequeueReusableCell(withIdentifier: ToDoTableViewCell.cellID,
-                                                               for: indexPath) as? ToDoTableViewCell) else {
-            let tableviewcell = UITableViewCell()
-            return tableviewcell
-        }
-        cell.dateLabel.text = dateArr[indexPath.row]
-        cell.toDoTitle.text = doArr[indexPath.row]
-        cell.colorDot.tintColor = selectedColorArr[indexPath.row]
-        cell.selectionStyle = .none
-        cell.backgroundColor = .clear
-        return cell
-    }
+extension MainVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailMainVC = DetailMainVC()
         self.present(detailMainVC, animated: true, completion: nil)

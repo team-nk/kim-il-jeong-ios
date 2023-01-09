@@ -51,18 +51,7 @@ class CommentListVC: BaseVC {
             }
         }
     }
-    private func sendNewComment() {
-        let input = NewCommentVM.Input(
-            commentContent: commentTextField.rx.text.orEmpty.asDriver(),
-            postID: postID.asDriver(),
-            buttonDidTap: getComments.asSignal(onErrorJustReturn: ()))
-        let output = newCommentViewModel.transform(input)
-        output.postResult
-            .subscribe(onNext: {
-               print($0)
-            }).disposed(by: disposeBag)
-    }
-    override func bind() {
+    private func bindViewModels() {
         let input = CommentListVM.Input(getComments: getComments.asDriver(), postId: postID.asDriver())
         let output = viewModel.transform(input)
         output.comments.bind(to: commentTableView.rx.items(
@@ -81,6 +70,17 @@ class CommentListVC: BaseVC {
                 self.updateConstraints()
                 cell.selectionStyle = .none
             }.disposed(by: disposeBag)
+    }
+    private func sendNewComment() {
+        let input = NewCommentVM.Input(
+            commentContent: commentTextField.rx.text.orEmpty.asDriver(),
+            postID: postID.asDriver(),
+            buttonDidTap: getComments.asSignal(onErrorJustReturn: ()))
+        let output = newCommentViewModel.transform(input)
+        output.postResult
+            .subscribe(onNext: {
+               print($0)
+            }).disposed(by: disposeBag)
     }
     override func addView() {
         view.addSubview(scrollView)
@@ -106,6 +106,7 @@ class CommentListVC: BaseVC {
         scrollView.contentInsetAdjustmentBehavior = .never
         commentTextField.delegate = self
         setKeyboardObserver()
+        bindViewModels()
         sendButton.rx.tap
             .throttle(.seconds(1), scheduler: MainScheduler.instance)
             .subscribe(onNext: {

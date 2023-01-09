@@ -4,7 +4,8 @@ import Then
 import RxCocoa
 import FloatingPanel
 class DetailMapVC: BaseVC {
-//    private let viewModel = DetailMapViewModel()
+    private let viewAppear = PublishRelay<Void>()
+    private let viewModel = DetailMapViewModel()
     private let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
@@ -15,18 +16,34 @@ class DetailMapVC: BaseVC {
         $0.tintColor = KimIlJeongAsset.Color.textColor.color
     }
     let detailLocationTabelView = UITableView().then {
-        $0.register(DetailLocationTableViewCell.self, forCellReuseIdentifier: "cell")
+        $0.register(DetailLocationTableViewCell.self, forCellReuseIdentifier: "DetailLocationTableViewCell")
         $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
+        $0.rowHeight = 60
+        $0.separatorStyle = .none
+        $0.showsVerticalScrollIndicator = false
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        viewAppear.accept(())
+    }
+    override func bind() {
+        let input = DetailMapViewModel.Input(viewAppear: viewAppear.asSignal())
+        let output = viewModel.transform(input)
+        output.myMapSchedules
+            .bind(to: detailLocationTabelView.rx.items(
+                cellIdentifier: "DetailLocationTableViewCell",
+                cellType: DetailLocationTableViewCell.self)) { _, item, cell in
+            switch item.color {
+            case "RED":
+                cell.tableColor.backgroundColor = KimIlJeongColor.redTag.color
+            default:
+                cell.tableColor.backgroundColor = KimIlJeongColor.blueTag.color
+            }
+            cell.titleLabel.text = item.content
+            cell.subTitleLabel.text = item.address
+        }.disposed(by: disposeBag)
     }
     override func configureVC() {
-        tableViewSetting()
-    }
-    private func tableViewSetting() {
         detailLocationTabelView.delegate = self
-        detailLocationTabelView.dataSource = self
-        detailLocationTabelView.rowHeight = 60
-        detailLocationTabelView.separatorStyle = .none
-        detailLocationTabelView.isScrollEnabled = true
     }
 
     override func addView() {
@@ -52,21 +69,7 @@ class DetailMapVC: BaseVC {
         }
     }
 }
-extension DetailMapVC: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell",
-                                                       for: indexPath) as? DetailLocationTableViewCell
-        else {
-            return UITableViewCell()
-        }
-        cell.titleLabel.text = "네이버 비전계획팀 미팅"
-        cell.subTitleLabel.text = "대전광역시 둔산동 갤러리아읍 둔산 스타벅스"
-        cell.tableColor.backgroundColor = KimIlJeongColor.purpleColor.color
-        return cell
-    }
+extension DetailMapVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         MapVC().view.isHidden = true
         let editPlanVC = EditPlanVC()

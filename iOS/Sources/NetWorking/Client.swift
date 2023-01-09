@@ -16,6 +16,9 @@ enum API {
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
     case postNewComment(content: String, postId: Int)
+    case getMySchedule
+    case refreshToken
+    case getMapSchedule
 }
 
 extension API: TargetType {
@@ -52,6 +55,12 @@ extension API: TargetType {
             return "/comment/\(id)"
         case .postNewComment(_, let id):
             return "/comment/\(id)"
+        case .getMySchedule:
+            return "/schedule/list"
+        case .refreshToken:
+            return "/auth"
+        case .getMapSchedule:
+            return "/schedule/map"
         }
     }
 
@@ -59,8 +68,10 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
             return .get
+        case .refreshToken:
+            return .put
         }
     }
 
@@ -111,7 +122,7 @@ extension API: TargetType {
                                         [
                                             "account-id": accountId
                                         ], encoding: URLEncoding.queryString)
-        case .postSerach:
+        default:
             return .requestPlain
         case .getBirthdayUsers:
             return .requestPlain
@@ -143,10 +154,12 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
-                .postNewPost, .getAllComments, .postNewComment:
+                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
+        case .refreshToken:
+            return Header.refreshToken.header()
         }
     }
 }
