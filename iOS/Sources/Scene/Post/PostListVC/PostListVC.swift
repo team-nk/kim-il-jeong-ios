@@ -79,6 +79,7 @@ class PostListVC: BaseVC {
         }
     }
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     override func bind() {
         let input = PostListVM.Input(
             getLists: getPosts.asDriver(onErrorJustReturn: ()),
@@ -102,7 +103,20 @@ class PostListVC: BaseVC {
                 cell.scheduleContent.text = items.scheduleContent
                 cell.scheduleDate.text = items.createTime
                 cell.scheduleLocation.text = items.address
-                cell.colorSetting.tintColor = UIColor(named: "\(items.color)")
+                switch items.color {
+                case "RED":
+                    cell.colorSetting.tintColor = KimIlJeongColor.errorColor.color
+                case "BLUE":
+                    cell.colorSetting.tintColor = KimIlJeongColor.mainColor.color
+                case "YELLOW":
+                    cell.colorSetting.tintColor = KimIlJeongColor.yellowColor.color
+                case "GREEN":
+                    cell.colorSetting.tintColor = KimIlJeongColor.greenColor.color
+                case "PURPLE":
+                    cell.colorSetting.tintColor = KimIlJeongColor.purpleColor.color
+                default:
+                    print("ColorEmpty")
+                }
                 cell.selectionStyle = .none
                 self.postsCount += 1
                 self.updateConstraints()
@@ -127,7 +141,6 @@ class PostListVC: BaseVC {
                 default:
                     print("ColorEmpty")
                 }
-                self.nextColor = detail.color
                 self.nextSchedule = detail.scheduleContent
                 self.nextAccountID = detail.accountId
                 self.nextAddress = detail.address
@@ -136,19 +149,22 @@ class PostListVC: BaseVC {
             }).disposed(by: disposeBag)
         scheduleTableView.rx.itemSelected
             .subscribe(onNext: { _ in
-                let next = PostVC()
-                next.isMyPost.accept(self.nextMyPost)
-                next.postID.accept(self.nextID)
-                next.postCommentCount.accept(self.nextCommentCount)
-                next.postTitleLabel.text = self.nextTitle
-                next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
-                next.scheduleLabel.text = self.nextSchedule
-                next.userNameLabel.text = self.nextAccountID
-                next.locationLabel.text = self.nextAddress
-                next.dateLabel.text = self.nextDate
-                next.contentTextView.text = self.nextContent
-                self.navigationController?.pushViewController(next, animated: true)
+                self.cellDidTap()
             }).disposed(by: disposeBag)
+    }
+    private func cellDidTap() {
+        let next = PostVC()
+        next.isMyPost.accept(self.nextMyPost)
+        next.postID.accept(self.nextID)
+        next.postCommentCount.accept(self.nextCommentCount)
+        next.postTitleLabel.text = self.nextTitle
+        next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
+        next.scheduleLabel.text = self.nextSchedule
+        next.userNameLabel.text = self.nextAccountID
+        next.locationLabel.text = self.nextAddress
+        next.dateLabel.text = self.nextDate
+        next.contentTextView.text = self.nextContent
+        self.navigationController?.pushViewController(next, animated: true)
     }
     override func addView() {
         [
