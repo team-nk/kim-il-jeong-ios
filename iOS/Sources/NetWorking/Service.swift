@@ -84,6 +84,24 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
+        return provider.rx.request(.getAllComments(postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map(CommentModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func sendNewComment(_ content: String, _ postID: Int) -> Single<NetworkingResult> {
+        return provider.rx.request(.postNewComment(content: content, postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .createOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0))}
+    }
     func refreshToken() -> Single<NetworkingResult> {
         return provider.rx.request(.refreshToken)
             .filterSuccessfulStatusCodes()
@@ -105,16 +123,6 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
-    func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
-        return provider.rx.request(.getAllComments(postId: postID))
-            .filterSuccessfulStatusCodes()
-            .map(CommentModel.self)
-            .map { return ($0, .getOk) }
-            .catch { error in
-                print(error)
-                return .just((nil, .fault))
-            }
-    }
     func getMapSchedules() -> Single<(MyMapSchedulesModel?, NetworkingResult)> {
         return provider.rx.request(.getMapSchedule)
             .filterSuccessfulStatusCodes()
@@ -124,14 +132,6 @@ final class Service {
                 print(error)
                 return .just((nil, .fault))
             }
-    }
-    func sendNewComment(_ content: String, _ postID: Int) -> Single<NetworkingResult> {
-        return provider.rx.request(.postNewComment(content: content, postId: postID))
-            .filterSuccessfulStatusCodes()
-            .map { _ -> NetworkingResult in
-                return .createOk
-            }
-            .catch { [unowned self] in return .just(setNetworkError($0))}
     }
     func setNetworkError(_ error: Error) -> NetworkingResult {
             print(error)
