@@ -15,6 +15,7 @@ enum API {
     case getAllSchedules
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
+    case postNewComment(content: String, postId: Int)
 }
 
 extension API: TargetType {
@@ -49,12 +50,14 @@ extension API: TargetType {
             return "/post"
         case .getAllComments(let id):
             return "/comment/\(id)"
+        case .postNewComment(_, let id):
+            return "/comment/\(id)"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate, .login, .signup, .postNewPost:
+        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments:
             return .get
@@ -127,12 +130,20 @@ extension API: TargetType {
             return .requestParameters(parameters: [
                 "post-id": id
             ], encoding: URLEncoding.queryString)
+        case .postNewComment(let content, _):
+            return .requestParameters(
+                parameters:
+                    [
+                        "content": content
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules, .postNewPost, .getAllComments:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
+                .postNewPost, .getAllComments, .postNewComment:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()

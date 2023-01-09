@@ -8,6 +8,7 @@ class CommentListVC: BaseVC {
     private let getComments = BehaviorRelay<Void>(value: ())
     let postID = BehaviorRelay<Int>(value: 0)
     private let viewModel = CommentListVM()
+    private let newCommentViewModel = NewCommentVM()
     var keyboardUp: Bool = false
     var commentCount = Int()
     private let scrollView = UIScrollView().then {
@@ -39,9 +40,6 @@ class CommentListVC: BaseVC {
         $0.setImage(UIImage(named: "PaperPlane"), for: .normal)
         $0.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
     }
-    @objc func didTapSendButton() {
-        commentTextField.text?.removeAll()
-    }
     private func updateConstraints() {
         contentView.snp.remakeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
@@ -53,9 +51,6 @@ class CommentListVC: BaseVC {
             }
         }
     }
-    func setUpViews() {
-        commentTextField.delegate = self
-    }
     private func bindViewModels() {
         let input = CommentListVM.Input(getComments: getComments.asDriver(), postId: postID.asDriver())
         let output = viewModel.transform(input)
@@ -64,11 +59,28 @@ class CommentListVC: BaseVC {
             cellType: CommentCell.self)) { _, items, cell in
                 cell.commentLabel.text = items.content
                 cell.userLabel.text = items.accountId
-                cell.commentDateLabel.text = items.createTime
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [ .withFullDate, .withTime, .withColonSeparatorInTime ]
+                let createdTime = formatter.date(from: items.createTime)
+                let createdWhen: String = "\(createdTime!)"
+                let endIndex = createdWhen.index(createdWhen.startIndex, offsetBy: 15)
+                let range = ...endIndex
+                cell.commentDateLabel.text = "\(createdWhen[range])"
                 self.commentCount += 1
                 self.updateConstraints()
                 cell.selectionStyle = .none
             }.disposed(by: disposeBag)
+    }
+    private func sendNewComment() {
+        let input = NewCommentVM.Input(
+            commentContent: commentTextField.rx.text.orEmpty.asDriver(),
+            postID: postID.asDriver(),
+            buttonDidTap: getComments.asSignal(onErrorJustReturn: ()))
+        let output = newCommentViewModel.transform(input)
+        output.postResult
+            .subscribe(onNext: {
+               print($0)
+            }).disposed(by: disposeBag)
     }
     override func addView() {
         view.addSubview(scrollView)
@@ -92,10 +104,15 @@ class CommentListVC: BaseVC {
         self.navigationController?.navigationBar.topItem?.title = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
         scrollView.contentInsetAdjustmentBehavior = .never
+        commentTextField.delegate = self
         setKeyboardObserver()
         bindViewModels()
-        setUpViews()
-        sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+        sendButton.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe(onNext: {
+                self.sendNewComment()
+                self.commentTextField.text?.removeAll()
+            }).disposed(by: disposeBag)
     }
     override func setLayout() {
         scrollView.snp.makeConstraints {
