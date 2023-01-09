@@ -47,12 +47,11 @@ class LogOutCustomAlertVC: BaseVC {
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             }).disposed(by: disposeBag)
-        logOutButton.rx.tap
-            .subscribe(onNext: {
-                Token.accessToken = nil
-//                self.navigationController?.popViewController(animated: true)
-                self.dismiss(animated: false)
-            }).disposed(by: disposeBag)
+        logOutButton.rx.tap.subscribe(onNext: {
+            self.dismiss(animated: true)
+            isLogOutTapped.accept(true)
+            Token.removeToken()
+        }).disposed(by: disposeBag)
     }
     override func setLayout() {
         popupView.snp.makeConstraints {

@@ -10,6 +10,12 @@ enum API {
     case sendEmail(email: String)
     case codeCheck(email: String, code: String)
     case idCheck(accountId: String)
+    // Post
+    case getBirthdayUsers
+    case getAllSchedules
+    case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
+    case getAllComments(postId: Int)
+    case postNewComment(content: String, postId: Int)
     case getMySchedule
     case refreshToken
     case getMapSchedule
@@ -38,6 +44,17 @@ extension API: TargetType {
             return "/user/code"
         case .idCheck:
             return "/user/check"
+        // Post
+        case .getBirthdayUsers:
+            return "/post/birthday"
+        case .getAllSchedules:
+            return "/post"
+        case .postNewPost:
+            return "/post"
+        case .getAllComments(let id):
+            return "/comment/\(id)"
+        case .postNewComment(_, let id):
+            return "/comment/\(id)"
         case .getMySchedule:
             return "/schedule/list"
         case .refreshToken:
@@ -49,9 +66,9 @@ extension API: TargetType {
 
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate, .login, .signup:
+        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getMySchedule, .getMapSchedule:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
             return .get
         case .refreshToken:
             return .put
@@ -107,12 +124,37 @@ extension API: TargetType {
                                         ], encoding: URLEncoding.queryString)
         default:
             return .requestPlain
+        case .getBirthdayUsers:
+            return .requestPlain
+        case .getAllSchedules:
+            return .requestPlain
+        case .postNewPost(let title, let content, let scheduleId):
+            return .requestParameters(
+                parameters:
+                    [
+                        "title": title,
+                        "content": content,
+                        "scheduleId": scheduleId
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
+        case .getAllComments(let id):
+            return .requestParameters(parameters: [
+                "post-id": id
+            ], encoding: URLEncoding.queryString)
+        case .postNewComment(let content, _):
+            return .requestParameters(
+                parameters:
+                    [
+                        "content": content
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getMySchedule, .getMapSchedule:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
+                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
