@@ -122,7 +122,7 @@ class ModifyVC: BaseVC {
     private let cencelButton = UIButton(type: .system).then {
         $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
         $0.layer.cornerRadius = 10
-        $0.setTitle("Cencel", for: .normal)
+        $0.setTitle("Cancel", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.textColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
