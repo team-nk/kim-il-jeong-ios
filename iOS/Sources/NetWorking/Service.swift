@@ -133,6 +133,17 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    // User
+    func fetchMyInfo() -> Single<(UserInfoModel?, NetworkingResult)> {
+        return provider.rx.request(.getMyInfo)
+            .filterSuccessfulStatusCodes()
+            .map(UserInfoModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
     func setNetworkError(_ error: Error) -> NetworkingResult {
             print(error)
             print(error.localizedDescription)

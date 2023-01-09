@@ -7,6 +7,8 @@ import Then
 public var isLogOutTapped = PublishRelay<Bool>()
 
 class MyPageVC: BaseVC {
+    private let viewModel = MyPageVM()
+    private let getMyInfo = BehaviorRelay<Void>(value: ())
     private let welcomeLabel = UILabel().then {
         $0.text = "Welcome!"
         $0.textColor = KimIlJeongColor.textColor.color
@@ -21,12 +23,12 @@ class MyPageVC: BaseVC {
         $0.layer.cornerRadius = 25
         $0.image = UIImage(named: "NoneProfile")
     }
-    private let userNameLabel = UILabel().then {
+    let userNameLabel = UILabel().then {
         $0.text = "kimdaehee0824"
         $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 14, weight: .semibold)
     }
-    private let userEmailLabel = UILabel().then {
+    let userEmailLabel = UILabel().then {
         $0.text = "0824dh@naver.com"
         $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 12, weight: .regular)
@@ -56,6 +58,15 @@ class MyPageVC: BaseVC {
         $0.backgroundColor = KimIlJeongColor.backGroundColor2.color
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
+    }
+    override func bind() {
+        let input = MyPageVM.Input(getMyInfo: getMyInfo.asDriver())
+        let output = viewModel.transform(input)
+        output.myInfo
+            .subscribe(onNext: {
+                self.userNameLabel.text = $0?.accountId
+                self.userEmailLabel.text = $0?.email
+            }).disposed(by: disposeBag)
     }
     override func addView() {
         [

@@ -19,6 +19,8 @@ enum API {
     case getMySchedule
     case refreshToken
     case getMapSchedule
+    // User
+    case getMyInfo
 }
 
 extension API: TargetType {
@@ -61,6 +63,9 @@ extension API: TargetType {
             return "/auth"
         case .getMapSchedule:
             return "/schedule/map"
+        // User
+        case .getMyInfo:
+            return "/user"
         }
     }
 
@@ -69,7 +74,8 @@ extension API: TargetType {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
+                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule,
+                .getMyInfo:
             return .get
         case .refreshToken:
             return .put
@@ -154,8 +160,9 @@ extension API: TargetType {
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
-                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
+                .getAllSchedules, .postNewPost, .getAllComments, .postNewComment,
+                .getMySchedule, .getMapSchedule, .getMyInfo:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
