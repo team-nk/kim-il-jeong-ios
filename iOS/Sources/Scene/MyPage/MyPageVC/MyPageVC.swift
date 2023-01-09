@@ -3,6 +3,7 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Then
+import Kingfisher
 
 public var isLogOutTapped = PublishRelay<Bool>()
 
@@ -19,7 +20,7 @@ class MyPageVC: BaseVC {
         $0.textColor = KimIlJeongColor.mainColor.color
         $0.font = .systemFont(ofSize: 20, weight: .bold)
     }
-    private let profileImage = UIImageView().then {
+    let profileImage = UIImageView().then {
         $0.layer.cornerRadius = 25
         $0.image = UIImage(named: "NoneProfile")
     }
@@ -66,6 +67,8 @@ class MyPageVC: BaseVC {
             .subscribe(onNext: {
                 self.userNameLabel.text = $0?.accountId
                 self.userEmailLabel.text = $0?.email
+//                guard let imgURL = URL(string: $0?.profile ?? "") else { return }
+//                self.profileImage.kf.setImage(with: imgURL)
             }).disposed(by: disposeBag)
     }
     override func addView() {
