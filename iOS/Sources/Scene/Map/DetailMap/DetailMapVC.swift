@@ -6,7 +6,7 @@ import FloatingPanel
 class DetailMapVC: BaseVC {
     private let viewAppear = PublishRelay<Void>()
     private let viewModel = DetailMapViewModel()
-    private let titleLabel = UILabel().then {
+    let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
         $0.font = UIFont.boldSystemFont(ofSize: 20)

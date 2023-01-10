@@ -66,6 +66,22 @@ class NewPostVC: BaseVC {
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             }).disposed(by: disposeBag)
+        scheduleButton.rx.tap
+            .subscribe(onNext: {
+                let next = DetailMapVC()
+                self.present(next, animated: true)
+                next.titleLabel.text = "일정을 선택해 주세요"
+                if #available(iOS 16.0, *) {
+                    if let presentationController = next.presentationController as? UISheetPresentationController {
+                        presentationController.detents = [
+                            .custom { _ in
+                                return 700
+                            }
+                        ]
+                        presentationController.preferredCornerRadius = 20
+                    }
+                } else { /*Fallback on earlier versions*/ }
+            }).disposed(by: disposeBag)
     }
     override func setLayout() {
         contentTextView.snp.makeConstraints {
