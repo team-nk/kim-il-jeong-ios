@@ -7,6 +7,7 @@ import RxSwift
 import CoreLocation
 
 class EditPlanVC: BaseVC {
+    var isNewPostDetail = PublishRelay<Bool>()
     private let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
@@ -29,19 +30,63 @@ class EditPlanVC: BaseVC {
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.description.color
     }
-    private let deleteButton = UIButton(type: .system).then {
+    let deleteButton = UIButton(type: .system).then {
         $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor3.color
         $0.layer.cornerRadius = 10
         $0.setTitle("Delete", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.errorColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
-    private let modifyButton = UIButton(type: .system).then {
+    let modifyButton = UIButton(type: .system).then {
         $0.backgroundColor = KimIlJeongAsset.Color.mainColor.color
         $0.layer.cornerRadius = 10
         $0.setTitle("Modify", for: .normal)
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+    }
+    private func writeNewPost() {
+        isNewPostDetail
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.deleteButton.setTitle("취소하기", for: .normal)
+                    self.deleteButton.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
+                    self.deleteButton.backgroundColor = .clear
+                    self.deleteButton.rx.tap
+                        .subscribe(onNext: {
+                            self.dismiss(animated: true)
+                        }).disposed(by: self.disposeBag)
+                    self.modifyButton.setTitle("선택하기", for: .normal)
+                    self.modifyButton.rx.tap
+                        .subscribe(onNext: {
+                            self.dismiss(animated: false)
+                        }).disposed(by: self.disposeBag)
+                } else {
+                    self.modifyButton.rx.tap.subscribe(onNext: { _ in
+                        let modifyVC = ModifyVC()
+                        if #available(iOS 16.0, *) {
+                            if let sheet = modifyVC.sheetPresentationController {
+                                let id = UISheetPresentationController.Detent.Identifier("frist")
+                                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                                    return 700
+                                }
+                                sheet.detents = [detent]
+                                sheet.preferredCornerRadius = 32
+                                self.present(modifyVC, animated: true)
+                            }
+                            modifyVC.isModalInPresentation = true
+                        }
+                    }).disposed(by: self.disposeBag)
+                    self.deleteButton.rx.tap.subscribe(onNext: {
+                        let deleteCustomVC = DeleteCustomAlertVC()
+                        deleteCustomVC.modalPresentationStyle = .overFullScreen
+                        deleteCustomVC.modalTransitionStyle = .crossDissolve
+                        guard let pvc = self.presentingViewController else { return }
+                        self.dismiss(animated: false) {
+                          pvc.present(deleteCustomVC, animated: true)
+                        }
+                    }).disposed(by: self.disposeBag)
+                }
+            }).disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -55,30 +100,7 @@ class EditPlanVC: BaseVC {
         ].forEach {view.addSubview($0)}
     }
     override func configureVC() {
-        modifyButton.rx.tap.subscribe(onNext: { _ in
-            let modifyVC = ModifyVC()
-            if #available(iOS 16.0, *) {
-                if let sheet = modifyVC.sheetPresentationController {
-                    let id = UISheetPresentationController.Detent.Identifier("frist")
-                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
-                        return 700
-                    }
-                    sheet.detents = [detent]
-                    sheet.preferredCornerRadius = 32
-                    self.present(modifyVC, animated: true)
-                }
-                modifyVC.isModalInPresentation = true
-            }
-        }).disposed(by: disposeBag)
-        deleteButton.rx.tap.subscribe(onNext: {
-            let deleteCustomVC = DeleteCustomAlertVC()
-            deleteCustomVC.modalPresentationStyle = .overFullScreen
-            deleteCustomVC.modalTransitionStyle = .crossDissolve
-            guard let pvc = self.presentingViewController else { return }
-            self.dismiss(animated: false) {
-              pvc.present(deleteCustomVC, animated: true)
-            }
-        }).disposed(by: disposeBag)
+        writeNewPost()
     }
     override func setLayout() {
         cellColor.snp.makeConstraints {

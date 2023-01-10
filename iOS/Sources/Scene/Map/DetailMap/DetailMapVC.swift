@@ -3,15 +3,17 @@ import SnapKit
 import Then
 import RxCocoa
 import FloatingPanel
+
 class DetailMapVC: BaseVC {
     private let viewAppear = PublishRelay<Void>()
     private let viewModel = DetailMapViewModel()
+    var isNewPost = BehaviorRelay<Bool>(value: false)
     let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
         $0.font = UIFont.boldSystemFont(ofSize: 20)
     }
-    private let plusButton = UIButton(type: .system).then {
+    let plusButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
         $0.tintColor = KimIlJeongAsset.Color.textColor.color
     }
@@ -21,6 +23,25 @@ class DetailMapVC: BaseVC {
         $0.rowHeight = 60
         $0.separatorStyle = .none
         $0.showsVerticalScrollIndicator = false
+    }
+    private func cellDidTap() {
+        detailLocationTabelView.rx.itemSelected
+            .subscribe(onNext: { _ in
+                let editPlanVC = EditPlanVC()
+                if #available(iOS 16.0, *) {
+                    if let sheet = editPlanVC.sheetPresentationController {
+                        let id = UISheetPresentationController.Detent.Identifier("frist")
+                        let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                            return 220
+                        }
+                        sheet.detents = [detent]
+                        sheet.preferredCornerRadius = 32
+                        self.present(editPlanVC, animated: true)
+                    }
+                }
+                editPlanVC.isModalInPresentation = true
+                editPlanVC.isNewPostDetail.accept(self.isNewPost.value)
+            }).disposed(by: disposeBag)
     }
     override func viewWillAppear(_ animated: Bool) {
         viewAppear.accept(())
@@ -49,7 +70,8 @@ class DetailMapVC: BaseVC {
         }.disposed(by: disposeBag)
     }
     override func configureVC() {
-        detailLocationTabelView.delegate = self
+//        detailLocationTabelView.delegate = self
+        cellDidTap()
     }
 
     override func addView() {
@@ -73,23 +95,5 @@ class DetailMapVC: BaseVC {
             $0.top.equalTo(plusButton.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview().inset(23)
         }
-    }
-}
-extension DetailMapVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        MapVC().view.isHidden = true
-        let editPlanVC = EditPlanVC()
-        if #available(iOS 16.0, *) {
-            if let sheet = editPlanVC.sheetPresentationController {
-                let id = UISheetPresentationController.Detent.Identifier("frist")
-                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
-                    return 220
-                }
-                sheet.detents = [detent]
-                sheet.preferredCornerRadius = 32
-                self.present(editPlanVC, animated: true)
-            }
-        }
-        editPlanVC.isModalInPresentation = true
     }
 }

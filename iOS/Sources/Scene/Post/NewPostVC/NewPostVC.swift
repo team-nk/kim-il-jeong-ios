@@ -69,8 +69,10 @@ class NewPostVC: BaseVC {
         scheduleButton.rx.tap
             .subscribe(onNext: {
                 let next = DetailMapVC()
-                self.present(next, animated: true)
+                next.isNewPost.accept(true)
                 next.titleLabel.text = "일정을 선택해 주세요"
+                next.plusButton.tintColor = .clear
+                self.present(next, animated: true)
                 if #available(iOS 16.0, *) {
                     if let presentationController = next.presentationController as? UISheetPresentationController {
                         presentationController.detents = [
