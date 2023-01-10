@@ -7,18 +7,10 @@ import Then
 class PostListVC: BaseVC {
     private let getPosts = BehaviorRelay<Void>(value: ())
     private let viewModel = PostListVM()
+    private let nextPost = BehaviorRelay<Posts?>(value: nil)
     var birthUserCount = Int()
     var postsCount = Int()
-    var nextTitle = String()
-    var nextContent = String()
-    var nextID = Int()
-    var nextSchedule = String()
     var nextColor = String()
-    var nextAddress = String()
-    var nextCommentCount = Int()
-    var nextAccountID = String()
-    var nextMyPost = Bool()
-    var nextDate = String()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -79,7 +71,6 @@ class PostListVC: BaseVC {
         }
     }
     // swiftlint:disable function_body_length
-    // swiftlint:disable cyclomatic_complexity
     override func bind() {
         let input = PostListVM.Input(
             getLists: getPosts.asDriver(onErrorJustReturn: ()),
@@ -121,31 +112,9 @@ class PostListVC: BaseVC {
                 self.postsCount += 1
                 self.updateConstraints()
             }.disposed(by: disposeBag)
-        output.postDetail.asObservable()
-            .subscribe(onNext: { detail in
-                self.nextMyPost = detail.mine
-                self.nextID = detail.id
-                self.nextCommentCount = detail.commentCount
-                self.nextTitle = detail.title
-                switch detail.color {
-                case "RED":
-                    self.nextColor = "ErrorColor"
-                case "BLUE":
-                    self.nextColor = "MainColor"
-                case "YELLOW":
-                    self.nextColor = "YellowColor"
-                case "GREEN":
-                    self.nextColor = "GreenColor"
-                case "PURPLE":
-                    self.nextColor = "PurpleColor"
-                default:
-                    print("ColorEmpty")
-                }
-                self.nextSchedule = detail.scheduleContent
-                self.nextAccountID = detail.accountId
-                self.nextAddress = detail.address
-                self.nextDate = detail.createTime
-                self.nextContent = detail.content
+        output.postDetail
+            .subscribe(onNext: {
+                self.nextPost.accept($0)
             }).disposed(by: disposeBag)
         scheduleTableView.rx.itemSelected
             .subscribe(onNext: { _ in
@@ -154,16 +123,30 @@ class PostListVC: BaseVC {
     }
     private func cellDidTap() {
         let next = PostVC()
-        next.isMyPost.accept(self.nextMyPost)
-        next.postID.accept(self.nextID)
-        next.postCommentCount.accept(self.nextCommentCount)
-        next.postTitleLabel.text = self.nextTitle
+        next.isMyPost.accept(self.nextPost.value!.mine)
+        next.postID.accept(self.nextPost.value!.id)
+        next.postCommentCount.accept(self.nextPost.value!.commentCount)
+        next.postTitleLabel.text = self.nextPost.value!.title
+        switch nextPost.value!.color {
+        case "RED":
+            self.nextColor = "ErrorColor"
+        case "BLUE":
+            self.nextColor = "MainColor"
+        case "YELLOW":
+            self.nextColor = "YellowColor"
+        case "GREEN":
+            self.nextColor = "GreenColor"
+        case "PURPLE":
+            self.nextColor = "PurpleColor"
+        default:
+            print("ColorEmpty")
+        }
         next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
-        next.scheduleLabel.text = self.nextSchedule
-        next.userNameLabel.text = self.nextAccountID
-        next.locationLabel.text = self.nextAddress
-        next.dateLabel.text = self.nextDate
-        next.contentTextView.text = self.nextContent
+        next.scheduleLabel.text = self.nextPost.value!.scheduleContent
+        next.userNameLabel.text = self.nextPost.value?.accountId
+        next.locationLabel.text = self.nextPost.value!.address
+        next.dateLabel.text = self.nextPost.value!.createTime
+        next.contentTextView.text = self.nextPost.value!.content
         self.navigationController?.pushViewController(next, animated: true)
     }
     override func addView() {

@@ -12,15 +12,16 @@ class PostListVM: BaseVM {
         let birthUsers: BehaviorRelay<[Users]>
         let posts: BehaviorRelay<[Posts]>
         let getListResult: PublishRelay<Bool>
-        let postDetail: Signal<Posts>
+        let postDetail: BehaviorRelay<Posts?>
     }
     func transform(_ input: Input) -> Output {
         let api = Service()
         let birthUsers = BehaviorRelay<[Users]>(value: [])
         let posts = BehaviorRelay<[Posts]>(value: [])
         let getListResult = PublishRelay<Bool>()
-        let postDetail = PublishRelay<Posts>()
-        input.getLists.asObservable().flatMap { _ in
+        let postDetail = BehaviorRelay<Posts?>(value: nil)
+        input.getLists.asObservable()
+            .flatMap { _ in
             api.fetchBirthdayUsers()
         }.subscribe(onNext: { data, res in
             switch res {
@@ -32,7 +33,8 @@ class PostListVM: BaseVM {
                 getListResult.accept(false)
             }
         }).disposed(by: disposeBag)
-        input.getLists.asObservable().flatMap { _ in
+        input.getLists.asObservable()
+            .flatMap { _ in
             api.fetchAllPosts()
         }.subscribe(onNext: { data, res in
             switch res {
@@ -53,7 +55,7 @@ class PostListVM: BaseVM {
             birthUsers: birthUsers,
             posts: posts,
             getListResult: getListResult,
-            postDetail: postDetail.asSignal()
+            postDetail: postDetail
         )
     }
 }
