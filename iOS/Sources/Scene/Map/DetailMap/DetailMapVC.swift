@@ -35,6 +35,12 @@ class DetailMapVC: BaseVC {
             switch item.color {
             case "RED":
                 cell.tableColor.backgroundColor = KimIlJeongColor.redTag.color
+            case "YELLOW":
+                cell.tableColor.backgroundColor = KimIlJeongColor.yellowTag.color
+            case "GREEN":
+                cell.tableColor.backgroundColor = KimIlJeongColor.greenTag.color
+            case "PURPLE":
+                cell.tableColor.backgroundColor = KimIlJeongColor.purpleTag.color
             default:
                 cell.tableColor.backgroundColor = KimIlJeongColor.blueTag.color
             }

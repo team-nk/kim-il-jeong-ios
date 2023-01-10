@@ -92,6 +92,7 @@ class MainVC: BaseVC {
         $0.rowHeight = 49
         $0.backgroundColor = .clear
         $0.register(ToDoTableViewCell.self, forCellReuseIdentifier: ToDoTableViewCell.cellID)
+        $0.showsVerticalScrollIndicator = false
         $0.separatorStyle = .none
     }
     func moveMonth(next: Bool) {
