@@ -101,8 +101,7 @@ class MyPageVC: BaseVC {
             .subscribe(onNext: {
                 let next = MyPostVC()
                 next.navigationItem.title = "내 글 확인하기"
-                let former = MyPageVC()
-                former.navigationController?.pushViewController(next, animated: true)
+                self.navigationController?.pushViewController(next, animated: true)
             }).disposed(by: disposeBag)
         isLogOutTapped.subscribe(onNext: {
             print($0)
