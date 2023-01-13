@@ -33,7 +33,7 @@ class MyBirthSheetVC: BaseVC {
     }
     private let cancelButton = UIButton().then {
         $0.layer.cornerRadius = 10
-        $0.backgroundColor = KimIlJeongColor.backGroundColor.color
+        $0.backgroundColor = .clear
         $0.setTitle("취소하기", for: .normal)
         $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18.48, weight: .bold)

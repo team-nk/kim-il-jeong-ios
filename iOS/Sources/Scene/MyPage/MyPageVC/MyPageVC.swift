@@ -35,7 +35,7 @@ class MyPageVC: BaseVC {
         $0.font = .systemFont(ofSize: 12, weight: .regular)
     }
     private let editButton = UIButton().then {
-        $0.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+        $0.setImage(KimIlJeongImage.pencilFill.image, for: .normal)
     }
     let myScheduleButton = UIButton().then {
         $0.backgroundColor = KimIlJeongColor.surface2.color
@@ -93,9 +93,7 @@ class MyPageVC: BaseVC {
         userMenuTableView.reloadData()
         editButton.rx.tap
             .subscribe(onNext: {
-                let nextVC = MyEditVC()
-                nextVC.navigationItem.title = "정보 변경하기"
-                self.navigationController?.pushViewController(nextVC, animated: true)
+                self.navigationController?.pushViewController(MyEditVC(), animated: true)
             }).disposed(by: disposeBag)
         myScheduleButton.rx.tap
             .subscribe(onNext: {

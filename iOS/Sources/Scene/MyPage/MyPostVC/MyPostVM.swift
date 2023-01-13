@@ -39,6 +39,6 @@ class MyPostVM: BaseVM {
         return Output(
             posts: posts,
             getListResult: getListResult,
-            myNextPost:  myNextPost)
+            myNextPost: myNextPost)
     }
 }
