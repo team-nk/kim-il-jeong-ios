@@ -97,11 +97,21 @@ class MyPageVC: BaseVC {
                 nextVC.navigationItem.title = "정보 변경하기"
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
+        myScheduleButton.rx.tap
+            .subscribe(onNext: {
+                let nextVC = DetailMapVC()
+                nextVC.navigationController?.isNavigationBarHidden = false
+                nextVC.titleLabel.text = " "
+                nextVC.plusButton.tintColor = .clear
+                nextVC.navigationItem.title = "내 일정 확인하기"
+                nextVC.setNavigation()
+                self.navigationController?.pushViewController(nextVC, animated: true)
+            }).disposed(by: disposeBag)
         myPostsButton.rx.tap
             .subscribe(onNext: {
-                let next = MyPostVC()
-                next.navigationItem.title = "내 글 확인하기"
-                self.navigationController?.pushViewController(next, animated: true)
+                let nextVC = MyPostVC()
+                nextVC.navigationItem.title = "내 글 확인하기"
+                self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
         isLogOutTapped.subscribe(onNext: {
             print($0)

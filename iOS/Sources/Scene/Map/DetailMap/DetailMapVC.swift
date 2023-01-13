@@ -71,6 +71,7 @@ class DetailMapVC: BaseVC {
     }
     override func configureVC() {
 //        detailLocationTabelView.delegate = self
+        self.navigationController?.isNavigationBarHidden = false
         cellDidTap()
     }
 
