@@ -67,8 +67,8 @@ class MyPageVC: BaseVC {
             .subscribe(onNext: {
                 self.userNameLabel.text = $0?.accountId
                 self.userEmailLabel.text = $0?.email
-//                guard let imgURL = URL(string: $0?.profile ?? "") else { return }
-//                self.profileImage.kf.setImage(with: imgURL)
+                guard let imgURL = URL(string: $0?.profile ?? "") else { return }
+                self.profileImage.kf.setImage(with: imgURL)
             }).disposed(by: disposeBag)
     }
     override func addView() {

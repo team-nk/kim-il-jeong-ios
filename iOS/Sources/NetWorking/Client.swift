@@ -12,7 +12,7 @@ enum API {
     case idCheck(accountId: String)
     // Post
     case getBirthdayUsers
-    case getAllSchedules
+    case getAllPosts
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
     case postNewComment(content: String, postId: Int)
@@ -49,7 +49,7 @@ extension API: TargetType {
         // Post
         case .getBirthdayUsers:
             return "/post/birthday"
-        case .getAllSchedules:
+        case .getAllPosts:
             return "/post"
         case .postNewPost:
             return "/post"
@@ -63,7 +63,7 @@ extension API: TargetType {
             return "/auth"
         case .getMapSchedule:
             return "/schedule/map"
-        // User
+        //User
         case .getMyInfo:
             return "/user"
         }
@@ -74,7 +74,7 @@ extension API: TargetType {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule,
+                .getAllPosts, .getAllComments, .getMySchedule, .getMapSchedule,
                 .getMyInfo:
             return .get
         case .refreshToken:
@@ -131,7 +131,7 @@ extension API: TargetType {
                                         ], encoding: URLEncoding.queryString)
         case .getBirthdayUsers:
             return .requestPlain
-        case .getAllSchedules:
+        case .getAllPosts:
             return .requestPlain
         case .postNewPost(let title, let content, let scheduleId):
             return .requestParameters(
@@ -161,7 +161,7 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
-                .getAllSchedules, .postNewPost, .getAllComments, .postNewComment,
+                .getAllPosts, .postNewPost, .getAllComments, .postNewComment,
                 .getMySchedule, .getMapSchedule, .getMyInfo:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:

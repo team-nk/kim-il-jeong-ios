@@ -75,7 +75,7 @@ final class Service {
             }
     }
     func fetchAllPosts() -> Single<(PostListModel?, NetworkingResult)> {
-        return provider.rx.request(.getAllSchedules)
+        return provider.rx.request(.getAllPosts)
             .filterSuccessfulStatusCodes()
             .map(PostListModel.self)
             .map { return ($0, .getOk)}

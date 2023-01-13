@@ -1,7 +1,7 @@
 import Foundation
 
 struct UserInfoModel: Codable {
-    let profile: String
+    let profile: String?
     let accountId: String
     let email: String
     enum CodingKeys: String, CodingKey {
