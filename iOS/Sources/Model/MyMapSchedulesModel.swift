@@ -1,11 +1,11 @@
 import Foundation
 // swiftlint:disable identifier_name
-// MARK: - MyMapSchedulesToken
+// MARK: - MyMapSchedulesModel
 struct MyMapSchedulesModel: Codable {
     let schedule_list: [MapScheduleList]
 }
 
-// MARK: - ScheduleList
+// MARK: - MapScheduleList
 struct MapScheduleList: Codable {
     let schedule_id: Int
     let content: String
