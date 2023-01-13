@@ -9,4 +9,9 @@ extension UIButton {
         )
         setAttributedTitle(attributedString, for: .normal)
     }
+    func setCheckImage() {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
+        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
+        self.setImage(checkImage, for: .normal)
+    }
 }
