@@ -5,6 +5,8 @@ import RxSwift
 import RxCocoa
 
 class DeleteCustomAlertVC: BaseVC {
+    var scheduleId = 0
+    private let viewModel = DeleteCustomAlertViewModel()
     private let popupView = UIView().then {
         $0.backgroundColor = .white
         $0.layer.cornerRadius = 20
@@ -29,6 +31,21 @@ class DeleteCustomAlertVC: BaseVC {
         $0.setTitle("삭제하기", for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         $0.layer.cornerRadius = 10
+    }
+    override func bind() {
+        let input = DeleteCustomAlertViewModel.Input(
+            scheduleId: scheduleId,
+            deleteButtonDidTap: deleteButton.rx.tap.asSignal())
+        let output = viewModel.transform(input)
+        output.deleteResult.subscribe(onNext: { _ in
+            self.dismiss(animated: false) {
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("reloadData"),
+                    object: nil,
+                    userInfo: nil
+                )
+            }
+        }).disposed(by: disposeBag)
     }
 
     override func addView() {
@@ -68,10 +85,6 @@ class DeleteCustomAlertVC: BaseVC {
         cencelButton.rx.tap
             .subscribe(onNext: {
                 self.dismiss(animated: true)
-            }).disposed(by: disposeBag)
-        deleteButton.rx.tap
-            .subscribe(onNext: {
-                self.dismiss(animated: false)
             }).disposed(by: disposeBag)
     }
 }
