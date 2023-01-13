@@ -62,6 +62,10 @@ class NewPostVC: BaseVC {
         self.navigationController?.navigationBar.topItem?.title = "새 글 작성"
         setNavigation()
         contentTextView.delegate = self
+        cancelButton.rx.tap
+            .subscribe(onNext: {
+                self.navigationController?.popViewController(animated: true)
+            }).disposed(by: disposeBag)
     }
     override func setLayout() {
         contentTextView.snp.makeConstraints {

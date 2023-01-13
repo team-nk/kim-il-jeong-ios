@@ -63,6 +63,45 @@ final class Service {
             }
             .catch {[unowned self] in return .just(setNetworkError($0))}
     }
+    // Post
+    func fetchBirthdayUsers() -> Single<(BirthdayListModel?, NetworkingResult)> {
+        return provider.rx.request(.getBirthdayUsers)
+            .filterSuccessfulStatusCodes()
+            .map(BirthdayListModel.self)
+            .map { return ($0, .getOk)}
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func fetchAllPosts() -> Single<(PostListModel?, NetworkingResult)> {
+        return provider.rx.request(.getAllSchedules)
+            .filterSuccessfulStatusCodes()
+            .map(PostListModel.self)
+            .map { return ($0, .getOk)}
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
+        return provider.rx.request(.getAllComments(postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map(CommentModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func sendNewComment(_ content: String, _ postID: Int) -> Single<NetworkingResult> {
+        return provider.rx.request(.postNewComment(content: content, postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .createOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0))}
+    }
     func refreshToken() -> Single<NetworkingResult> {
         return provider.rx.request(.refreshToken)
             .filterSuccessfulStatusCodes()

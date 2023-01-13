@@ -5,7 +5,9 @@ import SnapKit
 import Then
 
 class PostVC: BaseVC {
-    var myPost: Bool = false
+    let isMyPost = BehaviorRelay<Bool>(value: false)
+    let postID = BehaviorRelay<Int>(value: 0)
+    let postCommentCount = BehaviorRelay<Int>(value: 0)
     let postTitleLabel = UILabel().then {
         $0.text = "Starbucks 인수 결정했습니다!"
         $0.font = .systemFont(ofSize: 18, weight: .regular)
@@ -97,17 +99,20 @@ class PostVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.navigationItem.backButtonTitle = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
-        if myPost == false {
-            commentCountLabel.text = "댓글 12개"
-        } else {
-            commentCountLabel.text = nil
-            self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
-            self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
-        }
+        isMyPost.subscribe(onNext: {
+            if $0 == true {
+                self.commentCountLabel.text = "댓글 \(self.postCommentCount.value)개"
+            } else {
+                self.commentCountLabel.text = nil
+                self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+                self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
+            }
+        }).disposed(by: disposeBag)
         commentButton.rx.tap
             .subscribe(onNext: {
                 let nextVC = CommentListVC()
                 nextVC.navigationController?.navigationItem.backButtonTitle = " "
+                nextVC.postID.accept(self.postID.value)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
     }

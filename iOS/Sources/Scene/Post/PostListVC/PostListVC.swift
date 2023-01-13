@@ -5,9 +5,20 @@ import SnapKit
 import Then
 
 class PostListVC: BaseVC {
-    var birthDayList: [BirthDay] = []
-    var scheduleList: [Schedule] = []
-    let dummyList = Dummies()
+    private let getPosts = BehaviorRelay<Void>(value: ())
+    private let viewModel = PostListVM()
+    var birthUserCount = Int()
+    var postsCount = Int()
+    var nextTitle = String()
+    var nextContent = String()
+    var nextID = Int()
+    var nextSchedule = String()
+    var nextColor = String()
+    var nextAddress = String()
+    var nextCommentCount = Int()
+    var nextAccountID = String()
+    var nextMyPost = Bool()
+    var nextDate = String()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -56,25 +67,104 @@ class PostListVC: BaseVC {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
-    func setUpTableView() {
-        birthTableView.delegate = self
-        birthTableView.dataSource = self
-        birthTableView.reloadData()
-
-        scheduleTableView.delegate = self
-        scheduleTableView.dataSource = self
-        scheduleTableView.reloadData()
+    private func updateConstraints() {
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalToSuperview()
+            if birthUserCount * 90 + postsCount * 80 > 800 {
+                $0.height.equalTo((birthUserCount + postsCount) * 90)
+            } else {
+                $0.height.equalTo(900)
+            }
+        }
     }
-    func addDummyData() {
-        birthDayList = [
-            dummyList.birthItem1, dummyList.birthItem2,
-            dummyList.birthItem3, dummyList.birthItem4
-        ]
-        scheduleList = [
-            dummyList.scheduleItem1, dummyList.scheduleItem2,
-            dummyList.scheduleItem3, dummyList.scheduleItem4,
-            dummyList.scheduleItem5
-        ]
+    // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
+    override func bind() {
+        let input = PostListVM.Input(
+            getLists: getPosts.asDriver(onErrorJustReturn: ()),
+            selectedIndex: scheduleTableView.rx.itemSelected.asSignal()
+        )
+        let output = viewModel.transform(input)
+        output.birthUsers.bind(to: birthTableView.rx.items(
+            cellIdentifier: "BirthDayCell",
+            cellType: BirthDayCell.self)) { _, items, cell in
+                cell.congratulationsLabel.text = "\(items.accountId)님의 생일이에요!"
+                cell.dateLabel.text = items.birthday
+                cell.selectionStyle = .none
+                self.birthUserCount += 1
+                self.updateConstraints()
+            }.disposed(by: disposeBag)
+        output.posts.bind(to: scheduleTableView.rx.items(
+            cellIdentifier: "ScheduleCell",
+            cellType: ScheduleCell.self)) { _, items, cell in
+                cell.scheduleTitle.text = items.title
+                cell.scheduleOwner.text = items.accountId
+                cell.scheduleContent.text = items.scheduleContent
+                cell.scheduleDate.text = items.createTime
+                cell.scheduleLocation.text = items.address
+                switch items.color {
+                case "RED":
+                    cell.colorSetting.tintColor = KimIlJeongColor.errorColor.color
+                case "BLUE":
+                    cell.colorSetting.tintColor = KimIlJeongColor.mainColor.color
+                case "YELLOW":
+                    cell.colorSetting.tintColor = KimIlJeongColor.yellowColor.color
+                case "GREEN":
+                    cell.colorSetting.tintColor = KimIlJeongColor.greenColor.color
+                case "PURPLE":
+                    cell.colorSetting.tintColor = KimIlJeongColor.purpleColor.color
+                default:
+                    print("ColorEmpty")
+                }
+                cell.selectionStyle = .none
+                self.postsCount += 1
+                self.updateConstraints()
+            }.disposed(by: disposeBag)
+        output.postDetail.asObservable()
+            .subscribe(onNext: { detail in
+                self.nextMyPost = detail.mine
+                self.nextID = detail.id
+                self.nextCommentCount = detail.commentCount
+                self.nextTitle = detail.title
+                switch detail.color {
+                case "RED":
+                    self.nextColor = "ErrorColor"
+                case "BLUE":
+                    self.nextColor = "MainColor"
+                case "YELLOW":
+                    self.nextColor = "YellowColor"
+                case "GREEN":
+                    self.nextColor = "GreenColor"
+                case "PURPLE":
+                    self.nextColor = "PurpleColor"
+                default:
+                    print("ColorEmpty")
+                }
+                self.nextSchedule = detail.scheduleContent
+                self.nextAccountID = detail.accountId
+                self.nextAddress = detail.address
+                self.nextDate = detail.createTime
+                self.nextContent = detail.content
+            }).disposed(by: disposeBag)
+        scheduleTableView.rx.itemSelected
+            .subscribe(onNext: { _ in
+                self.cellDidTap()
+            }).disposed(by: disposeBag)
+    }
+    private func cellDidTap() {
+        let next = PostVC()
+        next.isMyPost.accept(self.nextMyPost)
+        next.postID.accept(self.nextID)
+        next.postCommentCount.accept(self.nextCommentCount)
+        next.postTitleLabel.text = self.nextTitle
+        next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
+        next.scheduleLabel.text = self.nextSchedule
+        next.userNameLabel.text = self.nextAccountID
+        next.locationLabel.text = self.nextAddress
+        next.dateLabel.text = self.nextDate
+        next.contentTextView.text = self.nextContent
+        self.navigationController?.pushViewController(next, animated: true)
     }
     override func addView() {
         [
@@ -97,8 +187,6 @@ class PostListVC: BaseVC {
     }
     override func configureVC() {
         scrollView.contentInsetAdjustmentBehavior = .never
-        addDummyData()
-        setUpTableView()
         writePostButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?
@@ -114,8 +202,8 @@ class PostListVC: BaseVC {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if birthDayList.count * 90 + scheduleList.count * 80 > 800 {
-                $0.height.equalTo(400 + (birthDayList.count + scheduleList.count) * 90)
+            if birthUserCount * 90 + postsCount * 80 > 800 {
+                $0.height.equalTo(400 + (birthUserCount + postsCount) * 90)
             } else {
                 $0.height.equalTo(900)
             }
