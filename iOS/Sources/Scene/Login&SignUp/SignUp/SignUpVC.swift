@@ -93,26 +93,15 @@ class SignUpVC: BaseVC {
     }
     override func addView() {
         [
-            signUpLabel,
-            emailTextField,
-            emailCheckButton,
-            emailCodeTextField,
-            codeCheckButton,
-            idTextField,
-            idCheckButton,
-            passwordTextField,
-            passwordCheckTextField,
-            noticePasswordLabel,
-            noticeLabel,
-            nextButton
+            signUpLabel, emailTextField,
+            emailCheckButton, emailCodeTextField,
+            codeCheckButton, idTextField,
+            idCheckButton, passwordTextField,
+            passwordCheckTextField, noticePasswordLabel,
+            noticeLabel, nextButton
         ].forEach {
             view.addSubview($0)
         }
-    }
-    private func validpassword(mypassword: String) -> Bool {
-            let passwordreg =  ("(?=.*[0-9])(?=.*[a-zA-Z]).{8,16}$")
-            let passwordtesting = NSPredicate(format: "SELF MATCHES %@", passwordreg)
-            return passwordtesting.evaluate(with: mypassword)
     }
     override func bind() {
         let input = SignUpViewModel.Input(emailText: emailTextField.rx.text.orEmpty.asDriver(),
@@ -154,7 +143,7 @@ class SignUpVC: BaseVC {
     override func configureVC() {
         passwordTextField.rx.text.orEmpty
             .filter {!$0.isEmpty}
-            .map {self.validpassword(mypassword: $0 )}
+            .map { $0.validpassword() }
             .subscribe(onNext: { [self] in
                 switch $0 {
                 case true:
@@ -172,10 +161,8 @@ class SignUpVC: BaseVC {
                 switch $0 {
                 case true:
                     viewModel.isRePasswordCheck = true
-                    print("비밀번호 재확인 ok")
                 case false:
                     viewModel.isRePasswordCheck = false
-                    print("비밀번호 재확인 x")
                 }
             }).disposed(by: disposeBag)
     }

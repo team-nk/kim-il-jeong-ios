@@ -3,12 +3,11 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class ModifyViewModel: BaseVM {
+class MainEditModifyViewModel: BaseVM {
 
     struct Input {
-        let scheduleId: Int
         let content: Driver<String>
-        let address: String
+        let address: Driver<String>
         let color: Driver<String>
         let startTime: Driver<String>
         let endTime: Driver<String>
@@ -17,7 +16,7 @@ class ModifyViewModel: BaseVM {
     }
 
     struct Output {
-        let putScheduleResult: PublishRelay<Bool>
+        let postScheduleResult: PublishRelay<Bool>
         let content: PublishRelay<String>
     }
 
@@ -25,14 +24,15 @@ class ModifyViewModel: BaseVM {
 
     func transform(_ input: Input) -> Output {
         let api = Service()
-        let putScheduleResult = PublishRelay<Bool>()
-        let info = Driver.combineLatest(input.content, input.color, input.startTime, input.endTime, input.isAlways)
+        let postScheduleResult = PublishRelay<Bool>()
+        let info = Driver.combineLatest(input.content, input.address,
+                                        input.color, input.startTime, input.endTime, input.isAlways)
         input.doneButtonDidTap.asObservable()
             .withLatestFrom(info)
-            .flatMap { content, color, startTime, endTime, isAlways in
-                api.putSchedule(input.scheduleId, content, input.address, color, startTime, endTime, isAlways) }
+            .flatMap { content, address, color, startTime, endTime, isAlways in
+                api.postSchedule(content, address, color, startTime, endTime, isAlways) }
             .subscribe(onNext: { res in
-                res == .deleteOk ? putScheduleResult.accept(true) : putScheduleResult.accept(false)
+                res == .createOk ? postScheduleResult.accept(true) : postScheduleResult.accept(false)
             }).disposed(by: disposeBag)
 
         let content = PublishRelay<String>()
@@ -41,6 +41,6 @@ class ModifyViewModel: BaseVM {
             .subscribe(onNext: { length in
                 content.accept(String(length))
             }).disposed(by: disposeBag)
-        return Output(putScheduleResult: putScheduleResult, content: content)
+        return Output(postScheduleResult: postScheduleResult, content: content)
     }
 }

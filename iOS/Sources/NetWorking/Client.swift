@@ -19,6 +19,12 @@ enum API {
     case getMySchedule
     case refreshToken
     case getMapSchedule
+    case deleteSchedule(scheduleId: Int)
+    case postSchedule(content: String, address: String, color: String,
+                      startTime: String, endTime: String, isAlways: Bool)
+    case putSchedule(scheduleId: Int, content: String, address: String, color: String,
+                      startTime: String, endTime: String, isAlways: Bool)
+    case getLocation
 }
 
 extension API: TargetType {
@@ -61,21 +67,29 @@ extension API: TargetType {
             return "/auth"
         case .getMapSchedule:
             return "/schedule/map"
+        case .deleteSchedule(let scheduleId):
+            return "/schedule/\(scheduleId)"
+        case .postSchedule:
+            return "/schedule"
+        case .putSchedule(let scheduleId, _, _, _, _, _, _):
+            return "/schedule/\(scheduleId)"
+        case .getLocation:
+            return "/schedule/location"
         }
     }
-
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
+        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment, .postSchedule:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule:
+                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule, .getLocation:
             return .get
-        case .refreshToken:
+        case .refreshToken, .putSchedule:
             return .put
+        case .deleteSchedule:
+            return .delete
         }
     }
-
     var task: Task {
         switch self {
         case .imageUproad(let image):
@@ -123,6 +137,26 @@ extension API: TargetType {
                                         [
                                             "account-id": accountId
                                         ], encoding: URLEncoding.queryString)
+        case .postSchedule(let content, let address, let color, let startTime, let endTime, let isAlways):
+            return .requestParameters(parameters:
+                                        [
+                                            "content": content,
+                                            "address": address,
+                                            "color": color,
+                                            "start_time": startTime,
+                                            "end_time": endTime,
+                                            "is_always": isAlways
+                                        ], encoding: JSONEncoding.prettyPrinted)
+        case .putSchedule( _, let content, let address, let color, let startTime, let endTime, let isAlways):
+            return .requestParameters(parameters:
+                                        [
+                                            "content": content,
+                                            "address": address,
+                                            "color": color,
+                                            "start_time": startTime,
+                                            "end_time": endTime,
+                                            "is_always": isAlways
+                                        ], encoding: JSONEncoding.prettyPrinted)
         case .getBirthdayUsers:
             return .requestPlain
         case .getAllSchedules:
@@ -155,7 +189,8 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
-                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule:
+                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule,
+                .deleteSchedule, .postSchedule, .getLocation, .putSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()

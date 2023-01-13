@@ -7,24 +7,6 @@ class MainVC: BaseVC {
     private let refresh = PublishRelay<Void>()
     private let viewModel = MainViewModel()
     private let viewAppear = PublishRelay<Void>()
-    let dateArr = [
-        "2022-05-04 11:23",
-        "2022-05-04 20:00",
-        "2022-05-05 15:00",
-        "2022-05-06 17:35"
-    ]
-    let doArr = [
-        "아침 자습 (대덕대학교)",
-        "Day Change 강의 수강",
-        "DataBase 수업",
-        "대덕대학교 축제"
-    ]
-    let selectedColorArr: [UIColor] = [
-        KimIlJeongColor.blueTag.color,
-        KimIlJeongColor.redTag.color,
-        KimIlJeongColor.yellowTag.color,
-        KimIlJeongColor.greenTag.color
-    ]
     private let kimIlJeongLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
         $0.text = "Kim il jeong"
@@ -132,18 +114,7 @@ class MainVC: BaseVC {
                     let time = myDateFormatter.string(from: str ?? Date())
                     cell.dateLabel.text = time
                     cell.toDoTitle.text = item.content
-                    switch item.color {
-                    case "RED":
-                        cell.colorDot.tintColor = KimIlJeongColor.redTag.color
-                    case "BLUE":
-                        cell.colorDot.tintColor = KimIlJeongColor.blueTag.color
-                    case "YELLOW":
-                        cell.colorDot.tintColor = KimIlJeongColor.yellowTag.color
-                    case "GREEN":
-                        cell.colorDot.tintColor = KimIlJeongColor.greenTag.color
-                    default:
-                        cell.colorDot.tintColor = KimIlJeongColor.purpleTag.color
-                    }
+                    cell.colorDot.tintColor = item.color.colorDistinction()
                     cell.selectionStyle = .none
                     cell.backgroundColor = .clear
                 }.disposed(by: disposeBag)
@@ -162,7 +133,18 @@ class MainVC: BaseVC {
         plusToDoButton.rx.tap
             .subscribe(onNext: { _ in
                 let mainModifyVC = MainModifyVC()
-                self.present(mainModifyVC, animated: true, completion: nil)
+                if #available(iOS 16.0, *) {
+                    if let sheet = mainModifyVC.sheetPresentationController {
+                        let id = UISheetPresentationController.Detent.Identifier("frist")
+                        let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                            return 700
+                        }
+                        sheet.detents = [detent]
+                        sheet.preferredCornerRadius = 32
+                        self.present(mainModifyVC, animated: true)
+                    }
+                    mainModifyVC.isModalInPresentation = true
+                }
             }).disposed(by: disposeBag)
     }
     override func addView() {

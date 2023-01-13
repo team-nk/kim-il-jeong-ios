@@ -4,7 +4,7 @@ import Then
 import RxCocoa
 import FloatingPanel
 class DetailMapVC: BaseVC {
-    private let viewAppear = PublishRelay<Void>()
+    let viewAppear = PublishRelay<Void>()
     private let viewModel = DetailMapViewModel()
     private let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
@@ -22,9 +22,21 @@ class DetailMapVC: BaseVC {
         $0.separatorStyle = .none
         $0.showsVerticalScrollIndicator = false
     }
+
     override func viewWillAppear(_ animated: Bool) {
         viewAppear.accept(())
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
     }
+
+    @objc func reloadData(_ notification: Notification) {
+        viewAppear.accept(())
+    }
+
     override func bind() {
         let input = DetailMapViewModel.Input(viewAppear: viewAppear.asSignal())
         let output = viewModel.transform(input)
@@ -32,18 +44,32 @@ class DetailMapVC: BaseVC {
             .bind(to: detailLocationTabelView.rx.items(
                 cellIdentifier: "DetailLocationTableViewCell",
                 cellType: DetailLocationTableViewCell.self)) { _, item, cell in
-            switch item.color {
-            case "RED":
-                cell.tableColor.backgroundColor = KimIlJeongColor.redTag.color
-            default:
-                cell.tableColor.backgroundColor = KimIlJeongColor.blueTag.color
-            }
-            cell.titleLabel.text = item.content
-            cell.subTitleLabel.text = item.address
-        }.disposed(by: disposeBag)
+                    cell.tableColor.backgroundColor = item.color.colorDistinction()
+                    cell.titleLabel.text = item.content
+                    cell.subTitleLabel.text = item.address
+                    cell.startTime = item.start_time
+                    cell.endTime = item.end_time
+                    cell.scheduleId = item.schedule_id
+                    cell.color = item.color
+                }.disposed(by: disposeBag)
     }
     override func configureVC() {
         detailLocationTabelView.delegate = self
+        plusButton.rx.tap.subscribe(onNext: {
+            let mainModifyVC = MainModifyVC()
+            if #available(iOS 16.0, *) {
+                if let sheet = mainModifyVC.sheetPresentationController {
+                    let id = UISheetPresentationController.Detent.Identifier("frist")
+                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                        return 700
+                    }
+                    sheet.detents = [detent]
+                    sheet.preferredCornerRadius = 32
+                    self.present(mainModifyVC, animated: true)
+                }
+                mainModifyVC.isModalInPresentation = true
+            }
+        }).disposed(by: disposeBag)
     }
 
     override func addView() {
@@ -71,8 +97,17 @@ class DetailMapVC: BaseVC {
 }
 extension DetailMapVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        MapVC().view.isHidden = true
+        let cell = tableView.cellForRow(at: indexPath) as? DetailLocationTableViewCell
         let editPlanVC = EditPlanVC()
+        editPlanVC.cellColor.backgroundColor = cell?.tableColor.backgroundColor
+        editPlanVC.addressLabel.text = cell?.subTitleLabel.text
+        editPlanVC.timeLabel.text = "\(cell!.startTime.dateFormate()) ~ \(cell!.endTime.dateFormate())"
+        editPlanVC.titleLabel.text = cell?.titleLabel.text
+        editPlanVC.scheduleId = cell?.scheduleId ?? 0
+        editPlanVC.color = cell?.color ?? "RED"
+        editPlanVC.isAlways = cell?.isAlways ?? false
+        editPlanVC.startTime = cell?.startTime ?? ""
+        editPlanVC.endTime = cell?.endTime ?? ""
         if #available(iOS 16.0, *) {
             if let sheet = editPlanVC.sheetPresentationController {
                 let id = UISheetPresentationController.Detent.Identifier("frist")
@@ -84,6 +119,5 @@ extension DetailMapVC: UITableViewDelegate {
                 self.present(editPlanVC, animated: true)
             }
         }
-        editPlanVC.isModalInPresentation = true
     }
 }

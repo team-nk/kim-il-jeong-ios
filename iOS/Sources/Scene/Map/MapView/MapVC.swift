@@ -12,20 +12,32 @@ class MapVC: BaseVC {
     private let mapView = MKMapView()
     private var fpc: FloatingPanelController!
     private var contentsVC: DetailMapVC!
+    private let viewAppear = PublishRelay<Void>()
+    private let viewModel = MapViewModel()
     override func configureVC() {
-        setMapView(coordinate: change(xAddress: "36.390906587662", yAddress: "127.36218898382"), addr: "대덕소프트웨어 마이스터고")
-        setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
         setUserLocation()
         floatingPanelView()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
     }
-    override func addView() {
-        self.view.addSubview(mapView)
+    @objc func reloadData(_ notification: Notification) {
+        viewAppear.accept(())
     }
-    override func setLayout() {
-        mapView.snp.makeConstraints {
-            $0.left.right.equalToSuperview()
-            $0.top.bottom.equalToSuperview()
-        }
+    override func bind() {
+        let input = MapViewModel.Input(viewAppear: viewAppear.asSignal())
+        let output = viewModel.transform(input)
+        output.locationList.subscribe(onNext: { [self] in
+            for count in $0 {
+                setMapView(coordinate: change(xAddress: count.latitude, yAddress: count.longitude), addr: count.address)
+            }
+        }).disposed(by: disposeBag)
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        viewAppear.accept(())
     }
     private func setUserLocation() {
         self.locationManager.delegate = self
@@ -44,8 +56,8 @@ class MapVC: BaseVC {
         fpc.layout = MapFloatingPanelLayout()
         fpc.invalidateLayout()
     }
-    private func change(xAddress: String, yAddress: String) -> CLLocationCoordinate2D {
-        let mapXY = CLLocationCoordinate2D(latitude: Double(xAddress) ?? 0, longitude: Double(yAddress) ?? 0)
+    private func change(xAddress: Double, yAddress: Double) -> CLLocationCoordinate2D {
+        let mapXY = CLLocationCoordinate2D(latitude: xAddress, longitude: yAddress)
         return mapXY
     }
     private func setMapView(coordinate: CLLocationCoordinate2D, addr: String) {
@@ -54,6 +66,15 @@ class MapVC: BaseVC {
         annotation.title = addr
         mapView.addAnnotation(annotation)
         mapView.delegate = self
+    }
+    override func addView() {
+        self.view.addSubview(mapView)
+    }
+    override func setLayout() {
+        mapView.snp.makeConstraints {
+            $0.left.right.equalToSuperview()
+            $0.top.bottom.equalToSuperview()
+        }
     }
 }
 
@@ -71,10 +92,10 @@ extension MapVC: MKMapViewDelegate, CLLocationManagerDelegate {
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.last
-        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude,
-                                            longitude: location!.coordinate.longitude)
+        let center = CLLocationCoordinate2D(latitude: location?.coordinate.latitude ?? 0,
+                                            longitude: location?.coordinate.longitude ?? 0)
         let region = MKCoordinateRegion(center: center,
-                                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         self.mapView.setRegion(region, animated: true)
         self.locationManager.stopUpdatingLocation()
     }

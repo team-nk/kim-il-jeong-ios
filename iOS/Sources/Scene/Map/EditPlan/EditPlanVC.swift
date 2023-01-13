@@ -7,11 +7,16 @@ import RxSwift
 import CoreLocation
 
 class EditPlanVC: BaseVC {
-    private let cellColor = UIView().then {
+    var scheduleId = 0
+    var color = ""
+    var isAlways = false
+    var startTime = ""
+    var endTime = ""
+    let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
     }
-    private let titleLabel = UILabel().then {
+    let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
@@ -19,12 +24,12 @@ class EditPlanVC: BaseVC {
     private let addressImageView = UIImageView().then {
         $0.image = UIImage(named: "AddressPin")
     }
-    private let addressLabel = UILabel().then {
+    let addressLabel = UILabel().then {
         $0.text = "대전광역시 유성구 가정북로 76"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
-    private let timeLabel = UILabel().then {
+    let timeLabel = UILabel().then {
         $0.text = "2022-05-02 16:30 ~ 2022-05-02 20:00"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.description.color
@@ -43,20 +48,28 @@ class EditPlanVC: BaseVC {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
-    override func addView() {
-        [
-            cellColor,
-            titleLabel,
-            addressImageView,
-            addressLabel,
-            timeLabel,
-            deleteButton,
-            modifyButton
-        ].forEach {view.addSubview($0)}
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
     }
+    @objc func reloadData(_ notification: Notification) {
+        self.dismiss(animated: true)
+    }
+
     override func configureVC() {
-        modifyButton.rx.tap.subscribe(onNext: { _ in
+        modifyButton.rx.tap.subscribe(onNext: { [self] in
             let modifyVC = ModifyVC()
+            modifyVC.addressLabel.text = addressLabel.text
+            modifyVC.allDayScheduleSwitch.isOn = isAlways
+            modifyVC.titleTextField.text = titleLabel.text
+            modifyVC.scheduleId = scheduleId
+            modifyVC.colorStackView.color.accept(color)
+            modifyVC.startTimeTextField.text = startTime
+            modifyVC.endTimeTextField.text = endTime
             if #available(iOS 16.0, *) {
                 if let sheet = modifyVC.sheetPresentationController {
                     let id = UISheetPresentationController.Detent.Identifier("frist")
@@ -72,6 +85,7 @@ class EditPlanVC: BaseVC {
         }).disposed(by: disposeBag)
         deleteButton.rx.tap.subscribe(onNext: {
             let deleteCustomVC = DeleteCustomAlertVC()
+            deleteCustomVC.scheduleId = self.scheduleId
             deleteCustomVC.modalPresentationStyle = .overFullScreen
             deleteCustomVC.modalTransitionStyle = .crossDissolve
             guard let pvc = self.presentingViewController else { return }
@@ -79,6 +93,17 @@ class EditPlanVC: BaseVC {
               pvc.present(deleteCustomVC, animated: true)
             }
         }).disposed(by: disposeBag)
+    }
+    override func addView() {
+        [
+            cellColor,
+            titleLabel,
+            addressImageView,
+            addressLabel,
+            timeLabel,
+            deleteButton,
+            modifyButton
+        ].forEach {view.addSubview($0)}
     }
     override func setLayout() {
         cellColor.snp.makeConstraints {
