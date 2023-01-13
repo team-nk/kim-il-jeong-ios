@@ -4,9 +4,10 @@ import Then
 import MapKit
 import RxCocoa
 import CoreLocation
-// swiftlint:disable type_body_length
+
 class MainModifyVC: BaseVC {
-    private let viewModel = ModifyViewModel()
+    var address = PublishRelay<String>()
+    private let viewModel = MainModifyViewModel()
     private let planChangeLabel = UILabel().then {
         $0.text = "새로운 일정 생성하기"
         $0.font = UIFont.boldSystemFont(ofSize: 25)
@@ -27,7 +28,6 @@ class MainModifyVC: BaseVC {
         $0.textAlignment = .right
     }
     private let addressLabel = UILabel().then {
-        $0.text = "대전광역시 둔산동 갤러리아..."
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
         $0.textColor = KimIlJeongAsset.Color.strongExplanation.color
     }
@@ -41,48 +41,8 @@ class MainModifyVC: BaseVC {
         $0.textColor = KimIlJeongColor.strongExplanation.color
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
     }
-    private let colorStackView = UIStackView().then {
+    private let colorStackView = ColorStackView().then {
         $0.axis = .horizontal
-    }
-    private let redColorButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.errorColor.color
-        $0.layer.cornerRadius = 12.5
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
-        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
-        $0.setImage(checkImage, for: .normal)
-        $0.tintColor = KimIlJeongColor.surfaceColor.color
-    }
-    private let blueColorButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.mainColor.color
-        $0.layer.cornerRadius = 12.5
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
-        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
-        $0.setImage(checkImage, for: .normal)
-        $0.tintColor = KimIlJeongColor.surfaceColor.color
-    }
-    private let yellowColorButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.yellowColor.color
-        $0.layer.cornerRadius = 12.5
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
-        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
-        $0.setImage(checkImage, for: .normal)
-        $0.tintColor = KimIlJeongColor.surfaceColor.color
-    }
-    private let greenColorButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.greenColor.color
-        $0.layer.cornerRadius = 12.5
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
-        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
-        $0.setImage(checkImage, for: .normal)
-        $0.tintColor = KimIlJeongColor.surfaceColor.color
-    }
-    private let purpleColorButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.purpleColor.color
-        $0.layer.cornerRadius = 12.5
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .light)
-        let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
-        $0.setImage(checkImage, for: .normal)
-        $0.tintColor = KimIlJeongColor.surfaceColor.color
     }
     private let allDayScheduleLabel = UILabel().then {
         $0.text = "일정이 하루 종일 인가요?"
@@ -91,6 +51,7 @@ class MainModifyVC: BaseVC {
     }
     private let allDayScheduleSwitch = UISwitch().then {
         $0.onTintColor = KimIlJeongColor.mainColor.color
+        $0.isOn = false
     }
     private let startTimeLabel = UILabel().then {
         $0.text = "시작 시간"
@@ -132,36 +93,36 @@ class MainModifyVC: BaseVC {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
-    override func viewDidLoad() {
-        if #available(iOS 16.0, *) {
-            if let presentationController = presentationController as? UISheetPresentationController {
-                presentationController.detents = [
-                    .custom { _ in
-                        return 600
-                    }
-                ]
-                presentationController.preferredCornerRadius = 32
-            }
-        } else {
-            // Fallback on earlier versions
-        }
-        super.viewDidLoad()
-        setTextField()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        address.subscribe(onNext: { [self] in
+            addressLabel.text = $0
+        }).disposed(by: disposeBag)
     }
     override func bind() {
-        let input = ModifyViewModel.Input(titleText: titleTextField.rx.text.orEmpty.asDriver())
+        let input = MainModifyViewModel.Input(
+            content: titleTextField.rx.text.orEmpty.asDriver(),
+            address: address.asDriver(onErrorJustReturn: ""),
+            color: colorStackView.color.asDriver(),
+            startTime: startTimeTextField.rx.text.orEmpty.asDriver(),
+            endTime: endTimeTextField.rx.text.orEmpty.asDriver(),
+            isAlways: allDayScheduleSwitch.rx.isOn.asDriver(),
+            doneButtonDidTap: doneButton.rx.tap.asSignal()
+        )
         let output = viewModel.transform(input)
-        output.title.asObservable()
+        output.postScheduleResult.subscribe(onNext: { _ in
+            self.dismiss(animated: false) {
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("reloadData"),
+                    object: nil,
+                    userInfo: nil
+                )
+            }
+        }).disposed(by: disposeBag)
+        output.content.asObservable()
             .subscribe(onNext: { [self] in
                 titleTextStateLabel.textColor = Int($0)! >= 100 ? .red : KimIlJeongColor.strongExplanation.color
                 titleTextStateLabel.text = $0 + "/100"
-            }).disposed(by: disposeBag)
-    }
-    private func setTextField() {
-        titleTextField.rx.text.orEmpty
-            .asObservable()
-            .subscribe(onNext: {
-                self.titleTextStateLabel.text = "\($0.count)/100"
             }).disposed(by: disposeBag)
     }
     override func configureVC() {
@@ -169,7 +130,11 @@ class MainModifyVC: BaseVC {
             .subscribe(onNext: { [self] in
                 dismiss(animated: true)
             }).disposed(by: disposeBag)
-
+        serachLocationButton.rx.tap.subscribe(onNext: {
+            let kakaoZipCodeVC = KakaoZipCodeVC()
+            kakaoZipCodeVC.modalPresentationStyle = .fullScreen
+            self.present(kakaoZipCodeVC, animated: true)
+        }).disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -190,13 +155,6 @@ class MainModifyVC: BaseVC {
             cencelButton,
             doneButton
         ].forEach {view.addSubview($0)}
-        [
-            redColorButton,
-            blueColorButton,
-            yellowColorButton,
-            greenColorButton,
-            purpleColorButton
-        ].forEach {colorStackView.addSubview($0)}
     }
     // swiftlint:disable function_body_length
     override func setLayout() {
@@ -240,31 +198,6 @@ class MainModifyVC: BaseVC {
             $0.trailing.equalToSuperview().inset(30)
             $0.width.equalTo(157)
             $0.height.equalTo(25)
-        }
-        redColorButton.snp.makeConstraints {
-            $0.leading.equalToSuperview()
-            $0.top.equalToSuperview()
-            $0.width.height.equalTo(25)
-        }
-        blueColorButton.snp.makeConstraints {
-            $0.leading.equalTo(redColorButton.snp.trailing).offset(8)
-            $0.top.equalToSuperview()
-            $0.width.height.equalTo(25)
-        }
-        yellowColorButton.snp.makeConstraints {
-            $0.leading.equalTo(blueColorButton.snp.trailing).offset(8)
-            $0.top.equalToSuperview()
-            $0.width.height.equalTo(25)
-        }
-        greenColorButton.snp.makeConstraints {
-            $0.leading.equalTo(yellowColorButton.snp.trailing).offset(8)
-            $0.top.equalToSuperview()
-            $0.width.height.equalTo(25)
-        }
-        purpleColorButton.snp.makeConstraints {
-            $0.leading.equalTo(greenColorButton.snp.trailing).offset(8)
-            $0.top.equalToSuperview()
-            $0.width.height.equalTo(25)
         }
         allDayScheduleLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(30)
