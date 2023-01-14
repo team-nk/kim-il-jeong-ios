@@ -5,9 +5,11 @@ import SnapKit
 import Then
 
 class PostVC: BaseVC {
-    let isMyPost = BehaviorRelay<Bool>(value: false)
+    private let getDetails = BehaviorRelay<Void>(value: ())
+    private let viewModel = PostVM()
+    private let isMyPost = BehaviorRelay<Bool>(value: false)
     let postID = BehaviorRelay<Int>(value: 0)
-    let postCommentCount = BehaviorRelay<Int>(value: 0)
+    private let postCommentCount = BehaviorRelay<Int>(value: 0)
     let postTitleLabel = UILabel().then {
         $0.text = "Starbucks 인수 결정했습니다!"
         $0.font = .systemFont(ofSize: 18, weight: .regular)
@@ -71,6 +73,47 @@ class PostVC: BaseVC {
     private let deleteButton = UIButton().then {
         $0.backgroundColor = .clear
     }
+    private func setDetails() {
+        self.isMyPost.subscribe(onNext: {
+            if $0 == false {
+                self.commentCountLabel.text = "댓글 \(self.postCommentCount.value)개"
+            } else {
+                self.commentCountLabel.text = nil
+                self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+                self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
+            }
+        }).disposed(by: disposeBag)
+    }
+    override func bind() {
+        let input = PostVM.Input(getContent: getDetails.asDriver(), postId: postID.asDriver())
+        let output = viewModel.transform(input)
+        output.postDetail
+            .subscribe(onNext: {
+                self.isMyPost.accept($0?.mine ?? false)
+                self.postCommentCount.accept($0?.commentCount ?? 0)
+                self.setDetails()
+                self.postTitleLabel.text = $0?.title
+                switch $0?.color {
+                case "RED":
+                    self.colorTag.tintColor = KimIlJeongColor.errorColor.color
+                case "BLUE":
+                    self.colorTag.tintColor = KimIlJeongColor.mainColor.color
+                case "YELLOW":
+                    self.colorTag.tintColor = KimIlJeongColor.yellowColor.color
+                case "GREEN":
+                    self.colorTag.tintColor = KimIlJeongColor.greenColor.color
+                case "PURPLE":
+                    self.colorTag.tintColor = KimIlJeongColor.purpleColor.color
+                default:
+                    print("ColorEmpty2")
+                }
+                self.scheduleLabel.text = $0?.scheduleContent
+                self.userNameLabel.text = $0?.accountId
+                self.locationLabel.text = $0?.address
+                self.dateLabel.text = $0?.createTime
+                self.contentTextView.text = $0?.content
+            }).disposed(by: disposeBag)
+    }
     override func addView() {
         [
             commentCountLabel,
@@ -99,15 +142,6 @@ class PostVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.navigationItem.backButtonTitle = ""
         view.backgroundColor = KimIlJeongColor.backGroundColor.color
-        isMyPost.subscribe(onNext: {
-            if $0 == true {
-                self.commentCountLabel.text = "댓글 \(self.postCommentCount.value)개"
-            } else {
-                self.commentCountLabel.text = nil
-                self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
-                self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
-            }
-        }).disposed(by: disposeBag)
         commentButton.rx.tap
             .subscribe(onNext: {
                 let nextVC = CommentListVC()

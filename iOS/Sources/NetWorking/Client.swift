@@ -13,6 +13,7 @@ enum API {
     // Post
     case getBirthdayUsers
     case getAllPosts
+    case getDetailPost(postId: Int)
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
     case postNewComment(content: String, postId: Int)
@@ -51,6 +52,8 @@ extension API: TargetType {
             return "/post/birthday"
         case .getAllPosts:
             return "/post"
+        case .getDetailPost(let id):
+            return "/post/\(id)"
         case .postNewPost:
             return "/post"
         case .getAllComments(let id):
@@ -63,7 +66,7 @@ extension API: TargetType {
             return "/auth"
         case .getMapSchedule:
             return "/schedule/map"
-        //User
+        // User
         case .getMyInfo:
             return "/user"
         }
@@ -74,7 +77,7 @@ extension API: TargetType {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllPosts, .getAllComments, .getMySchedule, .getMapSchedule,
+                .getAllPosts, .getDetailPost, .getAllComments, .getMySchedule, .getMapSchedule,
                 .getMyInfo:
             return .get
         case .refreshToken:
@@ -133,6 +136,15 @@ extension API: TargetType {
             return .requestPlain
         case .getAllPosts:
             return .requestPlain
+//        case .getDetailPost(let id):
+//            return .requestParameters(
+//                parameters:
+//                    [
+//                        "post-id": id
+//                    ],
+//                encoding: URLEncoding.queryString)
+        case .getDetailPost:
+            return .requestPlain
         case .postNewPost(let title, let content, let scheduleId):
             return .requestParameters(
                 parameters:
@@ -142,10 +154,15 @@ extension API: TargetType {
                         "scheduleId": scheduleId
                     ],
                 encoding: JSONEncoding.prettyPrinted)
-        case .getAllComments(let id):
-            return .requestParameters(parameters: [
-                "post-id": id
-            ], encoding: URLEncoding.queryString)
+//        case .getAllComments(let id):
+//            return .requestParameters(
+//                parameters:
+//                    [
+//                        "post-id": id
+//                    ],
+//                encoding: URLEncoding.queryString)
+        case .getAllComments:
+            return .requestPlain
         case .postNewComment(let content, _):
             return .requestParameters(
                 parameters:
@@ -161,7 +178,7 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
-                .getAllPosts, .postNewPost, .getAllComments, .postNewComment,
+                .getAllPosts, .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
                 .getMySchedule, .getMapSchedule, .getMyInfo:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:

@@ -12,14 +12,14 @@ class PostListVM: BaseVM {
         let birthUsers: BehaviorRelay<[Users]>
         let posts: BehaviorRelay<[Posts]>
         let getListResult: PublishRelay<Bool>
-        let postDetail: BehaviorRelay<Posts?>
+        let postID: BehaviorRelay<Int>
     }
     func transform(_ input: Input) -> Output {
         let api = Service()
         let birthUsers = BehaviorRelay<[Users]>(value: [])
         let posts = BehaviorRelay<[Posts]>(value: [])
         let getListResult = PublishRelay<Bool>()
-        let postDetail = BehaviorRelay<Posts?>(value: nil)
+        let postID = BehaviorRelay<Int>(value: 0)
         input.getLists.asObservable()
             .flatMap { _ in
             api.fetchBirthdayUsers()
@@ -49,13 +49,13 @@ class PostListVM: BaseVM {
         input.selectedIndex.asObservable()
             .subscribe(onNext: { index in
                 let value = posts.value
-                postDetail.accept(value[index.row].self)
+                postID.accept(value[index.row].id)
             }).disposed(by: disposeBag)
         return Output(
             birthUsers: birthUsers,
             posts: posts,
             getListResult: getListResult,
-            postDetail: postDetail
+            postID: postID
         )
     }
 }

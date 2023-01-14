@@ -7,10 +7,9 @@ import Then
 class PostListVC: BaseVC {
     private let getPosts = BehaviorRelay<Void>(value: ())
     private let viewModel = PostListVM()
-    private let nextPost = BehaviorRelay<Posts?>(value: nil)
+    private let nextID = BehaviorRelay<Int>(value: 0)
     var birthUserCount = Int()
     var postsCount = Int()
-    var nextColor = String()
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = .clear
         $0.showsVerticalScrollIndicator = false
@@ -106,15 +105,15 @@ class PostListVC: BaseVC {
                 case "PURPLE":
                     cell.colorSetting.tintColor = KimIlJeongColor.purpleColor.color
                 default:
-                    print("ColorEmpty")
+                    print("ColorEmpty1")
                 }
                 cell.selectionStyle = .none
                 self.postsCount += 1
                 self.updateConstraints()
             }.disposed(by: disposeBag)
-        output.postDetail
+        output.postID
             .subscribe(onNext: {
-                self.nextPost.accept($0)
+                self.nextID.accept($0)
             }).disposed(by: disposeBag)
         scheduleTableView.rx.itemSelected
             .subscribe(onNext: { _ in
@@ -123,30 +122,7 @@ class PostListVC: BaseVC {
     }
     private func cellDidTap() {
         let next = PostVC()
-        next.isMyPost.accept(self.nextPost.value!.mine)
-        next.postID.accept(self.nextPost.value!.id)
-        next.postCommentCount.accept(self.nextPost.value!.commentCount)
-        next.postTitleLabel.text = self.nextPost.value!.title
-        switch nextPost.value!.color {
-        case "RED":
-            self.nextColor = "ErrorColor"
-        case "BLUE":
-            self.nextColor = "MainColor"
-        case "YELLOW":
-            self.nextColor = "YellowColor"
-        case "GREEN":
-            self.nextColor = "GreenColor"
-        case "PURPLE":
-            self.nextColor = "PurpleColor"
-        default:
-            print("ColorEmpty")
-        }
-        next.colorTag.tintColor = UIColor(named: "\(self.nextColor)")
-        next.scheduleLabel.text = self.nextPost.value!.scheduleContent
-        next.userNameLabel.text = self.nextPost.value?.accountId
-        next.locationLabel.text = self.nextPost.value!.address
-        next.dateLabel.text = self.nextPost.value!.createTime
-        next.contentTextView.text = self.nextPost.value!.content
+        next.postID.accept(nextID.value)
         self.navigationController?.pushViewController(next, animated: true)
     }
     override func addView() {

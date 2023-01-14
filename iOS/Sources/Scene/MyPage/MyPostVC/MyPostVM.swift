@@ -11,13 +11,13 @@ class MyPostVM: BaseVM {
     struct Output {
         let posts: BehaviorRelay<[Posts]>
         let getListResult: PublishRelay<Bool>
-        let myNextPost: BehaviorRelay<Posts?>
+        let postID: BehaviorRelay<Int>
     }
     func transform(_ input: Input) -> Output {
         let api = Service()
         let posts = BehaviorRelay<[Posts]>(value: [])
         let getListResult = PublishRelay<Bool>()
-        let myNextPost = BehaviorRelay<Posts?>(value: nil)
+        let postID =  BehaviorRelay<Int>(value: 0)
         input.getLists.asObservable()
             .flatMap { _ in
                 api.fetchAllPosts()
@@ -34,11 +34,12 @@ class MyPostVM: BaseVM {
         input.selectedIndex.asObservable()
             .subscribe(onNext: { index in
                 let value = posts.value
-                myNextPost.accept(value[index.row].self)
+                postID.accept(value[index.row].id)
             }).disposed(by: disposeBag)
         return Output(
             posts: posts,
             getListResult: getListResult,
-            myNextPost: myNextPost)
+            postID: postID
+        )
     }
 }

@@ -84,6 +84,16 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    func fetchDetailPost(_ postID: Int) -> Single<(PostDetailModel?, NetworkingResult)> {
+        return provider.rx.request(.getDetailPost(postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map(PostDetailModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
     func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
         return provider.rx.request(.getAllComments(postId: postID))
             .filterSuccessfulStatusCodes()
