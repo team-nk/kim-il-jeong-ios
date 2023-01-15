@@ -59,13 +59,13 @@ class PostListVC: BaseVC {
         $0.isScrollEnabled = false
     }
     private func updateConstraints() {
-        contentView.snp.makeConstraints {
+        contentView.snp.remakeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalToSuperview()
-            if birthUserCount * 90 + postsCount * 80 > 800 {
-                $0.height.equalTo((birthUserCount + postsCount) * 90)
+            if Double(birthUserCount * 90 + postsCount * 80) > view.frame.height {
+                $0.height.equalTo(400 + (birthUserCount + postsCount) * 90)
             } else {
-                $0.height.equalTo(900)
+                $0.height.equalTo(100 + view.frame.height)
             }
         }
     }
@@ -83,6 +83,7 @@ class PostListVC: BaseVC {
                 cell.dateLabel.text = items.birthday
                 cell.selectionStyle = .none
                 self.birthUserCount += 1
+                print(self.birthUserCount)
                 self.updateConstraints()
             }.disposed(by: disposeBag)
         output.posts.bind(to: scheduleTableView.rx.items(
@@ -109,6 +110,7 @@ class PostListVC: BaseVC {
                 }
                 cell.selectionStyle = .none
                 self.postsCount += 1
+                print(self.postsCount)
                 self.updateConstraints()
             }.disposed(by: disposeBag)
         output.postID

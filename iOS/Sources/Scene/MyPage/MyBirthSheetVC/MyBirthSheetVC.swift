@@ -14,23 +14,35 @@ class MyBirthSheetVC: BaseVC {
         $0.numberOfLines = 0
         $0.text = "생년월일은 게시판 이용시 사용됩니다. 그 외에는 사용하지 않으며 생일 당일에 자동으로 생일 게시물이 생성됩니다."
         $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.font = .systemFont(ofSize: 12, weight: .regular)
+        $0.font = .systemFont(ofSize: 13, weight: .regular)
     }
     private let selectionGuideLabel = UILabel().then {
         $0.text = "생년월일을 선택하세요"
         $0.textColor = KimIlJeongColor.strongExplanation.color
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
-    private let dateBackView = UIView().then {
+    private let dateTextView = UITextField().then {
         $0.backgroundColor = KimIlJeongColor.cellBackGroundColor.color.withAlphaComponent(0.5)
         $0.layer.cornerRadius = 8
-    }
-    private let dateSelectionLabel = UILabel().then {
-        $0.text = "2022-05-09"
+        $0.placeholder = "ex) 2022-05-09"
         $0.textColor = KimIlJeongColor.strongExplanation.color
         $0.textAlignment = .center
         $0.font = .systemFont(ofSize: 17, weight: .regular)
+        $0.addPaddingToTextField(leftSize: 10, rightSize: 10)
     }
+//    private let dateSelectionLabel = UILabel().then {
+//        $0.text = "2022-05-09"
+//        $0.textColor = KimIlJeongColor.strongExplanation.color
+//        $0.textAlignment = .center
+//        $0.font = .systemFont(ofSize: 17, weight: .regular)
+//    }
+//    private let datePicker = UIDatePicker().then {
+//        $0.tintColor = KimIlJeongColor.strongExplanation.color
+//        $0.backgroundColor = .clear
+//        $0.preferredDatePickerStyle = .wheels
+//        $0.datePickerMode = .date
+//        $0.locale = Locale(identifier: "ko-KR")
+//    }
     private let cancelButton = UIButton().then {
         $0.layer.cornerRadius = 10
         $0.backgroundColor = .clear
@@ -56,12 +68,12 @@ class MyBirthSheetVC: BaseVC {
                 presentationController.preferredCornerRadius = 20
             }
         } else { /*Fallback on earlier versions*/ }
-        dateBackView.addSubview(dateSelectionLabel)
+//        dateBackView.addSubview(dateSelectionLabel)
         [
             inputGuideLabel,
             usageGuideLabel,
             selectionGuideLabel,
-            dateBackView,
+            dateTextView,
             cancelButton,
             inputButton
         ] .forEach {
@@ -89,14 +101,12 @@ class MyBirthSheetVC: BaseVC {
             $0.leading.equalToSuperview().inset(30)
             $0.height.equalTo(32)
         }
-        dateBackView.snp.makeConstraints {
-            $0.width.equalTo(121)
+        dateTextView.snp.makeConstraints {
+//            $0.width.equalTo(121)
             $0.height.equalTo(34)
             $0.top.equalTo(inputGuideLabel.snp.bottom).offset(62)
+            $0.leading.equalTo(selectionGuideLabel.snp.trailing).offset(65)
             $0.trailing.equalToSuperview().inset(30)
-        }
-        dateSelectionLabel.snp.makeConstraints {
-            $0.centerX.centerY.equalToSuperview()
         }
         cancelButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
