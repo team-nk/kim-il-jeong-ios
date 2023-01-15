@@ -22,6 +22,7 @@ enum API {
     case getMapSchedule
     // User
     case getMyInfo
+    case patchMyBirth(birthDate: String)
 }
 
 extension API: TargetType {
@@ -69,6 +70,8 @@ extension API: TargetType {
         // User
         case .getMyInfo:
             return "/user"
+        case .patchMyBirth:
+            return "/user/birthday"
         }
     }
 
@@ -82,6 +85,8 @@ extension API: TargetType {
             return .get
         case .refreshToken:
             return .put
+        case .patchMyBirth:
+            return .patch
         }
     }
 
@@ -170,6 +175,14 @@ extension API: TargetType {
                         "content": content
                     ],
                 encoding: JSONEncoding.prettyPrinted)
+        // User
+        case .patchMyBirth(let date):
+            return .requestParameters(
+                parameters:
+                    [
+                        "birthday": date
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         default:
             return .requestPlain
         }
@@ -179,7 +192,7 @@ extension API: TargetType {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
                 .getAllPosts, .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
-                .getMySchedule, .getMapSchedule, .getMyInfo:
+                .getMySchedule, .getMapSchedule, .getMyInfo, .patchMyBirth:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
