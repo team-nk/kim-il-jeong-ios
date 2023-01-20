@@ -7,6 +7,11 @@ import RxSwift
 import CoreLocation
 
 class DetailMainVC: BaseVC {
+    var scheduleId = 0
+    var color = ""
+    var isAlways = false
+    var startTime = ""
+    var endTime = ""
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation!
     private let mapView = MKMapView().then {
@@ -14,11 +19,11 @@ class DetailMainVC: BaseVC {
     }
     private var token = true
     private var contentsVC: DetailMapVC!
-    private let cellColor = UIView().then {
+    let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
     }
-    private let titleLabel = UILabel().then {
+    let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
@@ -26,12 +31,12 @@ class DetailMainVC: BaseVC {
     private let addressImageView = UIImageView().then {
         $0.image = UIImage(named: "AddressPin")
     }
-    private let addressLabel = UILabel().then {
+    let addressLabel = UILabel().then {
         $0.text = "대전광역시 유성구 가정북로 76"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
-    private let timeLabel = UILabel().then {
+    let timeLabel = UILabel().then {
         $0.text = "2022-05-02 16:30 ~ 2022-05-02 20:00"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.description.color
@@ -50,6 +55,19 @@ class DetailMainVC: BaseVC {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
+    }
+
+    @objc func reloadData(_ notification: Notification) {
+        self.dismiss(animated: true)
+    }
+
     override func addView() {
         if #available(iOS 16.0, *) {
             if let presentationController = presentationController as? UISheetPresentationController {
@@ -76,9 +94,28 @@ class DetailMainVC: BaseVC {
         setMapView(coordinate: change(xAddress: "36.390906587662", yAddress: "127.36218898382"), addr: "대덕소프트웨어 마이스터고")
         setMapView(coordinate: change(xAddress: "36.3751016880633", yAddress: "127.3820651968"), addr: "신세계")
         setUserLocation()
-        modifyButton.rx.tap.subscribe(onNext: { _ in
-            let mainEditModifyVC = MainEditModifyVC()
-            self.present(mainEditModifyVC, animated: true)
+        modifyButton.rx.tap.subscribe(onNext: { [self] in
+            let modifyVC = ModifyVC()
+            modifyVC.addressLabel.text = addressLabel.text
+            modifyVC.allDayScheduleSwitch.isOn = isAlways
+            modifyVC.titleTextField.text = titleLabel.text
+            modifyVC.scheduleId = scheduleId
+            modifyVC.colorStackView.color.accept(color)
+            modifyVC.startTimeTextField.text = startTime
+            modifyVC.endTimeTextField.text = endTime
+            modifyVC.address.accept(addressLabel.text ?? "")
+            if #available(iOS 16.0, *) {
+                if let sheet = modifyVC.sheetPresentationController {
+                    let id = UISheetPresentationController.Detent.Identifier("frist")
+                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                        return 700
+                    }
+                    sheet.detents = [detent]
+                    sheet.preferredCornerRadius = 32
+                    self.present(modifyVC, animated: true)
+                }
+                modifyVC.isModalInPresentation = true
+            }
         }).disposed(by: disposeBag)
         deleteButton.rx.tap.subscribe(onNext: {
             let deleteCustomVC = DeleteCustomAlertVC()

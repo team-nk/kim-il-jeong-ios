@@ -69,7 +69,13 @@ class SignUpCustomAlertVC: BaseVC {
         view.backgroundColor = .black.withAlphaComponent(0.3)
         doneButton.rx.tap
             .subscribe(onNext: {
-                self.dismiss(animated: true)
+                self.dismiss(animated: false) {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("signUp"),
+                        object: nil,
+                        userInfo: nil
+                    )
+                }
             }).disposed(by: disposeBag)
     }
 }

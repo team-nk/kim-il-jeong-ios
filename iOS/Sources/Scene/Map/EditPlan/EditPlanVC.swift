@@ -68,8 +68,10 @@ class EditPlanVC: BaseVC {
             modifyVC.titleTextField.text = titleLabel.text
             modifyVC.scheduleId = scheduleId
             modifyVC.colorStackView.color.accept(color)
-            modifyVC.startTimeTextField.text = startTime
-            modifyVC.endTimeTextField.text = endTime
+            modifyVC.startTimeTextField.text = startTime.dateFormate()
+            modifyVC.endTimeTextField.text = endTime.dateFormate()
+            modifyVC.startDatePicker.date = startTime.dateFormatter()
+            modifyVC.endDatePicker.date = endTime.dateFormatter()
             if #available(iOS 16.0, *) {
                 if let sheet = modifyVC.sheetPresentationController {
                     let id = UISheetPresentationController.Detent.Identifier("frist")

@@ -8,10 +8,12 @@ import CoreLocation
 class MainModifyVC: BaseVC {
     var address = PublishRelay<String>()
     private let viewModel = MainModifyViewModel()
+    let startDatePicker = UIDatePicker()
+    let endDatePicker = UIDatePicker()
     private let planChangeLabel = UILabel().then {
-        $0.text = "새로운 일정 생성하기"
-        $0.font = UIFont.boldSystemFont(ofSize: 25)
-        $0.textColor = KimIlJeongAsset.Color.textColor.color
+        $0.setLabel(text: "새로운 일정 생성하기",
+                    textColor: KimIlJeongAsset.Color.textColor.color,
+                    font: UIFont.boldSystemFont(ofSize: 25))
     }
     private let titleTextField = UITextField().then {
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
@@ -22,9 +24,9 @@ class MainModifyVC: BaseVC {
         $0.backgroundColor = KimIlJeongAsset.Color.strongExplanation.color
     }
     private let titleTextStateLabel = UILabel().then {
-        $0.text = "0/100"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        $0.textColor = KimIlJeongAsset.Color.strongExplanation.color
+        $0.setLabel(text: "0/100",
+                    textColor: KimIlJeongAsset.Color.strongExplanation.color,
+                    font: UIFont.systemFont(ofSize: 16, weight: .regular))
         $0.textAlignment = .right
     }
     private let addressLabel = UILabel().then {
@@ -37,61 +39,53 @@ class MainModifyVC: BaseVC {
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
     }
     private let setColorLabel = UILabel().then {
-        $0.text = "색상설정"
-        $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        $0.setLabel(text: "색상설정",
+                    textColor: KimIlJeongColor.strongExplanation.color,
+                    font: UIFont.systemFont(ofSize: 18, weight: .light))
     }
     private let colorStackView = ColorStackView().then {
         $0.axis = .horizontal
     }
     private let allDayScheduleLabel = UILabel().then {
-        $0.text = "일정이 하루 종일 인가요?"
-        $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        $0.setLabel(text: "일정이 하루 종일 인가요?",
+                    textColor: KimIlJeongColor.strongExplanation.color,
+                    font: UIFont.systemFont(ofSize: 18, weight: .light))
     }
     private let allDayScheduleSwitch = UISwitch().then {
         $0.onTintColor = KimIlJeongColor.mainColor.color
         $0.isOn = false
     }
     private let startTimeLabel = UILabel().then {
-        $0.text = "시작 시간"
-        $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        $0.setLabel(text: "시작 시간",
+                    textColor: KimIlJeongColor.strongExplanation.color,
+                    font: UIFont.systemFont(ofSize: 18, weight: .light))
     }
     private let startTimeTextField = UITextField().then {
-        $0.text = "2022-05-08"
-        $0.textColor = KimIlJeongColor.textColor.color
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        $0.layer.cornerRadius = 8
-        $0.backgroundColor = KimIlJeongColor.backGroundColor4.color
-        $0.textAlignment = .center
+        $0.setModifyTextField(
+            textColor: KimIlJeongColor.textColor.color,
+            backGroundColor: KimIlJeongColor.backGroundColor4.color)
     }
     private let endTimeLabel = UILabel().then {
-        $0.text = "시작 시간"
-        $0.textColor = KimIlJeongColor.strongExplanation.color
-        $0.font = UIFont.systemFont(ofSize: 18, weight: .light)
+        $0.setLabel(text: "종료 시간",
+                    textColor: KimIlJeongColor.strongExplanation.color,
+                    font: UIFont.systemFont(ofSize: 18, weight: .light))
     }
     private let endTimeTextField = UITextField().then {
-        $0.text = "2022-05-09"
-        $0.textColor = KimIlJeongColor.textColor.color
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        $0.layer.cornerRadius = 8
-        $0.backgroundColor = KimIlJeongColor.backGroundColor4.color
-        $0.textAlignment = .center
+        $0.setModifyTextField(
+            textColor: KimIlJeongColor.textColor.color,
+            backGroundColor: KimIlJeongColor.backGroundColor4.color)
     }
     private let cencelButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color
-        $0.layer.cornerRadius = 10
-        $0.setTitle("취소하기", for: .normal)
-        $0.setTitleColor(KimIlJeongAsset.Color.textColor.color, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        $0.setButton(
+            title: "취소하기",
+            titleColor: KimIlJeongAsset.Color.textColor.color,
+            backgroundColor: KimIlJeongAsset.Color.backGroundColor2.color)
     }
     private let doneButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.mainColor.color
-        $0.layer.cornerRadius = 10
-        $0.setTitle("생성하기", for: .normal)
-        $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        $0.setButton(
+            title: "생성하기",
+            titleColor: KimIlJeongAsset.Color.surfaceColor.color,
+            backgroundColor: KimIlJeongAsset.Color.mainColor.color)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -101,23 +95,19 @@ class MainModifyVC: BaseVC {
     }
     override func bind() {
         let input = MainModifyViewModel.Input(
-            content: titleTextField.rx.text.orEmpty.asDriver(),
-            address: address.asDriver(onErrorJustReturn: ""),
-            color: colorStackView.color.asDriver(),
-            startTime: startTimeTextField.rx.text.orEmpty.asDriver(),
-            endTime: endTimeTextField.rx.text.orEmpty.asDriver(),
-            isAlways: allDayScheduleSwitch.rx.isOn.asDriver(),
+            content: titleTextField.rx.text.orEmpty.asDriver(), address: address.asDriver(onErrorJustReturn: ""),
+            color: colorStackView.color.asDriver(), startTime: startTimeTextField.rx.text.orEmpty.asDriver(),
+            endTime: endTimeTextField.rx.text.orEmpty.asDriver(), isAlways: allDayScheduleSwitch.rx.isOn.asDriver(),
             doneButtonDidTap: doneButton.rx.tap.asSignal()
         )
         let output = viewModel.transform(input)
-        output.postScheduleResult.subscribe(onNext: { _ in
-            self.dismiss(animated: false) {
-                NotificationCenter.default.post(
-                    name: NSNotification.Name("reloadData"),
-                    object: nil,
-                    userInfo: nil
-                )
-            }
+        output.postScheduleResult.subscribe(onNext: {
+            $0 ? self.dismiss(animated: false) {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("reloadData"),
+                        object: nil,
+                        userInfo: nil)
+            } : print("생성 실패")
         }).disposed(by: disposeBag)
         output.content.asObservable()
             .subscribe(onNext: { [self] in
@@ -132,9 +122,18 @@ class MainModifyVC: BaseVC {
             }).disposed(by: disposeBag)
         serachLocationButton.rx.tap.subscribe(onNext: {
             let kakaoZipCodeVC = KakaoZipCodeVC()
+            kakaoZipCodeVC.preView = "mainModify"
             kakaoZipCodeVC.modalPresentationStyle = .fullScreen
             self.present(kakaoZipCodeVC, animated: true)
         }).disposed(by: disposeBag)
+        startDatePicker.rx.date.subscribe(onNext: {
+            self.startTimeTextField.text = $0.dateFormate()
+        }).disposed(by: disposeBag)
+        endDatePicker.rx.date.subscribe(onNext: {
+            self.endTimeTextField.text = $0.dateFormate()
+        }).disposed(by: disposeBag)
+        startTimeTextField.setToolBar(width: self.bound.width, disposeBag: disposeBag, datePicker: startDatePicker )
+        endTimeTextField.setToolBar(width: self.bound.width, disposeBag: disposeBag, datePicker: endDatePicker)
     }
     override func addView() {
         [
@@ -218,7 +217,7 @@ class MainModifyVC: BaseVC {
             $0.trailing.equalToSuperview().inset(30)
             $0.top.equalTo(allDayScheduleSwitch.snp.bottom).offset(35)
             $0.height.equalTo(34)
-            $0.width.equalTo(121)
+            $0.width.equalTo(150)
         }
         endTimeLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(30)
@@ -229,7 +228,7 @@ class MainModifyVC: BaseVC {
             $0.trailing.equalToSuperview().inset(30)
             $0.top.equalTo(startTimeTextField.snp.bottom).offset(35)
             $0.height.equalTo(34)
-            $0.width.equalTo(121)
+            $0.width.equalTo(150)
         }
         cencelButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)

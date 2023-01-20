@@ -5,7 +5,7 @@ import RxCocoa
 import SnapKit
 
 class KakaoZipCodeVC: UIViewController {
-
+    var preView = ""
     // MARK: - Properties
     var webView: WKWebView?
     let indicator = UIActivityIndicatorView(style: .medium)
@@ -60,12 +60,23 @@ extension KakaoZipCodeVC: WKScriptMessageHandler {
         if let data = message.body as? [String: Any] {
             address = data["roadAddress"] as? String ?? ""
         }
-        let preVC = self.presentingViewController
-        guard let mainModifyVC = preVC as? MainModifyVC else {
-            return
+        switch preView {
+        case "modify":
+            let preVC = self.presentingViewController
+            guard let mainModifyVC = preVC as? ModifyVC else {
+                return
+            }
+            mainModifyVC.address.accept(self.address)
+            mainModifyVC.addressLabel.text = self.address
+            self.presentingViewController?.dismiss(animated: true)
+        default:
+            let preVC = self.presentingViewController
+            guard let mainModifyVC = preVC as? MainModifyVC else {
+                return
+            }
+            mainModifyVC.address.accept(self.address)
+            self.presentingViewController?.dismiss(animated: true)
         }
-        mainModifyVC.address.accept(self.address)
-        self.presentingViewController?.dismiss(animated: true)
     }
 }
 
