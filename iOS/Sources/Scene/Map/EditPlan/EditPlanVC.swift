@@ -18,7 +18,7 @@ class EditPlanVC: BaseVC {
     }
     let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
     private let addressImageView = UIImageView().then {
@@ -35,18 +35,14 @@ class EditPlanVC: BaseVC {
         $0.textColor = KimIlJeongAsset.Color.description.color
     }
     private let deleteButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor3.color
-        $0.layer.cornerRadius = 10
-        $0.setTitle("Delete", for: .normal)
-        $0.setTitleColor(KimIlJeongAsset.Color.errorColor.color, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        $0.setButton(title: "Delete",
+                     titleColor: KimIlJeongColor.errorColor.color,
+                     backgroundColor: KimIlJeongColor.backGroundColor3.color)
     }
     private let modifyButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongAsset.Color.mainColor.color
-        $0.layer.cornerRadius = 10
-        $0.setTitle("Modify", for: .normal)
-        $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        $0.setButton(title: "Modify",
+                     titleColor: KimIlJeongColor.surfaceColor.color,
+                     backgroundColor: KimIlJeongColor.mainColor.color)
     }
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(

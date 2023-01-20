@@ -14,7 +14,7 @@ class ModifyVC: BaseVC {
     private let planChangeLabel = UILabel().then {
         $0.setLabel(text: "일정 변경하기",
                     textColor: KimIlJeongAsset.Color.textColor.color,
-                    font: UIFont.boldSystemFont(ofSize: 25))
+                    font: UIFont.systemFont(ofSize: 25, weight: .bold))
     }
     let titleTextField = UITextField().then {
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)

@@ -22,27 +22,18 @@ class EmailLoginVC: BaseVC {
         $0.font = .systemFont(ofSize: 25, weight: .semibold)
     }
     private let emailTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "Email을 입력하세요"
+        $0.setTextField(forTextField: $0, placeholderText: "Email을 입력하세요")
         $0.addLeftPadding()
     }
     private let passwordTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "Password를 입력하세요"
+        $0.setTextField(forTextField: $0, placeholderText: "Password를 입력하세요")
         $0.isSecureTextEntry = true
         $0.addLeftPadding()
     }
     private let loginButton = UIButton(type: .system).then {
-        $0.backgroundColor = KimIlJeongColor.mainColor.color
-        $0.setTitle("로그인", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        $0.setTitleColor(UIColor.white, for: .normal)
-        $0.layer.cornerRadius = 10
-
+        $0.setButton(title: "로그인",
+                     titleColor: KimIlJeongColor.surfaceColor.color,
+                     backgroundColor: KimIlJeongColor.mainColor.color)
     }
     private let signUpButton = UIButton(type: .system).then {
         $0.setTitle("김일정이 처음이신가요? 회원가입", for: .normal)

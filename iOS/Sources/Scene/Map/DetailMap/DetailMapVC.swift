@@ -9,7 +9,7 @@ class DetailMapVC: BaseVC {
     private let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
     }
     private let plusButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
