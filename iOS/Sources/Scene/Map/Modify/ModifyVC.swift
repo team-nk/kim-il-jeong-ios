@@ -84,7 +84,7 @@ class ModifyVC: BaseVC {
     }
     private let doneButton = UIButton(type: .system).then {
         $0.setButton(
-            title: "생성하기",
+            title: "변경하기",
             titleColor: KimIlJeongAsset.Color.surfaceColor.color,
             backgroundColor: KimIlJeongAsset.Color.mainColor.color)
     }
