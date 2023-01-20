@@ -13,7 +13,7 @@ class MainModifyVC: BaseVC {
     private let planChangeLabel = UILabel().then {
         $0.setLabel(text: "새로운 일정 생성하기",
                     textColor: KimIlJeongAsset.Color.textColor.color,
-                    font: UIFont.boldSystemFont(ofSize: 25))
+                    font: UIFont.systemFont(ofSize: 25, weight: .bold))
     }
     private let titleTextField = UITextField().then {
         $0.font = UIFont.systemFont(ofSize: 18, weight: .light)

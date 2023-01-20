@@ -7,70 +7,46 @@ import RxSwift
 class SignUpVC: BaseVC {
     private let viewModel = SignUpViewModel()
     private let signUpLabel = UILabel().then {
-        $0.textColor = KimIlJeongColor.textColor.color
-        $0.text = "SignUp"
-        $0.font = .systemFont(ofSize: 34, weight: .bold)
+        $0.setLabel(text: "SignUp",
+                    textColor: KimIlJeongColor.textColor.color,
+                    font: .systemFont(ofSize: 34, weight: .bold))
         $0.textAlignment = .center
     }
     private let emailTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "이메일을 입력해 주세요"
-        $0.font = .systemFont(ofSize: 18, weight: .regular)
+        $0.setTextField(forTextField: $0, placeholderText: "이메일을 입력해 주세요")
         $0.addLeftPadding()
     }
     private let emailCheckButton = UIButton(type: .system).then {
-        $0.layer.cornerRadius = 10
-        $0.setTitle("이메일 인증", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)
-        $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
-        $0.backgroundColor = KimIlJeongColor.surface2.color
+        $0.setButton(title: "이메일 인증",
+                     titleColor: KimIlJeongColor.textColor.color,
+                     backgroundColor: KimIlJeongColor.surface2.color)
     }
     private let emailCodeTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.font = .systemFont(ofSize: 18, weight: .regular)
-        $0.placeholder = "인증번호를 입력해 주세요"
+        $0.setTextField(forTextField: $0, placeholderText: "인증번호를 입력해 주세요")
         $0.addLeftPadding()
     }
     private let codeCheckButton = UIButton(type: .system).then {
-        $0.layer.cornerRadius = 10
-        $0.setTitle("확인하기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)
-        $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
-        $0.backgroundColor = KimIlJeongColor.surface2.color
+        $0.setButton(title: "확인하기",
+                     titleColor: KimIlJeongColor.textColor.color,
+                     backgroundColor: KimIlJeongColor.surface2.color)
     }
     private let idTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "아이디를 입력해 주세요"
-        $0.font = .systemFont(ofSize: 18, weight: .regular)
+        $0.setTextField(forTextField: $0, placeholderText: "아이디를 입력해 주세요")
         $0.addLeftPadding()
     }
     private let idCheckButton = UIButton(type: .system).then {
-        $0.layer.cornerRadius = 10
-        $0.setTitle("중복 확인", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)
-        $0.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
-        $0.backgroundColor = KimIlJeongColor.surface2.color
+        $0.setButton(title: "중복 확인",
+                     titleColor: KimIlJeongColor.textColor.color,
+                     backgroundColor: KimIlJeongColor.surface2.color)
     }
     private let passwordTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "Password를 입력하세요"
-        $0.font = .systemFont(ofSize: 18, weight: .regular)
+        $0.setTextField(forTextField: $0,
+                        placeholderText: "Password를 입력하세요")
         $0.addLeftPadding()
     }
     private let passwordCheckTextField = UITextField().then {
-        $0.layer.cornerRadius = 10
-        $0.layer.borderColor = KimIlJeongColor.mainColor.color.cgColor
-        $0.layer.borderWidth = 1
-        $0.placeholder = "Password를 한번 더 입력하세요"
-        $0.font = .systemFont(ofSize: 18, weight: .regular)
+        $0.setTextField(forTextField: $0,
+                        placeholderText: "Password를 한번 더 입력하세요")
         $0.addLeftPadding()
     }
     private let noticePasswordLabel = UILabel().then {
@@ -85,19 +61,16 @@ class SignUpVC: BaseVC {
         $0.textAlignment = .center
     }
     private let nextButton = UIButton(type: .system).then {
-        $0.setTitle("다음", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        $0.backgroundColor = KimIlJeongColor.mainColor.color
-        $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
-        $0.layer.cornerRadius = 10
+        $0.setButton(title: "다음",
+                     titleColor: KimIlJeongColor.surfaceColor.color,
+                     backgroundColor: KimIlJeongColor.mainColor.color)
     }
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.reloadData (_:)),
             name: NSNotification.Name("signUp"),
-            object: nil
-        )
+            object: nil)
     }
     @objc func reloadData(_ notification: Notification) {
         self.navigationController?.popViewController(animated: true)
@@ -120,7 +93,6 @@ class SignUpVC: BaseVC {
                     signUpCustomAlertVC.modalTransitionStyle = .crossDissolve
                     signUpCustomAlertVC.modalPresentationStyle = .overFullScreen
                     present(signUpCustomAlertVC, animated: true)
-//                    navigationController?.popViewController(animated: true)
                     print("회원가입 완료")
                 case false:
                     print("회원가입 실패")
