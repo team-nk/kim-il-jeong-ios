@@ -7,9 +7,9 @@ class ModifyViewModel: BaseVM {
 
     struct Input {
         let scheduleId: Int
-        let content: Driver<String>
-        let address: String
-        let color: Driver<String>
+        let contentText: Driver<String>
+        let addressText: Driver<String>
+        let colorText: Driver<String>
         let startTime: Driver<String>
         let endTime: Driver<String>
         let isAlways: Driver<Bool>
@@ -26,17 +26,21 @@ class ModifyViewModel: BaseVM {
     func transform(_ input: Input) -> Output {
         let api = Service()
         let putScheduleResult = PublishRelay<Bool>()
-        let info = Driver.combineLatest(input.content, input.color, input.startTime, input.endTime, input.isAlways)
+        let info = Driver.combineLatest(
+            input.contentText, input.addressText, input.colorText,
+            input.startTime, input.endTime, input.isAlways
+        )
         input.doneButtonDidTap.asObservable()
             .withLatestFrom(info)
-            .flatMap { content, color, startTime, endTime, isAlways in
-                api.putSchedule(input.scheduleId, content, input.address, color, startTime, endTime, isAlways) }
-            .subscribe(onNext: { res in
+            .flatMap { content, address, color, startTime, endTime, isAlways in
+                api.putSchedule(input.scheduleId, content, address,
+                                color, startTime.dateFormateT(), endTime.dateFormateT(), isAlways)
+            }.subscribe(onNext: { res in
                 res == .deleteOk ? putScheduleResult.accept(true) : putScheduleResult.accept(false)
             }).disposed(by: disposeBag)
 
         let content = PublishRelay<String>()
-        input.content.asObservable()
+        input.contentText.asObservable()
             .map { $0.count }
             .subscribe(onNext: { length in
                 content.accept(String(length))

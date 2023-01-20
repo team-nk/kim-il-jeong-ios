@@ -85,7 +85,18 @@ class MainVC: BaseVC {
     }
     override func viewWillAppear(_ animated: Bool) {
         refresh.accept(())
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
     }
+
+    @objc func reloadData(_ notification: Notification) {
+        viewAppear.accept(())
+    }
+
     override func bind() {
         let input = MainViewModel.Input(refresh: refresh.asSignal(), viewAppear: viewAppear.asSignal())
         let output = viewModel.transform(input)
@@ -104,19 +115,15 @@ class MainVC: BaseVC {
             .bind(to: toDayDoTableView.rx.items(
                 cellIdentifier: ToDoTableViewCell.cellID,
                 cellType: ToDoTableViewCell.self)) { _, item, cell in
-                    let nowDate = item.end_time
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.locale = Locale(identifier: "ko_KR")
-                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                    let str = dateFormatter.date(from: nowDate)
-                    let myDateFormatter = DateFormatter()
-                    myDateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                    let time = myDateFormatter.string(from: str ?? Date())
-                    cell.dateLabel.text = time
+                    cell.dateLabel.text = item.end_time.dateFormate()
                     cell.toDoTitle.text = item.content
                     cell.colorDot.tintColor = item.color.colorDistinction()
-                    cell.selectionStyle = .none
-                    cell.backgroundColor = .clear
+                    cell.scheduleId = item.schedule_id
+                    cell.startTime = item.start_time
+                    cell.endTime = item.end_time
+                    cell.color = item.color
+                    cell.isAlways = item.is_always
+                    cell.address = item.address ?? ""
                 }.disposed(by: disposeBag)
     }
     override func configureVC() {
@@ -228,6 +235,16 @@ class MainVC: BaseVC {
 extension MainVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailMainVC = DetailMainVC()
+        let cell = tableView.cellForRow(at: indexPath) as? ToDoTableViewCell
+        detailMainVC.cellColor.backgroundColor = cell?.colorDot.tintColor
+        detailMainVC.addressLabel.text = cell?.address
+        detailMainVC.timeLabel.text = "\(cell!.startTime.dateFormate()) ~ \(cell!.endTime.dateFormate())"
+        detailMainVC.titleLabel.text = cell?.toDoTitle.text
+        detailMainVC.scheduleId = cell?.scheduleId ?? 0
+        detailMainVC.color = cell?.color ?? "RED"
+        detailMainVC.isAlways = cell?.isAlways ?? false
+        detailMainVC.startTime = cell?.startTime ?? ""
+        detailMainVC.endTime = cell?.endTime ?? ""
         self.present(detailMainVC, animated: true, completion: nil)
     }
 }

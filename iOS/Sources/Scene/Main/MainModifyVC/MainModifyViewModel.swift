@@ -25,12 +25,12 @@ class MainModifyViewModel: BaseVM {
     func transform(_ input: Input) -> Output {
         let api = Service()
         let postScheduleResult = PublishRelay<Bool>()
-        let info = Driver.combineLatest(input.content, input.address,
-                                        input.color, input.startTime, input.endTime, input.isAlways)
+        let info = Driver.combineLatest(input.content, input.address, input.color,
+                                        input.startTime, input.endTime, input.isAlways)
         input.doneButtonDidTap.asObservable()
             .withLatestFrom(info)
             .flatMap { content, address, color, startTime, endTime, isAlways in
-                api.postSchedule(content, address, color, startTime, endTime, isAlways) }
+                api.postSchedule(content, address, color, startTime.dateFormateT(), endTime.dateFormateT(), isAlways) }
             .subscribe(onNext: { res in
                 res == .createOk ? postScheduleResult.accept(true) : postScheduleResult.accept(false)
             }).disposed(by: disposeBag)

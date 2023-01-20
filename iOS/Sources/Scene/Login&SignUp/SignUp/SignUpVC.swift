@@ -91,17 +91,16 @@ class SignUpVC: BaseVC {
         $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
         $0.layer.cornerRadius = 10
     }
-    override func addView() {
-        [
-            signUpLabel, emailTextField,
-            emailCheckButton, emailCodeTextField,
-            codeCheckButton, idTextField,
-            idCheckButton, passwordTextField,
-            passwordCheckTextField, noticePasswordLabel,
-            noticeLabel, nextButton
-        ].forEach {
-            view.addSubview($0)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("signUp"),
+            object: nil
+        )
+    }
+    @objc func reloadData(_ notification: Notification) {
+        self.navigationController?.popViewController(animated: true)
     }
     override func bind() {
         let input = SignUpViewModel.Input(emailText: emailTextField.rx.text.orEmpty.asDriver(),
@@ -165,6 +164,18 @@ class SignUpVC: BaseVC {
                     viewModel.isRePasswordCheck = false
                 }
             }).disposed(by: disposeBag)
+    }
+    override func addView() {
+        [
+            signUpLabel, emailTextField,
+            emailCheckButton, emailCodeTextField,
+            codeCheckButton, idTextField,
+            idCheckButton, passwordTextField,
+            passwordCheckTextField, noticePasswordLabel,
+            noticeLabel, nextButton
+        ].forEach {
+            view.addSubview($0)
+        }
     }
     // swiftlint:disable function_body_length
     override func setLayout() {

@@ -11,11 +11,13 @@ struct LocationModel: Codable {
 // MARK: - LocationList
 struct LocationList: Codable {
     let scheduleId: Int
-    let address: String
-    let latitude: Double
-    let longitude: Double
+    let buildingName: String
+    let latitude: String
+    let longitude: String
+    let color: String
     enum CodingKeys: String, CodingKey {
         case scheduleId = "schedule_id"
-        case latitude, longitude, address
+        case buildingName = "building_name"
+        case latitude, longitude, color
     }
 }

@@ -11,12 +11,19 @@ class MapVC: BaseVC {
     private var currentLocation: CLLocation!
     private let mapView = MKMapView()
     private var fpc: FloatingPanelController!
+    private var color = PublishRelay<String>()
     private var contentsVC: DetailMapVC!
     private let viewAppear = PublishRelay<Void>()
     private let viewModel = MapViewModel()
+    private var annotations = [MKAnnotation]()
+
+    override func viewWillAppear(_ animated: Bool) {
+        viewAppear.accept(())
+    }
     override func configureVC() {
         setUserLocation()
         floatingPanelView()
+        mapView.delegate = self
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.reloadData (_:)),
@@ -25,19 +32,23 @@ class MapVC: BaseVC {
         )
     }
     @objc func reloadData(_ notification: Notification) {
+        removeAllAnnotations()
         viewAppear.accept(())
     }
     override func bind() {
+        mapView.delegate = self
         let input = MapViewModel.Input(viewAppear: viewAppear.asSignal())
         let output = viewModel.transform(input)
         output.locationList.subscribe(onNext: { [self] in
-            for count in $0 {
-                setMapView(coordinate: change(xAddress: count.latitude, yAddress: count.longitude), addr: count.address)
-            }
+            $0.forEach {
+                setMapView(
+                    coordinate: change(
+                        xAddress: $0.latitude,
+                        yAddress: $0.longitude
+                    ),
+                    addr: $0.buildingName,
+                    color: $0.color) }
         }).disposed(by: disposeBag)
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        viewAppear.accept(())
     }
     private func setUserLocation() {
         self.locationManager.delegate = self
@@ -56,17 +67,27 @@ class MapVC: BaseVC {
         fpc.layout = MapFloatingPanelLayout()
         fpc.invalidateLayout()
     }
-    private func change(xAddress: Double, yAddress: Double) -> CLLocationCoordinate2D {
-        let mapXY = CLLocationCoordinate2D(latitude: xAddress, longitude: yAddress)
+    private func change(xAddress: String, yAddress: String) -> CLLocationCoordinate2D {
+        let mapXY = CLLocationCoordinate2D(latitude: Double(yAddress) ?? 0.0, longitude: Double(xAddress) ?? 0.0)
         return mapXY
     }
-    private func setMapView(coordinate: CLLocationCoordinate2D, addr: String) {
-        let annotation = MKPointAnnotation()
+    private func setMapView(coordinate: CLLocationCoordinate2D, addr: String, color: String) {
+        let annotation = CustomPointAnnotation()
         annotation.coordinate = coordinate
         annotation.title = addr
+        annotation.color = color
         mapView.addAnnotation(annotation)
-        mapView.delegate = self
     }
+    private func removeAllAnnotations() {
+        let annotations = mapView.annotations
+        if annotations.count != 0 {
+          for annotation in annotations {
+            mapView.removeAnnotation(annotation)
+          }
+        } else {
+          return
+        }
+      }
     override func addView() {
         self.view.addSubview(mapView)
     }
@@ -85,8 +106,10 @@ extension MapVC: MKMapViewDelegate, CLLocationManagerDelegate {
             let annotationView = MKUserLocationView(annotation: annotation, reuseIdentifier: "MyMarker")
             return annotationView
         default:
-            let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "MyMarker")
-            annotationView.markerTintColor = .blue
+            let customAnnotation = annotation as? CustomPointAnnotation
+            let annotationView = MKMarkerAnnotationView(annotation: customAnnotation, reuseIdentifier: "MyMarker")
+            annotationView.markerTintColor = customAnnotation?.color.colorDistinction()
+            annotationView.glyphImage = UIImage(systemName: "mappin.and.ellipse")
             return annotationView
         }
     }

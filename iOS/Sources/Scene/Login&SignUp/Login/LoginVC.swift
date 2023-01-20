@@ -27,9 +27,6 @@ class LoginVC: BaseVC {
     private let googleLoginButton = UIButton().then {
         $0.setImage(KimIlJeongImage.google.image, for: .normal)
     }
-    private let appleLoginButton = UIButton().then {
-        $0.setImage(KimIlJeongImage.apple.image, for: .normal)
-    }
     private let kakaoLoginButton = UIButton().then {
         $0.setImage(KimIlJeongImage.kakao.image, for: .normal)
     }
@@ -39,7 +36,6 @@ class LoginVC: BaseVC {
             kimIlJeongLabel,
             loginLabel,
             googleLoginButton,
-            appleLoginButton,
             kakaoLoginButton,
             emailLoginButton
         ].forEach {
@@ -69,17 +65,12 @@ class LoginVC: BaseVC {
         }
         googleLoginButton.snp.makeConstraints {
             $0.width.height.equalTo(50)
-            $0.centerX.equalToSuperview().offset(-80)
-            $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
-        }
-        appleLoginButton.snp.makeConstraints {
-            $0.width.height.equalTo(50)
-            $0.centerX.equalToSuperview()
+            $0.centerX.equalToSuperview().offset(-50)
             $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
         }
         kakaoLoginButton.snp.makeConstraints {
             $0.width.height.equalTo(50)
-            $0.centerX.equalToSuperview().offset(80)
+            $0.centerX.equalToSuperview().offset(50)
             $0.bottom.equalTo(emailLoginButton.snp.top).offset(-30)
         }
         emailLoginButton.snp.makeConstraints {
