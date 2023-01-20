@@ -14,4 +14,11 @@ extension UIButton {
         let checkImage = UIImage(systemName: "checkmark", withConfiguration: imageConfig.self)
         self.setImage(checkImage, for: .normal)
     }
+    func setButton(title: String, titleColor: UIColor, backgroundColor: UIColor) {
+        self.backgroundColor = backgroundColor
+        self.layer.cornerRadius = 10
+        self.setTitle(title, for: .normal)
+        self.setTitleColor(titleColor, for: .normal)
+        self.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+    }
 }
