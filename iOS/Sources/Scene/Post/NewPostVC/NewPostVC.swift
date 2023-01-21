@@ -77,6 +77,7 @@ class NewPostVC: BaseVC {
             .subscribe(onNext: {
                 if $0 == true {
                     self.navigationController?.popViewController(animated: true)
+                    scheduleContentForNew.accept("일정을 선택해 주세요")
                 } else {
                     print("false")
                 }
