@@ -93,7 +93,9 @@ class MyPageVC: BaseVC {
         userMenuTableView.reloadData()
         editButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.pushViewController(MyEditVC(), animated: true)
+                let next = MyEditVC()
+                next.navigationItem.title = "정보 변경하기"
+                self.navigationController?.pushViewController(next, animated: true)
             }).disposed(by: disposeBag)
         myScheduleButton.rx.tap
             .subscribe(onNext: {

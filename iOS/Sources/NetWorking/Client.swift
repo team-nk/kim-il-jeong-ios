@@ -141,13 +141,6 @@ extension API: TargetType {
             return .requestPlain
         case .getAllPosts:
             return .requestPlain
-//        case .getDetailPost(let id):
-//            return .requestParameters(
-//                parameters:
-//                    [
-//                        "post-id": id
-//                    ],
-//                encoding: URLEncoding.queryString)
         case .getDetailPost:
             return .requestPlain
         case .postNewPost(let title, let content, let scheduleId):
@@ -159,13 +152,6 @@ extension API: TargetType {
                         "schedule_id": scheduleId
                     ],
                 encoding: JSONEncoding.prettyPrinted)
-//        case .getAllComments(let id):
-//            return .requestParameters(
-//                parameters:
-//                    [
-//                        "post-id": id
-//                    ],
-//                encoding: URLEncoding.queryString)
         case .getAllComments:
             return .requestPlain
         case .postNewComment(let content, _):
