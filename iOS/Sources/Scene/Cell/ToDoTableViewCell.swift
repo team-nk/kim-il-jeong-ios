@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 class ToDoTableViewCell: UITableViewCell {
+    var scheduleId = 0
+    var color = ""
+    var isAlways = false
+    var startTime = ""
+    var endTime = ""
+    var address = ""
     typealias KimIlJeongColor = KimIlJeongAsset.Color
     static let cellID = "CellID"
     let dateLabel = UILabel().then {
@@ -26,6 +32,8 @@ class ToDoTableViewCell: UITableViewCell {
     }
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        self.backgroundColor = .clear
         [dateLabel, colorDot, toDoTitle].forEach { self.addSubview($0) }
         layout()
     }

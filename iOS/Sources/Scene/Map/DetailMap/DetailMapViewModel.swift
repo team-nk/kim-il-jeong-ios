@@ -24,12 +24,7 @@ class DetailMapViewModel: BaseVM {
         input.viewAppear.asObservable()
             .flatMap { api.getMapSchedules() }
             .subscribe(onNext: { data, res in
-                switch res {
-                case .getOk:
-                    myMapSchedules.accept(data!.schedule_list)
-                default:
-                    return
-                }
+                res == .getOk ? myMapSchedules.accept(data!.schedule_list) : myMapSchedules.accept([])
             }).disposed(by: disposeBag)
         input.selectedIndex.asObservable()
             .subscribe(onNext: { index in

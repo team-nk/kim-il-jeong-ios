@@ -1,15 +1,13 @@
-//
-//  DetailLocationTableViewCell.swift
-//  Kim-Il-Jeong
-//
-//  Created by 박주영 on 2022/10/19.
-//  Copyright © 2022 com.TeamNK. All rights reserved.
-//
-
 import UIKit
 import SnapKit
 import Then
+
 class DetailLocationTableViewCell: BaseTC {
+    var scheduleId = 0
+    var startTime = ""
+    var endTime = ""
+    var color = ""
+    var isAlways = false
     let titleLabel = UILabel().then {
         $0.text = "sdfs"
         $0.font = UIFont.systemFont(ofSize: 14, weight: .regular)

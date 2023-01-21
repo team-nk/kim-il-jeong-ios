@@ -169,6 +169,40 @@ final class Service {
                 return .deleteOk
             }
             .catch { [unowned self] in return .just(setNetworkError($0)) }
+    func deleteSchedule(_ scheduleId: Int) -> Single<NetworkingResult> {
+        return provider.rx.request(.deleteSchedule(scheduleId: scheduleId))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .deleteOk
+            }
+            .catch {[unowned self] in return .just(setNetworkError($0))}
+    }
+    // swiftlint:disable function_parameter_count
+    func postSchedule(_ content: String, _ address: String, _ color: String, _ startTime: String, _ endTime: String, _ isAlways: Bool) -> Single<NetworkingResult> {
+        return provider.rx.request(.postSchedule(content: content, address: address, color: color, startTime: startTime, endTime: endTime, isAlways: isAlways))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .createOk
+            }
+            .catch {[unowned self] in return .just(setNetworkError($0))}
+    }
+    func putSchedule(_ scheduleId: Int, _ content: String, _ address: String, _ color: String, _ startTime: String, _ endTime: String, _ isAlways: Bool) -> Single<NetworkingResult> {
+        return provider.rx.request(.putSchedule(scheduleId: scheduleId, content: content, address: address, color: color, startTime: startTime, endTime: endTime, isAlways: isAlways))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .deleteOk
+            }
+            .catch {[unowned self] in return .just(setNetworkError($0))}
+    }
+    func getLocation() -> Single<(LocationModel?, NetworkingResult)> {
+        return provider.rx.request(.getLocation)
+            .filterSuccessfulStatusCodes()
+            .map(LocationModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
     }
     func setNetworkError(_ error: Error) -> NetworkingResult {
             print(error)

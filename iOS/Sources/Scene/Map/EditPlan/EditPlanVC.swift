@@ -9,13 +9,20 @@ import CoreLocation
 class EditPlanVC: BaseVC {
     var isNewPostDetail = PublishRelay<Bool>()
     let dataModel = BehaviorRelay<MapScheduleList?>(value: nil)
+// 여기부터
+    var scheduleId = 0
+    var color = ""
+    var isAlways = false
+    var startTime = ""
+    var endTime = ""
+// 여기까지 고쳐요
     let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
     }
     let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
     private let addressImageView = UIImageView().then {
@@ -45,6 +52,17 @@ class EditPlanVC: BaseVC {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
+// 여긴 왜 고친거야      
+//     private let deleteButton = UIButton(type: .system).then {
+//         $0.setButton(title: "Delete",
+//                      titleColor: KimIlJeongColor.errorColor.color,
+//                      backgroundColor: KimIlJeongColor.backGroundColor3.color)
+//     }
+//     private let modifyButton = UIButton(type: .system).then {
+//         $0.setButton(title: "Modify",
+//                      titleColor: KimIlJeongColor.surfaceColor.color,
+//                      backgroundColor: KimIlJeongColor.mainColor.color)
+//     }
     // swiftlint:disable function_body_length
     private func writeNewPost() {
         isNewPostDetail
@@ -112,6 +130,56 @@ class EditPlanVC: BaseVC {
                 }
             }).disposed(by: disposeBag)
     }
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
+    }
+    @objc func reloadData(_ notification: Notification) {
+        self.dismiss(animated: true)
+    }
+
+    override func configureVC() {
+        writeNewPost()
+// 쉣 조졌다 미친 난이도        
+//         modifyButton.rx.tap.subscribe(onNext: { [self] in
+//             let modifyVC = ModifyVC()
+//             modifyVC.addressLabel.text = addressLabel.text
+//             modifyVC.allDayScheduleSwitch.isOn = isAlways
+//             modifyVC.titleTextField.text = titleLabel.text
+//             modifyVC.scheduleId = scheduleId
+//             modifyVC.colorStackView.color.accept(color)
+//             modifyVC.startTimeTextField.text = startTime.dateFormate()
+//             modifyVC.endTimeTextField.text = endTime.dateFormate()
+//             modifyVC.startDatePicker.date = startTime.dateFormatter()
+//             modifyVC.endDatePicker.date = endTime.dateFormatter()
+//             if #available(iOS 16.0, *) {
+//                 if let sheet = modifyVC.sheetPresentationController {
+//                     let id = UISheetPresentationController.Detent.Identifier("frist")
+//                     let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+//                         return 700
+//                     }
+//                     sheet.detents = [detent]
+//                     sheet.preferredCornerRadius = 32
+//                     self.present(modifyVC, animated: true)
+//                 }
+//                 modifyVC.isModalInPresentation = true
+//             }
+//         }).disposed(by: disposeBag)
+//         deleteButton.rx.tap.subscribe(onNext: {
+//             let deleteCustomVC = DeleteCustomAlertVC()
+//             deleteCustomVC.scheduleId = self.scheduleId
+//             deleteCustomVC.modalPresentationStyle = .overFullScreen
+//             deleteCustomVC.modalTransitionStyle = .crossDissolve
+//             guard let pvc = self.presentingViewController else { return }
+//             self.dismiss(animated: false) {
+//               pvc.present(deleteCustomVC, animated: true)
+//             }
+//         }).disposed(by: disposeBag)
+    }
     override func addView() {
         [
             cellColor,
@@ -122,9 +190,6 @@ class EditPlanVC: BaseVC {
             deleteButton,
             modifyButton
         ].forEach {view.addSubview($0)}
-    }
-    override func configureVC() {
-        writeNewPost()
     }
     override func setLayout() {
         cellColor.snp.makeConstraints {

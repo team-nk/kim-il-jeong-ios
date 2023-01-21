@@ -7,14 +7,14 @@ import FloatingPanel
 public let isSheetClosed = BehaviorRelay<Bool>(value: false)
 
 class DetailMapVC: BaseVC {
-    private let viewAppear = PublishRelay<Void>()
+    let viewAppear = PublishRelay<Void>()
     private let viewModel = DetailMapViewModel()
     private let nextData = BehaviorRelay<MapScheduleList?>(value: nil)
     var isNewPost = BehaviorRelay<Bool>(value: false)
     let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
         $0.text = "오늘 일정"
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
     }
     let plusButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
@@ -27,9 +27,21 @@ class DetailMapVC: BaseVC {
         $0.separatorStyle = .none
         $0.showsVerticalScrollIndicator = false
     }
+
     override func viewWillAppear(_ animated: Bool) {
         viewAppear.accept(())
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.reloadData (_:)),
+            name: NSNotification.Name("reloadData"),
+            object: nil
+        )
     }
+
+    @objc func reloadData(_ notification: Notification) {
+        viewAppear.accept(())
+    }
+
     override func bind() {
         let input = DetailMapViewModel.Input(
             viewAppear: viewAppear.asSignal(),
@@ -39,20 +51,13 @@ class DetailMapVC: BaseVC {
             .bind(to: detailLocationTabelView.rx.items(
                 cellIdentifier: "DetailLocationTableViewCell",
                 cellType: DetailLocationTableViewCell.self)) { _, item, cell in
-            switch item.color {
-            case "RED":
-                cell.tableColor.backgroundColor = KimIlJeongColor.redTag.color
-            case "YELLOW":
-                cell.tableColor.backgroundColor = KimIlJeongColor.yellowTag.color
-            case "GREEN":
-                cell.tableColor.backgroundColor = KimIlJeongColor.greenTag.color
-            case "PURPLE":
-                cell.tableColor.backgroundColor = KimIlJeongColor.purpleTag.color
-            default:
-                cell.tableColor.backgroundColor = KimIlJeongColor.blueTag.color
-            }
+            cell.tableColor.backgroundColor = item.color.colorDistinction()
             cell.titleLabel.text = item.content
             cell.subTitleLabel.text = item.address
+//             cell.startTime = item.start_time
+//             cell.endTime = item.end_time
+//             cell.scheduleId = item.schedule_id
+//             cell.color = item.color
         }.disposed(by: disposeBag)
         output.nextData
             .subscribe(onNext: { data in
@@ -90,6 +95,22 @@ class DetailMapVC: BaseVC {
                     print($0)
                 }
             }).disposed(by: disposeBag)
+        detailLocationTabelView.delegate = self
+        plusButton.rx.tap.subscribe(onNext: {
+            let mainModifyVC = MainModifyVC()
+            if #available(iOS 16.0, *) {
+                if let sheet = mainModifyVC.sheetPresentationController {
+                    let id = UISheetPresentationController.Detent.Identifier("frist")
+                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                        return 700
+                    }
+                    sheet.detents = [detent]
+                    sheet.preferredCornerRadius = 32
+                    self.present(mainModifyVC, animated: true)
+                }
+                mainModifyVC.isModalInPresentation = true
+            }
+        }).disposed(by: disposeBag)
     }
     override func addView() {
         [
@@ -114,3 +135,29 @@ class DetailMapVC: BaseVC {
         }
     }
 }
+// extension DetailMapVC: UITableViewDelegate {
+//     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//         let cell = tableView.cellForRow(at: indexPath) as? DetailLocationTableViewCell
+//         let editPlanVC = EditPlanVC()
+//         editPlanVC.cellColor.backgroundColor = cell?.tableColor.backgroundColor
+//         editPlanVC.addressLabel.text = cell?.subTitleLabel.text
+//         editPlanVC.timeLabel.text = "\(cell!.startTime.dateFormate()) ~ \(cell!.endTime.dateFormate())"
+//         editPlanVC.titleLabel.text = cell?.titleLabel.text
+//         editPlanVC.scheduleId = cell?.scheduleId ?? 0
+//         editPlanVC.color = cell?.color ?? "RED"
+//         editPlanVC.isAlways = cell?.isAlways ?? false
+//         editPlanVC.startTime = cell?.startTime ?? ""
+//         editPlanVC.endTime = cell?.endTime ?? ""
+//         if #available(iOS 16.0, *) {
+//             if let sheet = editPlanVC.sheetPresentationController {
+//                 let id = UISheetPresentationController.Detent.Identifier("frist")
+//                 let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+//                     return 220
+//                 }
+//                 sheet.detents = [detent]
+//                 sheet.preferredCornerRadius = 32
+//                 self.present(editPlanVC, animated: true)
+//             }
+//         }
+//     }
+// }

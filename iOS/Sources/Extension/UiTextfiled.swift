@@ -1,6 +1,9 @@
 import UIKit
 import SnapKit
 import Then
+import RxCocoa
+import RxSwift
+
 extension UITextField {
     typealias KimIlJeongColor = KimIlJeongAsset.Color
     func addLeftPadding() {
@@ -26,5 +29,25 @@ extension UITextField {
         forTextField.layer.cornerRadius = 10
         forTextField.textColor = KimIlJeongColor.strongExplanation.color
         forTextField.font = .systemFont(ofSize: 18.48, weight: .regular)
+    }
+    func setModifyTextField(textColor: UIColor, backGroundColor: UIColor) {
+        self.textColor = textColor
+        self.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        self.layer.cornerRadius = 8
+        self.backgroundColor = backGroundColor
+        self.textAlignment = .center
+    }
+    func setToolBar(width: CGFloat, disposeBag: DisposeBag, datePicker: UIDatePicker) {
+        let toolBar = UIToolbar(frame: CGRect(x: 0.0, y: 0.0, width: width, height: 44.0))
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let barButton = UIBarButtonItem(title: "Done", style: .plain, target: target, action: nil)
+        toolBar.setItems([flexible, barButton], animated: false)
+        self.inputAccessoryView = toolBar
+        barButton.rx.tap.subscribe(onNext: { [self] in
+            self.resignFirstResponder()
+        }).disposed(by: disposeBag)
+        datePicker.datePickerMode = .dateAndTime
+        datePicker.preferredDatePickerStyle = .wheels
+        self.inputView = datePicker
     }
 }
