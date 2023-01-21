@@ -156,7 +156,7 @@ extension API: TargetType {
                     [
                         "title": title,
                         "content": content,
-                        "scheduleId": scheduleId
+                        "schedule_id": scheduleId
                     ],
                 encoding: JSONEncoding.prettyPrinted)
 //        case .getAllComments(let id):

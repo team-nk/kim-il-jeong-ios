@@ -4,9 +4,12 @@ import Then
 import RxCocoa
 import FloatingPanel
 
+let isSheetClosed = BehaviorRelay<Bool>(value: false)
+
 class DetailMapVC: BaseVC {
     private let viewAppear = PublishRelay<Void>()
     private let viewModel = DetailMapViewModel()
+    private let nextData = BehaviorRelay<MapScheduleList?>(value: nil)
     var isNewPost = BehaviorRelay<Bool>(value: false)
     let titleLabel = UILabel().then {
         $0.textColor = KimIlJeongAsset.Color.textColor.color
@@ -24,30 +27,13 @@ class DetailMapVC: BaseVC {
         $0.separatorStyle = .none
         $0.showsVerticalScrollIndicator = false
     }
-    private func cellDidTap() {
-        detailLocationTabelView.rx.itemSelected
-            .subscribe(onNext: { _ in
-                let editPlanVC = EditPlanVC()
-                if #available(iOS 16.0, *) {
-                    if let sheet = editPlanVC.sheetPresentationController {
-                        let id = UISheetPresentationController.Detent.Identifier("frist")
-                        let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
-                            return 220
-                        }
-                        sheet.detents = [detent]
-                        sheet.preferredCornerRadius = 32
-                        self.present(editPlanVC, animated: true)
-                    }
-                }
-                editPlanVC.isModalInPresentation = true
-                editPlanVC.isNewPostDetail.accept(self.isNewPost.value)
-            }).disposed(by: disposeBag)
-    }
     override func viewWillAppear(_ animated: Bool) {
         viewAppear.accept(())
     }
     override func bind() {
-        let input = DetailMapViewModel.Input(viewAppear: viewAppear.asSignal())
+        let input = DetailMapViewModel.Input(
+            viewAppear: viewAppear.asSignal(),
+            selectedIndex: detailLocationTabelView.rx.itemSelected.asSignal())
         let output = viewModel.transform(input)
         output.myMapSchedules
             .bind(to: detailLocationTabelView.rx.items(
@@ -68,13 +54,43 @@ class DetailMapVC: BaseVC {
             cell.titleLabel.text = item.content
             cell.subTitleLabel.text = item.address
         }.disposed(by: disposeBag)
+        output.nextData
+            .subscribe(onNext: { data in
+                self.nextData.accept(data.self)
+            }).disposed(by: disposeBag)
+        detailLocationTabelView.rx.itemSelected
+            .subscribe(onNext: { _ in
+                self.cellDidTap()
+            }).disposed(by: disposeBag)
+    }
+    private func cellDidTap() {
+        let editPlanVC = EditPlanVC()
+        editPlanVC.dataModel.accept(self.nextData.value)
+        if #available(iOS 16.0, *) {
+            if let sheet = editPlanVC.sheetPresentationController {
+                let id = UISheetPresentationController.Detent.Identifier("frist")
+                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                    return 220
+                }
+                sheet.detents = [detent]
+                sheet.preferredCornerRadius = 32
+                self.present(editPlanVC, animated: true)
+            }
+        }
+        editPlanVC.isModalInPresentation = true
+        editPlanVC.isNewPostDetail.accept(self.isNewPost.value)
     }
     override func configureVC() {
-//        detailLocationTabelView.delegate = self
         self.navigationController?.isNavigationBarHidden = false
-        cellDidTap()
+        isSheetClosed
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.dismiss(animated: true)
+                } else {
+                    print($0)
+                }
+            }).disposed(by: disposeBag)
     }
-
     override func addView() {
         [
             plusButton,

@@ -94,6 +94,14 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    func sendNewPost(_ title: String, _ content: String, _ scheduleID: Int) -> Single<NetworkingResult> {
+        return provider.rx.request(.postNewPost(title, content, scheduleID))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .createOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0)) }
+    }
     func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
         return provider.rx.request(.getAllComments(postId: postID))
             .filterSuccessfulStatusCodes()

@@ -83,7 +83,6 @@ class PostListVC: BaseVC {
                 cell.dateLabel.text = items.birthday
                 cell.selectionStyle = .none
                 self.birthUserCount += 1
-                print(self.birthUserCount)
                 self.updateConstraints()
             }.disposed(by: disposeBag)
         output.posts.bind(to: scheduleTableView.rx.items(
@@ -110,7 +109,6 @@ class PostListVC: BaseVC {
                 }
                 cell.selectionStyle = .none
                 self.postsCount += 1
-                print(self.postsCount)
                 self.updateConstraints()
             }.disposed(by: disposeBag)
         output.postID

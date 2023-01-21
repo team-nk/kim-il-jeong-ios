@@ -4,7 +4,10 @@ import RxCocoa
 import SnapKit
 import Then
 
+public let scheduleIDForNew = PublishRelay<Int>()
+
 class NewPostVC: BaseVC {
+    private let viewModel = NewPostVM()
     private let contentTextView = UITextView().then {
         $0.backgroundColor = .clear
         $0.text = "내용을 입력하세요(첫 줄은 제목입니다.)"
@@ -38,6 +41,31 @@ class NewPostVC: BaseVC {
         $0.setTitle("생성하기", for: .normal)
         $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18.48, weight: .bold)
+    }
+    override func bind() {
+        let titleString = PublishRelay<String>()
+        let contentString = PublishRelay<String>()
+        createButton.rx.tap
+            .subscribe(onNext: {
+                let temp = self.contentTextView.text.split(separator: "\n")
+                titleString.accept("\(temp[0])")
+                contentString.accept("\(temp[1])")
+            }).disposed(by: disposeBag)
+        let input = NewPostVM.Input(
+            buttonDidTap: self.createButton.rx.tap.asSignal(),
+            newTitle: titleString.asDriver(onErrorJustReturn: ""),
+            newContent: contentString.asDriver(onErrorJustReturn: ""),
+            scheduleID: scheduleIDForNew.asDriver(onErrorJustReturn: 0)
+        )
+        let output = self.viewModel.transform(input)
+        output.postResult
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    print("false")
+                }
+            }).disposed(by: self.disposeBag)
     }
     override func addView() {
         [
