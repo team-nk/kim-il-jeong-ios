@@ -84,7 +84,6 @@ class DetailMapVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         isSheetClosed
             .subscribe(onNext: {
-                let former = NewPostVC()
                 if $0 == true {
                     self.dismiss(animated: true)
                 } else {
