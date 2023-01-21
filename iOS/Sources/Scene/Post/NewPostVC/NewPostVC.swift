@@ -5,6 +5,7 @@ import SnapKit
 import Then
 
 public let scheduleIDForNew = PublishRelay<Int>()
+public let scheduleContentForNew = BehaviorRelay<String>(value: "")
 
 class NewPostVC: BaseVC {
     private let viewModel = NewPostVM()
@@ -42,7 +43,21 @@ class NewPostVC: BaseVC {
         $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18.48, weight: .bold)
     }
+    private func setButtonTitle() {
+        isSheetClosed
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.dismiss(animated: true)
+                    scheduleContentForNew
+                        .bind(to: self.placeholderLabel.rx.text)
+                        .disposed(by: self.disposeBag)
+                } else {
+                    print($0)
+                }
+            }).disposed(by: disposeBag)
+    }
     override func bind() {
+        setButtonTitle()
         let titleString = PublishRelay<String>()
         let contentString = PublishRelay<String>()
         createButton.rx.tap

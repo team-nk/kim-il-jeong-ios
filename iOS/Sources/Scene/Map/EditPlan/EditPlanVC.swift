@@ -80,6 +80,7 @@ class EditPlanVC: BaseVC {
                     self.modifyButton.rx.tap
                         .subscribe(onNext: {
                             scheduleIDForNew.accept(self.dataModel.value?.schedule_id ?? 0)
+                            scheduleContentForNew.accept(self.dataModel.value?.content ?? "일정을 선택해 주세요")
                             self.dismiss(animated: true)
                             isSheetClosed.accept(true)
                         }).disposed(by: self.disposeBag)

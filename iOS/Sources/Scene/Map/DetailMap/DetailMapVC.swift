@@ -4,7 +4,7 @@ import Then
 import RxCocoa
 import FloatingPanel
 
-let isSheetClosed = BehaviorRelay<Bool>(value: false)
+public let isSheetClosed = BehaviorRelay<Bool>(value: false)
 
 class DetailMapVC: BaseVC {
     private let viewAppear = PublishRelay<Void>()
@@ -84,6 +84,7 @@ class DetailMapVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         isSheetClosed
             .subscribe(onNext: {
+                let former = NewPostVC()
                 if $0 == true {
                     self.dismiss(animated: true)
                 } else {
