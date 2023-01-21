@@ -70,13 +70,6 @@ class CommentListVC: BaseVC {
             cellType: CommentCell.self)) { _, items, cell in
                 cell.commentLabel.text = items.content
                 cell.userLabel.text = items.accountId
-//                let formatter = ISO8601DateFormatter()
-//                formatter.formatOptions = [ .withFullDate, .withTime, .withColonSeparatorInTime ]
-//                let createdTime = formatter.date(from: items.createTime)
-//                let createdWhen: String = "\(createdTime!)"
-//                let endIndex = createdWhen.index(createdWhen.startIndex, offsetBy: 15)
-//                let range = ...endIndex
-//                cell.commentDateLabel.text = "\(createdWhen[range])"
                 cell.commentDateLabel.text = transformISO8601(stringDate: items.createTime)
                 self.commentCount += 1
                 self.updateConstraints()

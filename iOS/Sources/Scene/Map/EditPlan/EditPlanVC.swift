@@ -8,11 +8,12 @@ import CoreLocation
 
 class EditPlanVC: BaseVC {
     var isNewPostDetail = PublishRelay<Bool>()
-    private let cellColor = UIView().then {
+    let dataModel = BehaviorRelay<MapScheduleList?>(value: nil)
+    let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
     }
-    private let titleLabel = UILabel().then {
+    let titleLabel = UILabel().then {
         $0.text = "대덕대학교 자습"
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
@@ -20,12 +21,12 @@ class EditPlanVC: BaseVC {
     private let addressImageView = UIImageView().then {
         $0.image = UIImage(named: "AddressPin")
     }
-    private let addressLabel = UILabel().then {
+    let addressLabel = UILabel().then {
         $0.text = "대전광역시 유성구 가정북로 76"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.textColor.color
     }
-    private let timeLabel = UILabel().then {
+    let timeLabel = UILabel().then {
         $0.text = "2022-05-02 16:30 ~ 2022-05-02 20:00"
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.description.color
@@ -44,10 +45,30 @@ class EditPlanVC: BaseVC {
         $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
+    // swiftlint:disable function_body_length
     private func writeNewPost() {
         isNewPostDetail
             .subscribe(onNext: {
                 if $0 == true {
+                    switch self.dataModel.value?.color {
+                    case "RED":
+                        self.cellColor.backgroundColor = KimIlJeongColor.errorColor.color
+                    case "YELLOW":
+                        self.cellColor.backgroundColor = KimIlJeongColor.yellowColor.color
+                    case "GREEN":
+                        self.cellColor.backgroundColor = KimIlJeongColor.greenColor.color
+                    case "BLUE":
+                        self.cellColor.backgroundColor = KimIlJeongColor.mainColor.color
+                    case "PURPLE":
+                        self.cellColor.backgroundColor = KimIlJeongColor.purpleColor.color
+                    default:
+                        print("ColorIsEmpty")
+                    }
+                    self.titleLabel.text = self.dataModel.value?.content
+                    self.addressLabel.text = self.dataModel.value?.address
+                    self.timeLabel.text =
+                    transformISO8601(stringDate: self.dataModel.value?.start_time ?? "") +
+                    " ~ " + transformISO8601(stringDate: self.dataModel.value?.end_time ?? "")
                     self.deleteButton.setTitle("취소하기", for: .normal)
                     self.deleteButton.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
                     self.deleteButton.backgroundColor = .clear
@@ -58,7 +79,9 @@ class EditPlanVC: BaseVC {
                     self.modifyButton.setTitle("선택하기", for: .normal)
                     self.modifyButton.rx.tap
                         .subscribe(onNext: {
-                            self.dismiss(animated: false)
+                            scheduleIDForNew.accept(self.dataModel.value?.schedule_id ?? 0)
+                            self.dismiss(animated: true)
+                            isSheetClosed.accept(true)
                         }).disposed(by: self.disposeBag)
                 } else {
                     self.modifyButton.rx.tap.subscribe(onNext: { _ in
