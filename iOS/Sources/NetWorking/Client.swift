@@ -12,13 +12,17 @@ enum API {
     case idCheck(accountId: String)
     // Post
     case getBirthdayUsers
-    case getAllSchedules
+    case getAllPosts
+    case getDetailPost(postId: Int)
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
     case postNewComment(content: String, postId: Int)
     case getMySchedule
     case refreshToken
     case getMapSchedule
+    // User
+    case getMyInfo
+    case patchMyBirth(birthDate: String)
     case deleteSchedule(scheduleId: Int)
     case postSchedule(content: String, address: String, color: String,
                       startTime: String, endTime: String, isAlways: Bool)
@@ -53,8 +57,10 @@ extension API: TargetType {
         // Post
         case .getBirthdayUsers:
             return "/post/birthday"
-        case .getAllSchedules:
+        case .getAllPosts:
             return "/post"
+        case .getDetailPost(let id):
+            return "/post/\(id)"
         case .postNewPost:
             return "/post"
         case .getAllComments(let id):
@@ -67,6 +73,11 @@ extension API: TargetType {
             return "/auth"
         case .getMapSchedule:
             return "/schedule/map"
+        // User
+        case .getMyInfo:
+            return "/user"
+        case .patchMyBirth:
+            return "/user/birthday"
         case .deleteSchedule(let scheduleId):
             return "/schedule/\(scheduleId)"
         case .postSchedule:
@@ -82,10 +93,13 @@ extension API: TargetType {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment, .postSchedule:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllSchedules, .getAllComments, .getMySchedule, .getMapSchedule, .getLocation:
+                .getAllPosts, .getDetailPost, .getAllComments, .getMySchedule, .getMapSchedule,
+                .getMyInfo, .getLocation:
             return .get
         case .refreshToken, .putSchedule:
             return .put
+        case .patchMyBirth:
+            return .patch
         case .deleteSchedule:
             return .delete
         }
@@ -159,7 +173,9 @@ extension API: TargetType {
                                         ], encoding: JSONEncoding.prettyPrinted)
         case .getBirthdayUsers:
             return .requestPlain
-        case .getAllSchedules:
+        case .getAllPosts:
+            return .requestPlain
+        case .getDetailPost:
             return .requestPlain
         case .postNewPost(let title, let content, let scheduleId):
             return .requestParameters(
@@ -167,18 +183,24 @@ extension API: TargetType {
                     [
                         "title": title,
                         "content": content,
-                        "scheduleId": scheduleId
+                        "schedule_id": scheduleId
                     ],
                 encoding: JSONEncoding.prettyPrinted)
-        case .getAllComments(let id):
-            return .requestParameters(parameters: [
-                "post-id": id
-            ], encoding: URLEncoding.queryString)
+        case .getAllComments:
+            return .requestPlain
         case .postNewComment(let content, _):
             return .requestParameters(
                 parameters:
                     [
                         "content": content
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
+        // User
+        case .patchMyBirth(let date):
+            return .requestParameters(
+                parameters:
+                    [
+                        "birthday": date
                     ],
                 encoding: JSONEncoding.prettyPrinted)
         default:
@@ -188,9 +210,10 @@ extension API: TargetType {
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllSchedules,
-                .postNewPost, .getAllComments, .postNewComment, .getMySchedule, .getMapSchedule,
-                .deleteSchedule, .postSchedule, .getLocation, .putSchedule:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
+                .getAllPosts, .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
+                .getMySchedule, .getMapSchedule, .getMyInfo, .patchMyBirth, .deleteSchedule, 
+                .postSchedule, .getLocation, .putSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()

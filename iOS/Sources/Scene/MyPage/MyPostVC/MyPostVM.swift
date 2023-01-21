@@ -2,44 +2,29 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class PostListVM: BaseVM {
+class MyPostVM: BaseVM {
     private let disposeBag = DisposeBag()
     struct Input {
         let getLists: Driver<Void>
         let selectedIndex: Signal<IndexPath>
     }
     struct Output {
-        let birthUsers: BehaviorRelay<[Users]>
         let posts: BehaviorRelay<[Posts]>
         let getListResult: PublishRelay<Bool>
         let postID: BehaviorRelay<Int>
     }
     func transform(_ input: Input) -> Output {
         let api = Service()
-        let birthUsers = BehaviorRelay<[Users]>(value: [])
         let posts = BehaviorRelay<[Posts]>(value: [])
         let getListResult = PublishRelay<Bool>()
-        let postID = BehaviorRelay<Int>(value: 0)
+        let postID =  BehaviorRelay<Int>(value: 0)
         input.getLists.asObservable()
             .flatMap { _ in
-            api.fetchBirthdayUsers()
+                api.fetchAllPosts()
         }.subscribe(onNext: { data, res in
             switch res {
             case .getOk:
-                birthUsers.accept(data!.userList)
-                getListResult.accept(true)
-            default:
-                print(res)
-                getListResult.accept(false)
-            }
-        }).disposed(by: disposeBag)
-        input.getLists.asObservable()
-            .flatMap { _ in
-            api.fetchAllPosts()
-        }.subscribe(onNext: { data, res in
-            switch res {
-            case .getOk:
-                posts.accept(data!.postList)
+                posts.accept(data!.postList.filter { $0.mine == true })
                 getListResult.accept(true)
             default:
                 print(res)
@@ -52,7 +37,6 @@ class PostListVM: BaseVM {
                 postID.accept(value[index.row].id)
             }).disposed(by: disposeBag)
         return Output(
-            birthUsers: birthUsers,
             posts: posts,
             getListResult: getListResult,
             postID: postID

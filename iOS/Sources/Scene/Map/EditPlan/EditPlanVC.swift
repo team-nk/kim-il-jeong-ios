@@ -7,11 +7,15 @@ import RxSwift
 import CoreLocation
 
 class EditPlanVC: BaseVC {
+    var isNewPostDetail = PublishRelay<Bool>()
+    let dataModel = BehaviorRelay<MapScheduleList?>(value: nil)
+// 여기부터
     var scheduleId = 0
     var color = ""
     var isAlways = false
     var startTime = ""
     var endTime = ""
+// 여기까지 고쳐요
     let cellColor = UIView().then {
         $0.backgroundColor = KimIlJeongColor.purpleColor.color
         $0.layer.cornerRadius = 5
@@ -34,15 +38,97 @@ class EditPlanVC: BaseVC {
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         $0.textColor = KimIlJeongAsset.Color.description.color
     }
-    private let deleteButton = UIButton(type: .system).then {
-        $0.setButton(title: "Delete",
-                     titleColor: KimIlJeongColor.errorColor.color,
-                     backgroundColor: KimIlJeongColor.backGroundColor3.color)
+    let deleteButton = UIButton(type: .system).then {
+        $0.backgroundColor = KimIlJeongAsset.Color.backGroundColor3.color
+        $0.layer.cornerRadius = 10
+        $0.setTitle("Delete", for: .normal)
+        $0.setTitleColor(KimIlJeongAsset.Color.errorColor.color, for: .normal)
+        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
     }
-    private let modifyButton = UIButton(type: .system).then {
-        $0.setButton(title: "Modify",
-                     titleColor: KimIlJeongColor.surfaceColor.color,
-                     backgroundColor: KimIlJeongColor.mainColor.color)
+    let modifyButton = UIButton(type: .system).then {
+        $0.backgroundColor = KimIlJeongAsset.Color.mainColor.color
+        $0.layer.cornerRadius = 10
+        $0.setTitle("Modify", for: .normal)
+        $0.setTitleColor(KimIlJeongAsset.Color.surfaceColor.color, for: .normal)
+        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+    }
+// 여긴 왜 고친거야      
+//     private let deleteButton = UIButton(type: .system).then {
+//         $0.setButton(title: "Delete",
+//                      titleColor: KimIlJeongColor.errorColor.color,
+//                      backgroundColor: KimIlJeongColor.backGroundColor3.color)
+//     }
+//     private let modifyButton = UIButton(type: .system).then {
+//         $0.setButton(title: "Modify",
+//                      titleColor: KimIlJeongColor.surfaceColor.color,
+//                      backgroundColor: KimIlJeongColor.mainColor.color)
+//     }
+    // swiftlint:disable function_body_length
+    private func writeNewPost() {
+        isNewPostDetail
+            .subscribe(onNext: {
+                if $0 == true {
+                    switch self.dataModel.value?.color {
+                    case "RED":
+                        self.cellColor.backgroundColor = KimIlJeongColor.errorColor.color
+                    case "YELLOW":
+                        self.cellColor.backgroundColor = KimIlJeongColor.yellowColor.color
+                    case "GREEN":
+                        self.cellColor.backgroundColor = KimIlJeongColor.greenColor.color
+                    case "BLUE":
+                        self.cellColor.backgroundColor = KimIlJeongColor.mainColor.color
+                    case "PURPLE":
+                        self.cellColor.backgroundColor = KimIlJeongColor.purpleColor.color
+                    default:
+                        print("ColorIsEmpty")
+                    }
+                    self.titleLabel.text = self.dataModel.value?.content
+                    self.addressLabel.text = self.dataModel.value?.address
+                    self.timeLabel.text =
+                    transformISO8601(stringDate: self.dataModel.value?.start_time ?? "") +
+                    " ~ " + transformISO8601(stringDate: self.dataModel.value?.end_time ?? "")
+                    self.deleteButton.setTitle("취소하기", for: .normal)
+                    self.deleteButton.setTitleColor(KimIlJeongColor.textColor.color, for: .normal)
+                    self.deleteButton.backgroundColor = .clear
+                    self.deleteButton.rx.tap
+                        .subscribe(onNext: {
+                            self.dismiss(animated: true)
+                        }).disposed(by: self.disposeBag)
+                    self.modifyButton.setTitle("선택하기", for: .normal)
+                    self.modifyButton.rx.tap
+                        .subscribe(onNext: {
+                            scheduleIDForNew.accept(self.dataModel.value?.schedule_id ?? 0)
+                            scheduleContentForNew.accept(self.dataModel.value?.content ?? "일정을 선택해 주세요")
+                            self.dismiss(animated: true)
+                            isSheetClosed.accept(true)
+                        }).disposed(by: self.disposeBag)
+                } else {
+                    self.modifyButton.rx.tap.subscribe(onNext: { _ in
+                        let modifyVC = ModifyVC()
+                        if #available(iOS 16.0, *) {
+                            if let sheet = modifyVC.sheetPresentationController {
+                                let id = UISheetPresentationController.Detent.Identifier("frist")
+                                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                                    return 700
+                                }
+                                sheet.detents = [detent]
+                                sheet.preferredCornerRadius = 32
+                                self.present(modifyVC, animated: true)
+                            }
+                            modifyVC.isModalInPresentation = true
+                        }
+                    }).disposed(by: self.disposeBag)
+                    self.deleteButton.rx.tap.subscribe(onNext: {
+                        let deleteCustomVC = DeleteCustomAlertVC()
+                        deleteCustomVC.modalPresentationStyle = .overFullScreen
+                        deleteCustomVC.modalTransitionStyle = .crossDissolve
+                        guard let pvc = self.presentingViewController else { return }
+                        self.dismiss(animated: false) {
+                          pvc.present(deleteCustomVC, animated: true)
+                        }
+                    }).disposed(by: self.disposeBag)
+                }
+            }).disposed(by: disposeBag)
     }
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(
@@ -57,40 +143,42 @@ class EditPlanVC: BaseVC {
     }
 
     override func configureVC() {
-        modifyButton.rx.tap.subscribe(onNext: { [self] in
-            let modifyVC = ModifyVC()
-            modifyVC.addressLabel.text = addressLabel.text
-            modifyVC.allDayScheduleSwitch.isOn = isAlways
-            modifyVC.titleTextField.text = titleLabel.text
-            modifyVC.scheduleId = scheduleId
-            modifyVC.colorStackView.color.accept(color)
-            modifyVC.startTimeTextField.text = startTime.dateFormate()
-            modifyVC.endTimeTextField.text = endTime.dateFormate()
-            modifyVC.startDatePicker.date = startTime.dateFormatter()
-            modifyVC.endDatePicker.date = endTime.dateFormatter()
-            if #available(iOS 16.0, *) {
-                if let sheet = modifyVC.sheetPresentationController {
-                    let id = UISheetPresentationController.Detent.Identifier("frist")
-                    let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
-                        return 700
-                    }
-                    sheet.detents = [detent]
-                    sheet.preferredCornerRadius = 32
-                    self.present(modifyVC, animated: true)
-                }
-                modifyVC.isModalInPresentation = true
-            }
-        }).disposed(by: disposeBag)
-        deleteButton.rx.tap.subscribe(onNext: {
-            let deleteCustomVC = DeleteCustomAlertVC()
-            deleteCustomVC.scheduleId = self.scheduleId
-            deleteCustomVC.modalPresentationStyle = .overFullScreen
-            deleteCustomVC.modalTransitionStyle = .crossDissolve
-            guard let pvc = self.presentingViewController else { return }
-            self.dismiss(animated: false) {
-              pvc.present(deleteCustomVC, animated: true)
-            }
-        }).disposed(by: disposeBag)
+        writeNewPost()
+// 쉣 조졌다 미친 난이도        
+//         modifyButton.rx.tap.subscribe(onNext: { [self] in
+//             let modifyVC = ModifyVC()
+//             modifyVC.addressLabel.text = addressLabel.text
+//             modifyVC.allDayScheduleSwitch.isOn = isAlways
+//             modifyVC.titleTextField.text = titleLabel.text
+//             modifyVC.scheduleId = scheduleId
+//             modifyVC.colorStackView.color.accept(color)
+//             modifyVC.startTimeTextField.text = startTime.dateFormate()
+//             modifyVC.endTimeTextField.text = endTime.dateFormate()
+//             modifyVC.startDatePicker.date = startTime.dateFormatter()
+//             modifyVC.endDatePicker.date = endTime.dateFormatter()
+//             if #available(iOS 16.0, *) {
+//                 if let sheet = modifyVC.sheetPresentationController {
+//                     let id = UISheetPresentationController.Detent.Identifier("frist")
+//                     let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+//                         return 700
+//                     }
+//                     sheet.detents = [detent]
+//                     sheet.preferredCornerRadius = 32
+//                     self.present(modifyVC, animated: true)
+//                 }
+//                 modifyVC.isModalInPresentation = true
+//             }
+//         }).disposed(by: disposeBag)
+//         deleteButton.rx.tap.subscribe(onNext: {
+//             let deleteCustomVC = DeleteCustomAlertVC()
+//             deleteCustomVC.scheduleId = self.scheduleId
+//             deleteCustomVC.modalPresentationStyle = .overFullScreen
+//             deleteCustomVC.modalTransitionStyle = .crossDissolve
+//             guard let pvc = self.presentingViewController else { return }
+//             self.dismiss(animated: false) {
+//               pvc.present(deleteCustomVC, animated: true)
+//             }
+//         }).disposed(by: disposeBag)
     }
     override func addView() {
         [

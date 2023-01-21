@@ -1,7 +1,7 @@
 import UIKit
 extension BaseVC {
     func setNavigation() {
-        self.navigationController?.navigationBar.backItem?.title = ""
+        self.navigationController?.navigationBar.backItem?.title = " "
         if let navigationBar = navigationController?.navigationBar {
             let appearance = UINavigationBarAppearance()
             appearance.backgroundColor = KimIlJeongAsset.Color.backGroundColor2.color

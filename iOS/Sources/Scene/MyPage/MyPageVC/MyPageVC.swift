@@ -3,10 +3,13 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Then
+import Kingfisher
 
 public var isLogOutTapped = PublishRelay<Bool>()
 
 class MyPageVC: BaseVC {
+    private let viewModel = MyPageVM()
+    private let getMyInfo = BehaviorRelay<Void>(value: ())
     private let welcomeLabel = UILabel().then {
         $0.text = "Welcome!"
         $0.textColor = KimIlJeongColor.textColor.color
@@ -17,22 +20,22 @@ class MyPageVC: BaseVC {
         $0.textColor = KimIlJeongColor.mainColor.color
         $0.font = .systemFont(ofSize: 20, weight: .bold)
     }
-    private let profileImage = UIImageView().then {
+    let profileImage = UIImageView().then {
         $0.layer.cornerRadius = 25
         $0.image = UIImage(named: "NoneProfile")
     }
-    private let userNameLabel = UILabel().then {
+    let userNameLabel = UILabel().then {
         $0.text = "kimdaehee0824"
         $0.textColor = KimIlJeongColor.textColor.color
         $0.font = .systemFont(ofSize: 14, weight: .semibold)
     }
-    private let userEmailLabel = UILabel().then {
+    let userEmailLabel = UILabel().then {
         $0.text = "0824dh@naver.com"
         $0.textColor = KimIlJeongColor.description.color
         $0.font = .systemFont(ofSize: 12, weight: .regular)
     }
     private let editButton = UIButton().then {
-        $0.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+        $0.setImage(KimIlJeongImage.pencilFill.image, for: .normal)
     }
     let myScheduleButton = UIButton().then {
         $0.backgroundColor = KimIlJeongColor.surface2.color
@@ -57,6 +60,17 @@ class MyPageVC: BaseVC {
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
     }
+    override func bind() {
+        let input = MyPageVM.Input(getMyInfo: getMyInfo.asDriver())
+        let output = viewModel.transform(input)
+        output.myInfo
+            .subscribe(onNext: {
+                self.userNameLabel.text = $0?.accountId
+                self.userEmailLabel.text = $0?.email
+                guard let imgURL = URL(string: $0?.profile ?? "") else { return }
+                self.profileImage.kf.setImage(with: imgURL)
+            }).disposed(by: disposeBag)
+    }
     override func addView() {
         [
             welcomeLabel,
@@ -79,16 +93,25 @@ class MyPageVC: BaseVC {
         userMenuTableView.reloadData()
         editButton.rx.tap
             .subscribe(onNext: {
-                let nextVC = MyEditVC()
-                nextVC.navigationItem.title = "정보 변경하기"
+                let next = MyEditVC()
+                next.navigationItem.title = "정보 변경하기"
+                self.navigationController?.pushViewController(next, animated: true)
+            }).disposed(by: disposeBag)
+        myScheduleButton.rx.tap
+            .subscribe(onNext: {
+                let nextVC = DetailMapVC()
+                nextVC.navigationController?.isNavigationBarHidden = false
+                nextVC.titleLabel.text = " "
+                nextVC.plusButton.tintColor = .clear
+                nextVC.navigationItem.title = "내 일정 확인하기"
+                nextVC.setNavigation()
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
         myPostsButton.rx.tap
             .subscribe(onNext: {
-                let next = MyPostVC()
-                next.navigationItem.title = "내 글 확인하기"
-                let former = MyPageVC()
-                former.navigationController?.pushViewController(next, animated: true)
+                let nextVC = MyPostVC()
+                nextVC.navigationItem.title = "내 글 확인하기"
+                self.navigationController?.pushViewController(nextVC, animated: true)
             }).disposed(by: disposeBag)
         isLogOutTapped.subscribe(onNext: {
             print($0)

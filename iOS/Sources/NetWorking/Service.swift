@@ -75,7 +75,7 @@ final class Service {
             }
     }
     func fetchAllPosts() -> Single<(PostListModel?, NetworkingResult)> {
-        return provider.rx.request(.getAllSchedules)
+        return provider.rx.request(.getAllPosts)
             .filterSuccessfulStatusCodes()
             .map(PostListModel.self)
             .map { return ($0, .getOk)}
@@ -83,6 +83,24 @@ final class Service {
                 print(error)
                 return .just((nil, .fault))
             }
+    }
+    func fetchDetailPost(_ postID: Int) -> Single<(PostDetailModel?, NetworkingResult)> {
+        return provider.rx.request(.getDetailPost(postId: postID))
+            .filterSuccessfulStatusCodes()
+            .map(PostDetailModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func sendNewPost(_ title: String, _ content: String, _ scheduleID: Int) -> Single<NetworkingResult> {
+        return provider.rx.request(.postNewPost(title, content, scheduleID))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .createOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0)) }
     }
     func fetchAllComments(_ postID: Int) -> Single<(CommentModel?, NetworkingResult)> {
         return provider.rx.request(.getAllComments(postId: postID))
@@ -133,6 +151,24 @@ final class Service {
                 return .just((nil, .fault))
             }
     }
+    // User
+    func fetchMyInfo() -> Single<(UserInfoModel?, NetworkingResult)> {
+        return provider.rx.request(.getMyInfo)
+            .filterSuccessfulStatusCodes()
+            .map(UserInfoModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func patchMyBirthday(_ birthday: String) -> Single<NetworkingResult> {
+        return provider.rx.request(.patchMyBirth(birthDate: birthday))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .deleteOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0)) }
     func deleteSchedule(_ scheduleId: Int) -> Single<NetworkingResult> {
         return provider.rx.request(.deleteSchedule(scheduleId: scheduleId))
             .filterSuccessfulStatusCodes()

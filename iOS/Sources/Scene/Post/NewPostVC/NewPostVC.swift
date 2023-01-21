@@ -4,7 +4,11 @@ import RxCocoa
 import SnapKit
 import Then
 
+public let scheduleIDForNew = PublishRelay<Int>()
+public let scheduleContentForNew = BehaviorRelay<String>(value: "")
+
 class NewPostVC: BaseVC {
+    private let viewModel = NewPostVM()
     private let contentTextView = UITextView().then {
         $0.backgroundColor = .clear
         $0.text = "내용을 입력하세요(첫 줄은 제목입니다.)"
@@ -39,6 +43,46 @@ class NewPostVC: BaseVC {
         $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18.48, weight: .bold)
     }
+    private func setButtonTitle() {
+        isSheetClosed
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.dismiss(animated: true)
+                    scheduleContentForNew
+                        .bind(to: self.placeholderLabel.rx.text)
+                        .disposed(by: self.disposeBag)
+                } else {
+                    print($0)
+                }
+            }).disposed(by: disposeBag)
+    }
+    override func bind() {
+        setButtonTitle()
+        let titleString = PublishRelay<String>()
+        let contentString = PublishRelay<String>()
+        createButton.rx.tap
+            .subscribe(onNext: {
+                let temp = self.contentTextView.text.split(separator: "\n")
+                titleString.accept("\(temp[0])")
+                contentString.accept("\(temp[1])")
+            }).disposed(by: disposeBag)
+        let input = NewPostVM.Input(
+            buttonDidTap: self.createButton.rx.tap.asSignal(),
+            newTitle: titleString.asDriver(onErrorJustReturn: ""),
+            newContent: contentString.asDriver(onErrorJustReturn: ""),
+            scheduleID: scheduleIDForNew.asDriver(onErrorJustReturn: 0)
+        )
+        let output = self.viewModel.transform(input)
+        output.postResult
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.navigationController?.popViewController(animated: true)
+                    scheduleContentForNew.accept("일정을 선택해 주세요")
+                } else {
+                    print("false")
+                }
+            }).disposed(by: self.disposeBag)
+    }
     override func addView() {
         [
             placeholderLabel,
@@ -65,6 +109,24 @@ class NewPostVC: BaseVC {
         cancelButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
+            }).disposed(by: disposeBag)
+        scheduleButton.rx.tap
+            .subscribe(onNext: {
+                let next = DetailMapVC()
+                next.isNewPost.accept(true)
+                next.titleLabel.text = "일정을 선택해 주세요"
+                next.plusButton.tintColor = .clear
+                self.present(next, animated: true)
+                if #available(iOS 16.0, *) {
+                    if let presentationController = next.presentationController as? UISheetPresentationController {
+                        presentationController.detents = [
+                            .custom { _ in
+                                return 700
+                            }
+                        ]
+                        presentationController.preferredCornerRadius = 20
+                    }
+                } else { /*Fallback on earlier versions*/ }
             }).disposed(by: disposeBag)
     }
     override func setLayout() {

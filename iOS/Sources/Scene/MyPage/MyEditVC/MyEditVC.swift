@@ -3,10 +3,13 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Then
+import PhotosUI
 
 class MyEditVC: BaseVC {
-    private let myProfileImage = UIImageView().then {
+    var newImage = UIImage()
+    let myProfileImage = UIImageView().then {
         $0.image = KimIlJeongImage.noneProfile.image
+        $0.layer.cornerRadius = 50
     }
     private let imageUpdateButton = UIButton().then {
         $0.setTitle("이미지 변경하기", for: .normal)
@@ -51,6 +54,21 @@ class MyEditVC: BaseVC {
         $0.setTitleColor(KimIlJeongColor.surfaceColor.color, for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 18.48, weight: .bold)
     }
+    private func openPhotoLibrary() {
+        if #available(iOS 14.0, *) {
+            var configuration = PHPickerConfiguration()
+            configuration.selectionLimit = 1
+            configuration.filter = .any(of: [.images])
+            let image = PHPickerViewController(configuration: configuration)
+            image.delegate = self
+            self.present(image, animated: true)
+        } else {
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            picker.sourceType = .photoLibrary
+            self.present(picker, animated: true)
+        }
+    }
     override func addView() {
         [
             myProfileImage,
@@ -70,6 +88,10 @@ class MyEditVC: BaseVC {
         self.navigationController?.isNavigationBarHidden = false
         self.navigationItem.title = "정보 변경하기"
         setNavigation()
+        imageUpdateButton.rx.tap
+            .subscribe(onNext: {
+                self.openPhotoLibrary()
+            }).disposed(by: disposeBag)
         passwordEditButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(PasswordEditVC(), animated: true)
