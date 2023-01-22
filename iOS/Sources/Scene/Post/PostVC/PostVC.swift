@@ -9,6 +9,7 @@ class PostVC: BaseVC {
     private let viewModel = PostVM()
     private let isMyPost = BehaviorRelay<Bool>(value: false)
     let postID = BehaviorRelay<Int>(value: 0)
+    let detailData = BehaviorRelay<MapScheduleList?>(value: nil)
     private let postCommentCount = BehaviorRelay<Int>(value: 0)
     let postTitleLabel = UILabel().then {
         $0.text = "Starbucks 인수 결정했습니다!"
@@ -80,7 +81,32 @@ class PostVC: BaseVC {
             } else {
                 self.commentCountLabel.text = nil
                 self.editButton.setImage(UIImage(named: "Pencil_fill"), for: .normal)
+                self.editButton.rx.tap
+                    .subscribe(onNext: {
+                        let modifyVC = ModifyVC()
+                        modifyVC.scheduleId = self.postID.value
+                        if #available(iOS 16.0, *) {
+                            if let sheet = modifyVC.sheetPresentationController {
+                                let id = UISheetPresentationController.Detent.Identifier("frist")
+                                let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
+                                    return 700
+                                }
+                                sheet.detents = [detent]
+                                sheet.preferredCornerRadius = 32
+                                self.present(modifyVC, animated: true)
+                            }
+                            modifyVC.isModalInPresentation = true
+                        }
+                    }).disposed(by: self.disposeBag)
                 self.deleteButton.setImage(UIImage(named: "Trash"), for: .normal)
+                self.deleteButton.rx.tap
+                    .subscribe(onNext: {
+                        let deleteAlert = DeleteCustomAlertVC()
+                        deleteAlert.scheduleId = self.postID.value
+                        deleteAlert.modalPresentationStyle = .overFullScreen
+                        deleteAlert.modalTransitionStyle = .crossDissolve
+                        self.present(deleteAlert, animated: true)
+                    }).disposed(by: self.disposeBag)
             }
         }).disposed(by: disposeBag)
     }
