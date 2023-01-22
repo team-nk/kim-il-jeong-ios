@@ -170,6 +170,14 @@ final class Service {
             }
             .catch { [unowned self] in return .just(setNetworkError($0)) }
     }
+    func patchMyPassword(_ old: String, _ new: String, _ check: String) -> Single<NetworkingResult> {
+        return provider.rx.request(.patchMyPW(oldPW: old, newPW: new, newCheck: check))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .deleteOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0)) }
+    }
     func deleteSchedule(_ scheduleId: Int) -> Single<NetworkingResult> {
         return provider.rx.request(.deleteSchedule(scheduleId: scheduleId))
             .filterSuccessfulStatusCodes()

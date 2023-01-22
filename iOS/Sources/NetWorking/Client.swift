@@ -30,6 +30,7 @@ enum API {
     // User
     case getMyInfo
     case patchMyBirth(birthDate: String)
+    case patchMyPW(oldPW: String, newPW: String, newCheck: String)
 }
 
 extension API: TargetType {
@@ -88,6 +89,8 @@ extension API: TargetType {
             return "/user"
         case .patchMyBirth:
             return "/user/birthday"
+        case .patchMyPW:
+            return "/user/password"
         }
     }
     var method: Moya.Method {
@@ -99,7 +102,7 @@ extension API: TargetType {
             return .get
         case .refreshToken, .putSchedule:
             return .put
-        case .patchMyBirth:
+        case .patchMyBirth, .patchMyPW:
             return .patch
         case .deleteSchedule:
             return .delete
@@ -204,6 +207,15 @@ extension API: TargetType {
                         "birthday": date
                     ],
                 encoding: JSONEncoding.prettyPrinted)
+        case .patchMyPW(let old, let new, let check):
+            return .requestParameters(
+                parameters:
+                    [
+                        "now_password": old,
+                        "new_password": new,
+                        "new2_password": check
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         default:
             return .requestPlain
         }
@@ -212,9 +224,9 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllPosts,
-                .getDetailPost, .postNewPost, .getAllComments, .postNewComment, .getMySchedule,
-                .getMapSchedule, .getMyInfo, .patchMyBirth, .deleteSchedule, .postSchedule,
-                .getLocation, .putSchedule:
+                .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
+                .getMySchedule, .getMapSchedule, .getMyInfo, .patchMyBirth,
+                .patchMyPW, .deleteSchedule, .postSchedule, .getLocation, .putSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
