@@ -3,11 +3,6 @@ import SnapKit
 import Then
 
 class DetailLocationTableViewCell: BaseTC {
-    var scheduleId = 0
-    var startTime = ""
-    var endTime = ""
-    var color = ""
-    var isAlways = false
     let titleLabel = UILabel().then {
         $0.text = "sdfs"
         $0.font = UIFont.systemFont(ofSize: 14, weight: .regular)

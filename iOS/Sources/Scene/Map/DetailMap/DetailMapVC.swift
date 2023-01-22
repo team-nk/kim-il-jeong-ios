@@ -54,10 +54,6 @@ class DetailMapVC: BaseVC {
             cell.tableColor.backgroundColor = item.color.colorDistinction()
             cell.titleLabel.text = item.content
             cell.subTitleLabel.text = item.address
-//             cell.startTime = item.start_time
-//             cell.endTime = item.end_time
-//             cell.scheduleId = item.schedule_id
-//             cell.color = item.color
         }.disposed(by: disposeBag)
         output.nextData
             .subscribe(onNext: { data in
@@ -71,6 +67,7 @@ class DetailMapVC: BaseVC {
     private func cellDidTap() {
         let editPlanVC = EditPlanVC()
         editPlanVC.dataModel.accept(self.nextData.value)
+        editPlanVC.isNewPostDetail.accept(self.isNewPost.value)
         if #available(iOS 16.0, *) {
             if let sheet = editPlanVC.sheetPresentationController {
                 let id = UISheetPresentationController.Detent.Identifier("frist")
@@ -95,7 +92,6 @@ class DetailMapVC: BaseVC {
                     print($0)
                 }
             }).disposed(by: disposeBag)
-        detailLocationTabelView.delegate = self
         plusButton.rx.tap.subscribe(onNext: {
             let mainModifyVC = MainModifyVC()
             if #available(iOS 16.0, *) {
@@ -135,29 +131,3 @@ class DetailMapVC: BaseVC {
         }
     }
 }
-// extension DetailMapVC: UITableViewDelegate {
-//     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//         let cell = tableView.cellForRow(at: indexPath) as? DetailLocationTableViewCell
-//         let editPlanVC = EditPlanVC()
-//         editPlanVC.cellColor.backgroundColor = cell?.tableColor.backgroundColor
-//         editPlanVC.addressLabel.text = cell?.subTitleLabel.text
-//         editPlanVC.timeLabel.text = "\(cell!.startTime.dateFormate()) ~ \(cell!.endTime.dateFormate())"
-//         editPlanVC.titleLabel.text = cell?.titleLabel.text
-//         editPlanVC.scheduleId = cell?.scheduleId ?? 0
-//         editPlanVC.color = cell?.color ?? "RED"
-//         editPlanVC.isAlways = cell?.isAlways ?? false
-//         editPlanVC.startTime = cell?.startTime ?? ""
-//         editPlanVC.endTime = cell?.endTime ?? ""
-//         if #available(iOS 16.0, *) {
-//             if let sheet = editPlanVC.sheetPresentationController {
-//                 let id = UISheetPresentationController.Detent.Identifier("frist")
-//                 let detent = UISheetPresentationController.Detent.custom(identifier: id) { _ in
-//                     return 220
-//                 }
-//                 sheet.detents = [detent]
-//                 sheet.preferredCornerRadius = 32
-//                 self.present(editPlanVC, animated: true)
-//             }
-//         }
-//     }
-// }

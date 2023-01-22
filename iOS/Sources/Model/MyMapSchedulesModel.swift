@@ -13,4 +13,5 @@ struct MapScheduleList: Codable {
     let color: String
     let start_time: String
     let end_time: String
+    let is_always: Bool
 }
