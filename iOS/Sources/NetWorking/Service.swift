@@ -169,6 +169,7 @@ final class Service {
                 return .deleteOk
             }
             .catch { [unowned self] in return .just(setNetworkError($0)) }
+    }
     func deleteSchedule(_ scheduleId: Int) -> Single<NetworkingResult> {
         return provider.rx.request(.deleteSchedule(scheduleId: scheduleId))
             .filterSuccessfulStatusCodes()
@@ -210,5 +211,4 @@ final class Service {
             guard let status = (error as? MoyaError)?.response?.statusCode else { return (.fault) }
             return (NetworkingResult(rawValue: status) ?? .fault)
     }
-
 }
