@@ -134,8 +134,7 @@ class PostListVC: BaseVC {
         scrollView.contentInsetAdjustmentBehavior = .never
         writePostButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?
-                    .pushViewController(NewPostVC(), animated: true)
+                self.navigationController?.pushViewController(NewPostVC(), animated: true)
             }).disposed(by: disposeBag)
         self.navigationController?.isNavigationBarHidden = true
     }
