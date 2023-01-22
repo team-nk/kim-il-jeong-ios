@@ -47,7 +47,6 @@ class NewPostVC: BaseVC {
         isSheetClosed
             .subscribe(onNext: {
                 if $0 == true {
-                    self.dismiss(animated: true)
                     scheduleContentForNew
                         .bind(to: self.placeholderLabel.rx.text)
                         .disposed(by: self.disposeBag)
@@ -65,6 +64,10 @@ class NewPostVC: BaseVC {
                 let temp = self.contentTextView.text.split(separator: "\n")
                 titleString.accept("\(temp[0])")
                 contentString.accept("\(temp[1])")
+            }).disposed(by: disposeBag)
+        cancelButton.rx.tap
+            .subscribe(onNext: {
+                scheduleContentForNew.accept("일정을 선택해 주세요")
             }).disposed(by: disposeBag)
         let input = NewPostVM.Input(
             buttonDidTap: self.createButton.rx.tap.asSignal(),

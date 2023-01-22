@@ -10,6 +10,16 @@ enum API {
     case sendEmail(email: String)
     case codeCheck(email: String, code: String)
     case idCheck(accountId: String)
+    case refreshToken
+    // Map
+    case getMySchedule
+    case getMapSchedule
+    case deleteSchedule(scheduleId: Int)
+    case postSchedule(content: String, address: String, color: String,
+                      startTime: String, endTime: String, isAlways: Bool)
+    case putSchedule(scheduleId: Int, content: String, address: String, color: String,
+                      startTime: String, endTime: String, isAlways: Bool)
+    case getLocation
     // Post
     case getBirthdayUsers
     case getAllPosts
@@ -17,18 +27,9 @@ enum API {
     case postNewPost(_ title: String, _ content: String, _ scheduleId: Int)
     case getAllComments(postId: Int)
     case postNewComment(content: String, postId: Int)
-    case getMySchedule
-    case refreshToken
-    case getMapSchedule
     // User
     case getMyInfo
     case patchMyBirth(birthDate: String)
-    case deleteSchedule(scheduleId: Int)
-    case postSchedule(content: String, address: String, color: String,
-                      startTime: String, endTime: String, isAlways: Bool)
-    case putSchedule(scheduleId: Int, content: String, address: String, color: String,
-                      startTime: String, endTime: String, isAlways: Bool)
-    case getLocation
 }
 
 extension API: TargetType {
@@ -54,6 +55,21 @@ extension API: TargetType {
             return "/user/code"
         case .idCheck:
             return "/user/check"
+        case .refreshToken:
+            return "/auth"
+        // Map
+        case .getMySchedule:
+            return "/schedule/list"
+        case .getMapSchedule:
+            return "/schedule/map"
+        case .deleteSchedule(let scheduleId):
+            return "/schedule/\(scheduleId)"
+        case .postSchedule:
+            return "/schedule"
+        case .putSchedule(let scheduleId, _, _, _, _, _, _):
+            return "/schedule/\(scheduleId)"
+        case .getLocation:
+            return "/schedule/location"
         // Post
         case .getBirthdayUsers:
             return "/post/birthday"
@@ -67,34 +83,19 @@ extension API: TargetType {
             return "/comment/\(id)"
         case .postNewComment(_, let id):
             return "/comment/\(id)"
-        case .getMySchedule:
-            return "/schedule/list"
-        case .refreshToken:
-            return "/auth"
-        case .getMapSchedule:
-            return "/schedule/map"
         // User
         case .getMyInfo:
             return "/user"
         case .patchMyBirth:
             return "/user/birthday"
-        case .deleteSchedule(let scheduleId):
-            return "/schedule/\(scheduleId)"
-        case .postSchedule:
-            return "/schedule"
-        case .putSchedule(let scheduleId, _, _, _, _, _, _):
-            return "/schedule/\(scheduleId)"
-        case .getLocation:
-            return "/schedule/location"
         }
     }
     var method: Moya.Method {
         switch self {
         case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment, .postSchedule:
             return .post
-        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers,
-                .getAllPosts, .getDetailPost, .getAllComments, .getMySchedule, .getMapSchedule,
-                .getMyInfo, .getLocation:
+        case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllPosts,
+                .getDetailPost, .getAllComments, .getMySchedule, .getMapSchedule, .getMyInfo, .getLocation:
             return .get
         case .refreshToken, .putSchedule:
             return .put
@@ -210,10 +211,10 @@ extension API: TargetType {
 
     var headers: [String: String]? {
         switch self {
-        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers,
-                .getAllPosts, .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
-                .getMySchedule, .getMapSchedule, .getMyInfo, .patchMyBirth, .deleteSchedule, 
-                .postSchedule, .getLocation, .putSchedule:
+        case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllPosts,
+                .getDetailPost, .postNewPost, .getAllComments, .postNewComment, .getMySchedule,
+                .getMapSchedule, .getMyInfo, .patchMyBirth, .deleteSchedule, .postSchedule,
+                .getLocation, .putSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()

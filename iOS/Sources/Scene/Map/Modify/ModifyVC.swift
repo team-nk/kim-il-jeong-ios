@@ -5,6 +5,7 @@ import MapKit
 import RxCocoa
 import CoreLocation
 
+// swiftlint:disable type_body_length
 class ModifyVC: BaseVC {
     let dataModel = BehaviorRelay<MapScheduleList?>(value: nil)
     var scheduleId = 0

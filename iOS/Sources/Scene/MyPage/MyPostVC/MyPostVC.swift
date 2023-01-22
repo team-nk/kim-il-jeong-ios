@@ -32,20 +32,7 @@ class MyPostVC: BaseVC {
                 cell.scheduleContent.text = items.scheduleContent
                 cell.scheduleDate.text = items.createTime
                 cell.scheduleLocation.text = items.address
-                switch items.color {
-                case "RED":
-                    cell.colorSetting.tintColor = KimIlJeongColor.errorColor.color
-                case "BLUE":
-                    cell.colorSetting.tintColor = KimIlJeongColor.mainColor.color
-                case "YELLOW":
-                    cell.colorSetting.tintColor = KimIlJeongColor.yellowColor.color
-                case "GREEN":
-                    cell.colorSetting.tintColor = KimIlJeongColor.greenColor.color
-                case "PURPLE":
-                    cell.colorSetting.tintColor = KimIlJeongColor.purpleColor.color
-                default:
-                    print("ColorEmpty")
-                }
+                cell.colorSetting.tintColor = items.color.colorDistinction()
                 cell.selectionStyle = .none
             }.disposed(by: disposeBag)
         output.postID
@@ -60,7 +47,11 @@ class MyPostVC: BaseVC {
     private func cellDidTap() {
         let next = PostVC()
         next.postID.accept(nextID.value)
+        self.navigationItem.title = ""
         self.navigationController?.pushViewController(next, animated: true)
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationItem.title = "내 글 확인하기"
     }
     override func addView() {
         view.addSubview(myPostTableView)

@@ -93,20 +93,7 @@ class PostVC: BaseVC {
                 self.postCommentCount.accept($0?.commentCount ?? 0)
                 self.setDetails()
                 self.postTitleLabel.text = $0?.title
-                switch $0?.color {
-                case "RED":
-                    self.colorTag.tintColor = KimIlJeongColor.errorColor.color
-                case "BLUE":
-                    self.colorTag.tintColor = KimIlJeongColor.mainColor.color
-                case "YELLOW":
-                    self.colorTag.tintColor = KimIlJeongColor.yellowColor.color
-                case "GREEN":
-                    self.colorTag.tintColor = KimIlJeongColor.greenColor.color
-                case "PURPLE":
-                    self.colorTag.tintColor = KimIlJeongColor.purpleColor.color
-                default:
-                    print("ColorEmpty2")
-                }
+                self.colorTag.tintColor = $0?.color.colorDistinction()
                 self.scheduleLabel.text = $0?.scheduleContent
                 self.userNameLabel.text = $0?.accountId
                 self.locationLabel.text = $0?.address

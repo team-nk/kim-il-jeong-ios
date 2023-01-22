@@ -69,7 +69,6 @@ class PostListVC: BaseVC {
             }
         }
     }
-    // swiftlint:disable function_body_length
     override func bind() {
         let input = PostListVM.Input(
             getLists: getPosts.asDriver(onErrorJustReturn: ()),
@@ -93,20 +92,7 @@ class PostListVC: BaseVC {
                 cell.scheduleContent.text = items.scheduleContent
                 cell.scheduleDate.text = items.createTime
                 cell.scheduleLocation.text = items.address
-                switch items.color {
-                case "RED":
-                    cell.colorSetting.tintColor = KimIlJeongColor.errorColor.color
-                case "BLUE":
-                    cell.colorSetting.tintColor = KimIlJeongColor.mainColor.color
-                case "YELLOW":
-                    cell.colorSetting.tintColor = KimIlJeongColor.yellowColor.color
-                case "GREEN":
-                    cell.colorSetting.tintColor = KimIlJeongColor.greenColor.color
-                case "PURPLE":
-                    cell.colorSetting.tintColor = KimIlJeongColor.purpleColor.color
-                default:
-                    print("ColorEmpty1")
-                }
+                cell.colorSetting.tintColor = items.color.colorDistinction()
                 cell.selectionStyle = .none
                 self.postsCount += 1
                 self.updateConstraints()
