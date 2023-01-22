@@ -7,4 +7,10 @@ extension Date {
         formmater.locale = Locale(identifier: "ko_KR")
         return formmater.string(from: self)
     }
+    func birthDateFormat() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
 }

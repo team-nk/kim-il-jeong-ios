@@ -5,7 +5,7 @@ import SnapKit
 import Then
 
 class PasswordEditVC: BaseVC {
-    private let passwordViewModel = PasswordEditViewModel()
+    private let viewModel = PasswordEditVM()
     private let oldPWTextField = UITextField().then {
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
         $0.setTextField(forTextField: $0, placeholderText: "기존 Password를 입력하세요")
@@ -57,12 +57,13 @@ class PasswordEditVC: BaseVC {
         }
     }
     override func bind() {
-        let input = PasswordEditViewModel.Input(oldPassword: oldPWTextField.rx.text.orEmpty.asDriver(),
-                                                newPassword: newPWTextField.rx.text.orEmpty.asDriver(),
-                                                newPasswordCheck: newPWCheckTextField.rx.text.orEmpty.asDriver(),
-                                                buttonDidTap: completeButton.rx.tap.asSignal())
-        let output = passwordViewModel.transform(input)
-        output.error.asObservable()
+        let input = PasswordEditVM.Input(
+            oldPassword: oldPWTextField.rx.text.orEmpty.asDriver(),
+            newPassword: newPWTextField.rx.text.orEmpty.asDriver(),
+            newPasswordCheck: newPWCheckTextField.rx.text.orEmpty.asDriver(),
+            buttonDidTap: completeButton.rx.tap.asSignal())
+        let output = viewModel.transform(input)
+        output.errorMessage.asObservable()
             .subscribe(onNext: {
                 self.errorMessage.text = $0
             }).disposed(by: disposeBag)

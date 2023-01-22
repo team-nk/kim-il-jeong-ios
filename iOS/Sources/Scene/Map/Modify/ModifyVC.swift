@@ -5,7 +5,9 @@ import MapKit
 import RxCocoa
 import CoreLocation
 
+// swiftlint:disable type_body_length
 class ModifyVC: BaseVC {
+    let dataModel = BehaviorRelay<MapScheduleList?>(value: nil)
     var scheduleId = 0
     var address = PublishRelay<String>()
     private let viewModel = ModifyViewModel()
@@ -87,6 +89,20 @@ class ModifyVC: BaseVC {
             title: "변경하기",
             titleColor: KimIlJeongAsset.Color.surfaceColor.color,
             backgroundColor: KimIlJeongAsset.Color.mainColor.color)
+    }
+    func setUpUI() {
+        self.dataModel
+            .subscribe { [self] _ in
+                addressLabel.text = dataModel.value?.address ?? ""
+                titleTextField.text = dataModel.value?.content
+                scheduleId = dataModel.value?.schedule_id ?? 0
+                colorStackView.color.accept(dataModel.value?.color ?? "RED")
+                startTimeTextField.text = transformISO8601(stringDate: dataModel.value?.start_time ?? "")
+                endTimeTextField.text = transformISO8601(stringDate: dataModel.value?.end_time ?? "")
+                startDatePicker.date = (dataModel.value?.start_time.dateFormatter())!
+                endDatePicker.date = (dataModel.value?.end_time.dateFormatter())!
+                allDayScheduleSwitch.isOn = dataModel.value!.is_always
+            }.disposed(by: disposeBag)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

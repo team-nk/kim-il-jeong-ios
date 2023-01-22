@@ -2,7 +2,8 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class PasswordEditViewModel: BaseVM {
+class PasswordEditVM: BaseVM {
+    private let disposeBag = DisposeBag()
     struct Input {
         let oldPassword: Driver<String>
         let newPassword: Driver<String>
@@ -10,20 +11,19 @@ class PasswordEditViewModel: BaseVM {
         let buttonDidTap: Signal<Void>
     }
     struct Output {
-        let error: PublishRelay<String>
-        let success: PublishRelay<Bool>
+        let patchResult: PublishRelay<Bool>
+        let errorMessage: PublishRelay<String>
     }
-    private var disposeBag = DisposeBag()
     func transform(_ input: Input) -> Output {
-        let error = PublishRelay<String>()
-        let success = PublishRelay<Bool>()
+        let api = Service()
+        let patchResult = PublishRelay<Bool>()
+        let errorMessage = PublishRelay<String>()
         let info = Driver.combineLatest(
             input.oldPassword,
             input.newPassword,
             input.newPasswordCheck
         )
-        input.buttonDidTap
-            .asObservable()
+        input.buttonDidTap.asObservable()
             .flatMap { info }
             .map {
                 if $0.0.isEmpty {
@@ -36,12 +36,24 @@ class PasswordEditViewModel: BaseVM {
             }
             .subscribe(onNext: {
                 if $0 == "" {
-                    error.accept($0)
-                    success.accept(true)
+                    errorMessage.accept($0)
                 } else {
-                    error.accept($0)
+                    errorMessage.accept($0)
                 }
             }).disposed(by: disposeBag)
-        return Output(error: error, success: success)
+        input.buttonDidTap.asObservable()
+            .withLatestFrom(info)
+            .flatMap { old, new, check in
+                api.patchMyPassword(old, new, check)
+            }
+            .subscribe(onNext: { res in
+                switch res {
+                case .deleteOk:
+                    patchResult.accept(true)
+                default:
+                    patchResult.accept(false)
+                }
+            }).disposed(by: disposeBag)
+        return Output(patchResult: patchResult, errorMessage: errorMessage)
     }
 }

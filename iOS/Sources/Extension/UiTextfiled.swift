@@ -50,4 +50,17 @@ extension UITextField {
         datePicker.preferredDatePickerStyle = .wheels
         self.inputView = datePicker
     }
+    func setBirthDayPicker(width: CGFloat, disposeBag: DisposeBag, datePicker: UIDatePicker) {
+        let toolBar = UIToolbar(frame: CGRect(x: 0.0, y: 0.0, width: width, height: 44.0))
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let barButton = UIBarButtonItem(title: "Done", style: .plain, target: target, action: nil)
+        toolBar.setItems([flexible, barButton], animated: false)
+        self.inputAccessoryView = toolBar
+        barButton.rx.tap.subscribe(onNext: { [self] in
+            self.resignFirstResponder()
+        }).disposed(by: disposeBag)
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .wheels
+        self.inputView = datePicker
+    }
 }
