@@ -22,6 +22,7 @@ class EmailLoginVC: BaseVC {
         $0.font = .systemFont(ofSize: 25, weight: .semibold)
     }
     private let emailTextField = UITextField().then {
+        $0.autocapitalizationType = .none
         $0.setTextField(forTextField: $0, placeholderText: "Email을 입력하세요")
         $0.addLeftPadding()
     }
