@@ -12,7 +12,7 @@ class MyEditVC: BaseVC {
     private let uploadImgVM = NewImageVM()
     private let editProfileVM = EditProfileVM()
     private let getURL = BehaviorRelay<Void>(value: ())
-    private let imgURL = BehaviorRelay<String?>(value: "")
+    private let imgURL = BehaviorRelay<String>(value: "")
     let myProfileImage = UIImageView().then {
         $0.image = KimIlJeongImage.noneProfile.image
         $0.layer.cornerRadius = 50
@@ -82,8 +82,8 @@ class MyEditVC: BaseVC {
             self.present(picker, animated: true)
         }
     }
-    private func postNewImage() {
-        let input = NewImageVM.Input(postNewImg: getURL.asDriver(), newProfileImg: newImage.asDriver())
+    override func bind() {
+        let input = NewImageVM.Input(postNewImg: completeButton.rx.tap.asDriver(), newProfileImg: newImage.asDriver())
         let output = uploadImgVM.transform(input)
         output.imageURL
             .subscribe(onNext: { url in
@@ -97,7 +97,6 @@ class MyEditVC: BaseVC {
                     print("thatimagehasn'tbeensent")
                 }
             }).disposed(by: disposeBag)
-        self.patchMyProfile()
     }
     private func patchMyProfile() {
         let input = EditProfileVM.Input(
@@ -106,15 +105,12 @@ class MyEditVC: BaseVC {
             accountID: idTextField.rx.text.orEmpty.asDriver(),
             imageURL: imgURL.asDriver())
         let output = editProfileVM.transform(input)
-        output.errorMessage
-            .subscribe(onNext: {
-                self.errorMessage.text = $0
-            }).disposed(by: disposeBag)
         output.requestResult
             .subscribe(onNext: {
                 if $0 == true {
-                    self.navigationController?.popViewController(animated: true)
                     Token.removeToken()
+                    isLogOutTapped.accept(true)
+                    self.navigationController?.popViewController(animated: true)
                 } else {
                     print("hasn'tbeenedited")
                 }
@@ -152,10 +148,6 @@ class MyEditVC: BaseVC {
         cancelButton.rx.tap
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
-            }).disposed(by: disposeBag)
-        completeButton.rx.tap
-            .subscribe(onNext: {
-                self.postNewImage()
             }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
