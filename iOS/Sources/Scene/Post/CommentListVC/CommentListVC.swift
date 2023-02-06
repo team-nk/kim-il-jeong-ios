@@ -3,6 +3,7 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Then
+import Kingfisher
 
 class CommentListVC: BaseVC {
     private let getComments = BehaviorRelay<Void>(value: ())
@@ -71,6 +72,10 @@ class CommentListVC: BaseVC {
                 cell.commentLabel.text = items.content
                 cell.userLabel.text = items.accountId
                 cell.commentDateLabel.text = transformISO8601(stringDate: items.createTime)
+                if items.profile != "null" {
+                    guard let imgURL = URL(string: items.profile ?? "") else { return }
+                    cell.profileImage.kf.setImage(with: imgURL)
+                }
                 self.commentCount += 1
                 self.updateConstraints()
                 cell.selectionStyle = .none
