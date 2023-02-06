@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Moya
 
 enum API {
@@ -31,6 +32,8 @@ enum API {
     case getMyInfo
     case patchMyBirth(birthDate: String)
     case patchMyPW(oldPW: String, newPW: String, newCheck: String)
+    case postImage(img: UIImage)
+    case patchMyNewProfile(_ email: String, _ accountId: String, _ profileURL: String)
 }
 
 extension API: TargetType {
@@ -91,18 +94,22 @@ extension API: TargetType {
             return "/user/birthday"
         case .patchMyPW:
             return "/user/password"
+        case .postImage:
+            return "/image"
+        case .patchMyNewProfile:
+            return "/user"
         }
     }
     var method: Moya.Method {
         switch self {
-        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment, .postSchedule:
+        case .imageUproad, .postCreate, .login, .signup, .postNewPost, .postNewComment, .postSchedule, .postImage:
             return .post
         case .sendEmail, .codeCheck, .postSerach, .idCheck, .getBirthdayUsers, .getAllPosts,
                 .getDetailPost, .getAllComments, .getMySchedule, .getMapSchedule, .getMyInfo, .getLocation:
             return .get
         case .refreshToken, .putSchedule:
             return .put
-        case .patchMyBirth, .patchMyPW:
+        case .patchMyBirth, .patchMyPW, .patchMyNewProfile:
             return .patch
         case .deleteSchedule:
             return .delete
@@ -216,6 +223,25 @@ extension API: TargetType {
                         "new2_password": check
                     ],
                 encoding: JSONEncoding.prettyPrinted)
+        case .postImage(let image):
+            var multiPartFormData = [MultipartFormData]()
+            let img = image.jpegData(compressionQuality: 0.5)
+            let imgData = MultipartFormData(
+                provider: .data(img!),
+                name: "image",
+                fileName: "image.jpg",
+                mimeType: "image/jpeg")
+            multiPartFormData.append(imgData)
+            return .uploadMultipart(multiPartFormData)
+        case .patchMyNewProfile(let email, let id, let url):
+            return .requestParameters(
+                parameters:
+                    [
+                        "email": email,
+                        "account_id": id,
+                        "profile": url
+                    ],
+                encoding: JSONEncoding.prettyPrinted)
         default:
             return .requestPlain
         }
@@ -224,14 +250,16 @@ extension API: TargetType {
     var headers: [String: String]? {
         switch self {
         case .imageUproad, .postSerach, .postCreate, .getBirthdayUsers, .getAllPosts,
-                .getDetailPost, .postNewPost, .getAllComments, .postNewComment,
-                .getMySchedule, .getMapSchedule, .getMyInfo, .patchMyBirth,
-                .patchMyPW, .deleteSchedule, .postSchedule, .getLocation, .putSchedule:
+                .getDetailPost, .postNewPost, .getAllComments, .postNewComment, .getMySchedule,
+                .getMapSchedule, .getMyInfo, .patchMyBirth, .patchMyPW, .patchMyNewProfile,
+                .deleteSchedule, .postSchedule, .getLocation, .putSchedule:
             return Header.accessToken.header()
         case .login, .signup, .sendEmail, .codeCheck, .idCheck:
             return Header.tokenIsEmpty.header()
         case .refreshToken:
             return Header.refreshToken.header()
+        case .postImage:
+            return Header.uploadImage.header()
         }
     }
 }

@@ -4,12 +4,19 @@ import RxCocoa
 import SnapKit
 import Then
 import PhotosUI
+import Alamofire
+import RxMoya
 
 class MyEditVC: BaseVC {
-    var newImage = UIImage()
+    var newImage = BehaviorRelay<UIImage?>(value: nil)
+    private let uploadImgVM = NewImageVM()
+    private let editProfileVM = EditProfileVM()
+    private let getURL = BehaviorRelay<Void>(value: ())
+    private let imgURL = BehaviorRelay<String?>(value: "")
     let myProfileImage = UIImageView().then {
         $0.image = KimIlJeongImage.noneProfile.image
         $0.layer.cornerRadius = 50
+        $0.clipsToBounds = true
     }
     private let imageUpdateButton = UIButton().then {
         $0.setTitle("이미지 변경하기", for: .normal)
@@ -24,6 +31,7 @@ class MyEditVC: BaseVC {
     let emailTextField = UITextField().then {
         $0.setTextField(forTextField: $0, placeholderText: "Email")
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
+        $0.autocapitalizationType = .none
     }
     let idTitleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 14, weight: .medium)
@@ -33,6 +41,11 @@ class MyEditVC: BaseVC {
     let idTextField = UITextField().then {
         $0.setTextField(forTextField: $0, placeholderText: "id")
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
+        $0.autocapitalizationType = .none
+    }
+    private let errorMessage = UILabel().then {
+        $0.font = .systemFont(ofSize: 14, weight: .regular)
+        $0.textColor = KimIlJeongColor.errorColor.color
     }
     private let passwordEditButton = UIButton().then {
         $0.setTitle("비밀번호 변경하기", for: .normal)
@@ -69,6 +82,44 @@ class MyEditVC: BaseVC {
             self.present(picker, animated: true)
         }
     }
+    private func postNewImage() {
+        let input = NewImageVM.Input(postNewImg: getURL.asDriver(), newProfileImg: newImage.asDriver())
+        let output = uploadImgVM.transform(input)
+        output.imageURL
+            .subscribe(onNext: { url in
+                self.imgURL.accept(url)
+            }).disposed(by: disposeBag)
+        output.getResult
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.patchMyProfile()
+                } else {
+                    print("thatimagehasn'tbeensent")
+                }
+            }).disposed(by: disposeBag)
+        self.patchMyProfile()
+    }
+    private func patchMyProfile() {
+        let input = EditProfileVM.Input(
+            buttonDidTap: getURL.asSignal(onErrorJustReturn: ()),
+            email: emailTextField.rx.text.orEmpty.asDriver(),
+            accountID: idTextField.rx.text.orEmpty.asDriver(),
+            imageURL: imgURL.asDriver())
+        let output = editProfileVM.transform(input)
+        output.errorMessage
+            .subscribe(onNext: {
+                self.errorMessage.text = $0
+            }).disposed(by: disposeBag)
+        output.requestResult
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.navigationController?.popViewController(animated: true)
+                    Token.removeToken()
+                } else {
+                    print("hasn'tbeenedited")
+                }
+            }).disposed(by: disposeBag)
+    }
     override func addView() {
         [
             myProfileImage,
@@ -78,6 +129,7 @@ class MyEditVC: BaseVC {
             idTitleLabel,
             idTextField,
             passwordEditButton,
+            errorMessage,
             cancelButton,
             completeButton
         ] .forEach {
@@ -103,7 +155,7 @@ class MyEditVC: BaseVC {
             }).disposed(by: disposeBag)
         completeButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.popViewController(animated: true)
+                self.postNewImage()
             }).disposed(by: disposeBag)
     }
     // swiftlint:disable function_body_length
@@ -142,6 +194,11 @@ class MyEditVC: BaseVC {
             $0.centerX.equalToSuperview()
             $0.height.equalTo(24)
             $0.bottom.equalToSuperview().inset(100)
+        }
+        errorMessage.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(passwordEditButton.snp.top).offset(-10)
+            $0.height.equalTo(24)
         }
         cancelButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
