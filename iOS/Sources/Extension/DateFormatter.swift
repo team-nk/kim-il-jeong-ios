@@ -9,3 +9,12 @@ public func transformISO8601(stringDate: String) -> String {
     let range = ...endIndex
     return "\(resultDate[range])"
 }
+
+public func currentDateFormatter() -> String {
+    let nowDate = Date()
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    formatter.dateFormat = "M월 d일 EEEE"
+    let date = formatter.string(from: nowDate)
+    return date
+}
