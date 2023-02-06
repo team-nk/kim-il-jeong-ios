@@ -8,8 +8,8 @@ extension MyEditVC: UIImagePickerControllerDelegate & UINavigationControllerDele
         if let itemProvider = itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self) {
             itemProvider.loadObject(ofClass: UIImage.self) { image, _ in
                 DispatchQueue.main.async {
-                    self.myProfileImage.image = image as? UIImage
-                    self.newImage = (image as? UIImage)!
+                    self.myProfileImage.image = (image as? UIImage) ?? UIImage(named: "NoneProfile")
+                    self.newImage.accept((image as? UIImage) ?? UIImage(named: "NoneProfile"))
                 }
             }
         }
