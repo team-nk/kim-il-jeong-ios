@@ -10,3 +10,10 @@ struct UserInfoModel: Codable {
         case email
     }
 }
+
+struct ImageURLModel: Codable {
+    let imgURL: String
+    enum CodingKeys: String, CodingKey {
+        case imgURL = "image_url"
+    }
+}

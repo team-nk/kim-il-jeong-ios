@@ -9,7 +9,7 @@ struct CommentModel: Codable {
 struct Comments: Codable {
     let content: String
     let accountId: String
-    let profile: String
+    let profile: String?
     let createTime: String
     enum CodingKeys: String, CodingKey {
         case content

@@ -23,6 +23,7 @@ class MyPageVC: BaseVC {
     let profileImage = UIImageView().then {
         $0.layer.cornerRadius = 25
         $0.image = UIImage(named: "NoneProfile")
+        $0.clipsToBounds = true
     }
     let userNameLabel = UILabel().then {
         $0.text = "kimdaehee0824"

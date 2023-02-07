@@ -31,7 +31,6 @@ extension String {
         let str = dateFormatter.date(from: nowDate)
         return str!
     }
-
     func colorDistinction() -> UIColor {
         switch self {
         case "RED":

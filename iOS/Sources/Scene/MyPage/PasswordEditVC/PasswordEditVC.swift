@@ -7,14 +7,17 @@ import Then
 class PasswordEditVC: BaseVC {
     private let viewModel = PasswordEditVM()
     private let oldPWTextField = UITextField().then {
+        $0.autocapitalizationType = .none
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
         $0.setTextField(forTextField: $0, placeholderText: "기존 Password를 입력하세요")
     }
     private let newPWTextField = UITextField().then {
+        $0.autocapitalizationType = .none
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
         $0.setTextField(forTextField: $0, placeholderText: "새로운 Password를 입력하세요")
     }
     private let newPWCheckTextField = UITextField().then {
+        $0.autocapitalizationType = .none
         $0.addPaddingToTextField(leftSize: 14, rightSize: 14)
         $0.setTextField(forTextField: $0, placeholderText: "새로운 Password를 한 번 더 입력하세요")
     }

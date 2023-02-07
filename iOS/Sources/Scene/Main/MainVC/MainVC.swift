@@ -60,7 +60,7 @@ class MainVC: BaseVC {
     }()
     private let toDayDoLabel = UILabel().then {
         $0.textColor = KimIlJeongColor.textColor.color
-        $0.text = "5월 8일 일정"
+        $0.text = currentDateFormatter()
         $0.font = .systemFont(ofSize: 18, weight: .bold)
     }
     private let plusToDoButton = UIButton().then {

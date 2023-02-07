@@ -23,9 +23,10 @@ class CommentCell: BaseTC {
         $0.textAlignment = .right
         $0.font = .systemFont(ofSize: 8, weight: .regular)
     }
-    private let profileImage = UIImageView().then {
+    let profileImage = UIImageView().then {
         $0.image = UIImage(named: "NoneProfile")
         $0.layer.cornerRadius = 10
+        $0.clipsToBounds = true
     }
     override func addView() {
         addSubview(backView)

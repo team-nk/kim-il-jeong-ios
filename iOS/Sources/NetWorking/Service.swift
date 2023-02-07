@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import RxSwift
 import RxCocoa
 import Moya
@@ -172,6 +173,24 @@ final class Service {
     }
     func patchMyPassword(_ old: String, _ new: String, _ check: String) -> Single<NetworkingResult> {
         return provider.rx.request(.patchMyPW(oldPW: old, newPW: new, newCheck: check))
+            .filterSuccessfulStatusCodes()
+            .map { _ -> NetworkingResult in
+                return .deleteOk
+            }
+            .catch { [unowned self] in return .just(setNetworkError($0)) }
+    }
+    func postNewImage(_ image: UIImage) -> Single<(ImageURLModel?, NetworkingResult)> {
+        return provider.rx.request(.postImage(img: image))
+            .filterSuccessfulStatusCodes()
+            .map(ImageURLModel.self)
+            .map { return ($0, .getOk) }
+            .catch { error in
+                print(error)
+                return .just((nil, .fault))
+            }
+    }
+    func patchNewProfile(_ email: String, _ accountID: String, _ profileURL: String) -> Single<NetworkingResult> {
+        return provider.rx.request(.patchMyNewProfile(email, accountID, profileURL))
             .filterSuccessfulStatusCodes()
             .map { _ -> NetworkingResult in
                 return .deleteOk

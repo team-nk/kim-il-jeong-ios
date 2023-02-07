@@ -36,7 +36,7 @@ struct Token {
 }
 
 enum Header {
-    case accessToken, tokenIsEmpty, refreshToken
+    case accessToken, tokenIsEmpty, refreshToken, uploadImage
 
     func header() -> [String: String]? {
         guard let token = Token.accessToken else {
@@ -55,6 +55,8 @@ enum Header {
                     "Refresh-Token": refreshToken, "Contect-Type": "application/json"]
         case .tokenIsEmpty:
             return ["Contect-Type": "application/json"]
+        case .uploadImage:
+            return ["Authorization": "Bearer " + token, "Content-Type": "multipart/form-data"]
         }
     }
 }
