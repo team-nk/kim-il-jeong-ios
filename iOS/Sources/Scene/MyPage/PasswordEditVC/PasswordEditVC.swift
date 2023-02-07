@@ -70,6 +70,12 @@ class PasswordEditVC: BaseVC {
             .subscribe(onNext: {
                 self.errorMessage.text = $0
             }).disposed(by: disposeBag)
+        output.patchResult
+            .subscribe(onNext: {
+                if $0 == true {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }).disposed(by: disposeBag)
     }
     override func configureVC() {
         self.navigationController?.isNavigationBarHidden = false
